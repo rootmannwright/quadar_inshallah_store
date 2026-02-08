@@ -1,0 +1,87 @@
+####################################
+# NODE / JAVASCRIPT
+####################################
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+####################################
+# ENVIRONMENT FILES (CRÍTICO)
+####################################
+.env
+.env.*
+.env.example
+!.env.development
+
+####################################
+# BACKEND SPECIFIC
+####################################
+backend/node_modules/
+backend/public/uploads/
+backend/logs/
+backend/tmp/
+backend/cache/
+
+####################################
+# BUILD / DIST
+####################################
+dist/
+build/
+.vite/
+.out/
+coverage/
+
+####################################
+# DATABASE / ORM
+####################################
+*.sqlite
+*.sqlite3
+*.db
+prisma/migrations/
+sequelize-data.json
+
+####################################
+# DOCKER
+####################################
+docker-data/
+volumes/
+**/docker-data/
+**/volumes/
+*.pid
+
+####################################
+# SYSTEM FILES
+####################################
+.DS_Store
+Thumbs.db
+desktop.ini
+
+####################################
+# IDE / EDITOR
+####################################
+.vscode/
+.idea/
+*.swp
+*.swo
+
+####################################
+# LOG FILES
+####################################
+logs/
+*.log
+
+####################################
+# SECURITY
+####################################
+*.pem
+*.key
+*.crt
+
+####################################
+# TEMP / CACHE
+####################################
+tmp/
+temp/
+.cache/

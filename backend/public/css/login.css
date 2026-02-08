@@ -1,0 +1,243 @@
+@import url('https://fonts.googleapis.com/css2?family=Monsieur+La+Doulaise&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    width: 100%;
+    height: auto;
+    background-color: #f4f4f4;
+    font-family: Arial, sans-serif;
+}
+
+.logo_img {
+    width: 350px;
+    height: 200px;
+    display: block;
+    margin: 20px auto;
+}
+
+.name-logo {
+  font-family: "Monsieur La Doulaise", cursive;
+  font-size: 5em;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+}
+
+.menu {
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    padding: 10px 0;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.menu a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+.menu li {
+    list-style: none;
+}
+
+.nav-links {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    padding: 10px 0;
+    cursor: pointer;
+}
+
+.nav-links a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    font-weight: bold;
+}
+
+.nav-links span {
+    margin: 0 15px;
+    font-size: 16px;
+    color: #555;
+}
+
+.nav-links span:hover {
+    color: #000;
+    text-decoration: underline;
+}
+
+/* ===== Container Principal ===== */
+.container-login {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 50px 20px;
+}
+
+/* ===== Container dos Formulários ===== */
+.login-register-info {
+  display: flex;
+  flex-direction: column; /* coluna por padrão */
+  gap: 32px; /* espaço entre login e registro */
+  width: 100%;
+  max-width: 1200px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+#login-content, #register-content {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+#login-content legend, #register-content legend {
+  font-size: 1.5em;
+  margin-bottom: 15px;
+  font-weight: bold;
+  text-align: center;
+}
+
+#login-content div, #register-content div {
+  margin-bottom: 15px;
+}
+
+#login-content label, #register-content label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+#login-content input, #register-content input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#login-content .loginBtn, #register-content .registerBtn {
+  text-align: center;
+}
+
+#login-content button, #register-content button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#login-content button:hover, #register-content button:hover {
+  background-color: #45a049;
+}
+
+footer {
+    width: 100%;
+    height: px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    background-color: rgb(122, 150, 212);
+    border-radius: 10px;
+    padding: 20px 0;
+    color: #fff;
+}
+
+.politcs {
+    display: flex;
+    width: 100%;
+}
+
+.content-politcs-footer {
+    margin: 32px;
+    width: 100%;
+    height: auto;
+}
+
+.politcs-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.politcs-content li a {
+    font-size: 14px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.politcs-content a:hover {
+    color: #000;
+    transform: scale(1.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+footer p {
+    margin: 5px 0;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.tipografy {
+    width: 17%;
+}
+
+#click-here {
+    color: #333;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.address {
+    text-transform: uppercase;
+    color: #000;
+}
+
+.img_footer {
+    display: flex;
+    width: 15%;
+    height: 15%;
+    margin-top: 50px;
+}
+
+.social-media {
+    display: flex;
+    gap: 2rem;
+    padding: 20px;
+    margin: 32px;
+    justify-content: center;
+    align-items: center;
+}
+
+.social-media img {
+    cursor: pointer;
+}
+
+.social-media img:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s ease-in-out;
+}

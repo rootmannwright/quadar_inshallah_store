@@ -1,0 +1,320 @@
+@import url('https://fonts.googleapis.com/css2?family=Monsieur+La+Doulaise&display=swap');
+
+/* RESET BÁSICO */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+html,
+body {
+  width: 100%;
+  background: #f6f6f6;
+  color: #111;
+  overflow-x: hidden;
+}
+
+.name-logo {
+  font-family: "Monsieur La Doulaise", cursive;
+  font-size: 5em;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+}
+
+.header-logo {
+  display: flex;
+  width: 100%;
+  height: auto;
+  justify-content: center;
+}
+
+.header-logo img {
+  width: 10em;
+  height: 10em;
+}
+
+.nav-links {
+  width: 100%;
+  height: auto;
+  display: flex;
+  gap: 5em;
+  justify-content: center;
+  margin: 32px;
+  padding: 32px;
+}
+
+.nav-links li {
+  display: flex;
+  list-style: none;
+}
+
+.nav-links img {
+  display: flex;
+  height: 100%;
+}
+
+/* HEADER */
+header {
+  width: 100%;
+  padding: 24px 40px;
+  background: #fff;
+  border-bottom: 1px solid #e5e5e5;
+  justify-content: center;
+}
+
+/* CONTAINER */
+.cart-container {
+  max-width: 1100px;
+  margin: 48px auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 32px;
+}
+
+/* TÍTULO */
+.cart-container h1 {
+  grid-column: span 2;
+  font-size: 2.2rem;
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+
+/* LISTA DE PRODUTOS */
+.cart-items {
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ITEM */
+.cart-item {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.cart-item:last-child {
+  border-bottom: none;
+}
+
+.cart-item img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+/* INFO */
+.cart-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cart-info h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.cart-info p {
+  font-size: 0.95rem;
+  color: #444;
+}
+
+/* RESUMO */
+.cart-summary {
+  background: #fff;
+  border-radius: 20px;
+  padding: 28px;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.summary-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.1rem;
+}
+
+.cart-total {
+  font-size: 1.4rem;
+}
+
+.remove-item {
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  width: 5em;
+  color: white;
+  background-color: red;
+}
+
+/* BOTÃO COMPRAR */
+#buyButton {
+  margin-top: 12px;
+  padding: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+#buyButton:hover {
+  background: #000;
+  transform: translateY(-2px);
+}
+
+/* CARRINHO VAZIO */
+.empty-cart {
+  text-align: center;
+  padding: 40px 0;
+  color: #777;
+}
+
+/* ===============================
+   RESPONSIVIDADE AVANÇADA
+================================ */
+
+/* Tablets e notebooks menores */
+@media (max-width: 1024px) {
+  .cart-container {
+    max-width: 100%;
+    margin: 32px auto;
+    padding: 0 20px;
+    gap: 24px;
+  }
+
+  .cart-item img {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+/* Tablets / celulares grandes */
+@media (max-width: 768px) {
+  header {
+    padding: 20px;
+  }
+
+  .cart-container {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-container h1 {
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+  }
+
+  .cart-items {
+    padding: 20px;
+  }
+
+  .cart-summary {
+    padding: 24px;
+    position: sticky;
+    bottom: 0;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.08);
+  }
+
+  #buyButton {
+    font-size: 1.05rem;
+    padding: 18px;
+  }
+}
+
+/* Celulares */
+@media (max-width: 480px) {
+  header img {
+    height: 40px;
+  }
+
+  .nav-links {
+    top: 0;
+    width: 80%;
+    background: #fff;
+    display: flex;
+    gap: 20px;
+    transition: right 0.3s ease;
+    z-index: 999;
+  
+}
+
+.name-logo {
+  font-size: 24px;
+}
+
+  .cart-container {
+    margin: 20px auto;
+    padding: 0 16px;
+    gap: 20px;
+  }
+
+  .cart-container h1 {
+    font-size: 1.5rem;
+  }
+
+  .cart-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .cart-item img {
+    width: 100%;
+    height: auto;
+  }
+
+  .cart-info h3 {
+    font-size: 1rem;
+  }
+
+  .cart-info p {
+    font-size: 0.9rem;
+  }
+
+  .cart-summary {
+    padding: 20px;
+  }
+
+  .summary-line {
+    font-size: 1rem;
+  }
+
+  .cart-total {
+    font-size: 1.3rem;
+  }
+
+  #buyButton {
+    width: 100%;
+    padding: 16px;
+  }
+}
+
+/* Celulares muito pequenos */
+@media (max-width: 360px) {
+  .cart-container h1 {
+    font-size: 1.3rem;
+  }
+
+  .cart-item img {
+    border-radius: 12px;
+  }
+
+  #buyButton {
+    font-size: 0.95rem;
+  }
+}

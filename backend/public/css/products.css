@@ -1,0 +1,249 @@
+@import url('https://fonts.googleapis.com/css2?family=Monsieur+La+Doulaise&display=swap');
+
+body {
+    width: 100%;
+    height: auto;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.logo_img {
+
+    display: flex;
+    width: 10em;
+    margin: 32px auto;
+}
+
+.nav-links {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    padding: 10px 0;
+    cursor: pointer;
+}
+
+.nav-links a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    font-weight: bold;
+}
+
+.nav-links span {
+    margin: 0 15px;
+    font-size: 16px;
+    color: #555;
+}
+
+.nav-links span:hover {
+    color: #000;
+    text-decoration: underline;
+}
+
+h1,
+p {
+    text-align: center;
+    margin: 32px;
+    font-weight: bold;
+}
+
+.menu {
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    padding: 10px 0;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.menu a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+.menu li {
+    list-style: none;
+}
+
+.name-logo {
+    font-family: "Monsieur La Doulaise", cursive;
+    font-size: 5em;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+}
+
+.container_imagem_product img {
+    display: flex;
+    max-height: 100%;
+    object-fit: fill;
+    margin: 32px auto;
+    width: 25em;
+    height: 35em;
+    /* border: 1px solid red; */
+}
+
+.main_products {
+    /* border: 1px solid red; */
+    width: fit-content;
+    display: flex;
+    row-gap: 120px;
+    column-gap: 80px;
+    margin: 32px auto;
+    align-items: start;
+}
+
+.container_products {
+    width: 100%;
+    max-width: 1200px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px) 3, 1fr);
+    justify-content: center;
+    align-items: flex-start;
+    /* border: 1px solid blue; */
+}
+
+.titleProduct {
+    font-family: "Monsieur La Doulaise", cursive;
+    font-weight: bold;
+    letter-spacing: 0.2em;
+    font-size: 0.8em;
+}
+
+.titleProduct h2 {
+    margin: 32px;
+    display: flex;
+    /* border: 1px solid red; */
+    justify-content: center;
+    align-items: center;
+}
+
+.container_description_product {
+    margin: 32px;
+}
+
+.descriptionProduct {
+    font-family: 'Courier New', Courier, monospace;
+    height: auto;
+    font-weight: bold;
+    font-style: italic;
+    color: gray;
+}
+
+.valueProduct {
+    display: flex;
+    /* border: 1px solid red; */
+    margin: 2em;
+    padding: 1em;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+.mascote {
+    display: block;
+    width: 300px;
+    height: auto;
+    margin: 0 auto;
+}
+
+footer {
+    width: 100%;
+    height: px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    background-color: rgb(122, 150, 212);
+    border-radius: 10px;
+    padding: 20px 0;
+    color: #fff;
+}
+
+.politcs {
+    display: flex;
+    width: 100%;
+}
+
+.content-politcs-footer {
+    margin: 32px;
+    width: 100%;
+    height: auto;
+}
+
+.politcs-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.politcs-content li a {
+    font-size: 14px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.politcs-content a:hover {
+    color: #000;
+    transform: scale(1.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+footer p {
+    margin: 5px 0;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.tipografy {
+    width: 17%;
+}
+
+#click-here {
+    color: #333;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.address {
+    text-transform: uppercase;
+    color: #000;
+}
+
+.img_footer {
+    display: flex;
+    width: 15%;
+    height: 15%;
+    margin-top: 50px;
+}
+
+.social-media {
+    display: flex;
+    gap: 2rem;
+    padding: 20px;
+    margin: 32px;
+    justify-content: center;
+    align-items: center;
+}
+
+.social-media img {
+    cursor: pointer;
+}
+
+.social-media img:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s ease-in-out;
+}

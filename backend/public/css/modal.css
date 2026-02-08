@@ -1,0 +1,136 @@
+/* modal.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.modal {
+    position: fixed;
+    display: none;
+    inset: 0;
+    background: #fff;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 20px;
+}
+
+.modal.active {
+    display: flex;
+    width: 100%;
+    height: auto;
+}
+
+.modal-content {
+    background: #fff;
+    width: 100%;
+    max-width: 460px;
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    animation: modalFade 0.25s ease;
+}
+
+.modal-content img {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+#closeModal {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.modal-body h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.modal-body p {
+    font-size: 15px;
+    color: #555;
+    line-height: 1.4;
+}
+
+.stock {
+    font-size: 14px;
+    color: #333;
+}
+
+.price {
+    font-size: 22px;
+    font-weight: bold;
+    color: #111;
+}
+
+.quantity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quantity button {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: none;
+    background: #eee;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+#quantityValue {
+    min-width: 24px;
+    text-align: center;
+    font-weight: bold;
+}
+
+#addToCartBtn {
+    width: 10em;
+    height: 5em;
+    margin-top: 16px;
+    background-color: #1a73e8;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#addToCartBtn:hover {
+    background-color: #155ab6;
+}
+
+@keyframes modalFade {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .modal-content {
+        padding: 16px;
+    }
+}
