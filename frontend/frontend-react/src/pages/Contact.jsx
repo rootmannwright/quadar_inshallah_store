@@ -1,0 +1,1 @@
+// make a page of contact information with a form to fill out for questions or comments, and also include the email address and phone number for the store, and a map of the location of the store.
