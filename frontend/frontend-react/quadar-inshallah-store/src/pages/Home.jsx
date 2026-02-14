@@ -81,20 +81,20 @@ export default function Home() {
         </section>
 
         {/* ===== Produtos ===== */}
-        <section className="max-w-7xl mx-auto px-6 py-16">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <section className="product-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+          <div className="product-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
 
             {/* LEFT — imagem editorial */}
-            <div className="w-full">
+            <div className="flex items-center justify-center lg:justify-start">
               <img
-                src="../public/logos/foto-perfil.jpg"
-                alt="Editorial"
-                className="w-full h-full object-cover"
+                src="../public/logos/scooby-quadar.png"
+                alt="Scooby Mascote Quadar Inshallah"
+                className="flex items-center justify-center lg:justify-start"
               />
             </div>
 
             {/* RIGHT — grid de produtos */}
-            <div className="grid grid-cols-2 gap-x-10 gap-y-14">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
 
               <motion.div
                 initial={{ opacity: 0, y: 30 }}

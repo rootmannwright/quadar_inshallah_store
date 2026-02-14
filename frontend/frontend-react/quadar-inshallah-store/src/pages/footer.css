@@ -34,3 +34,10 @@
     justify-content: center;
     gap: 20px;
 }
+
+.author-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 32px auto;
+}

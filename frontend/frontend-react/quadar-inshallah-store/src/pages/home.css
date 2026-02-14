@@ -44,17 +44,16 @@ body {
 }
 
 /* Produtos */
-.products {
-  border: 1px solid red;
+
+
+.product-content {
   display: flex;
-  flex-direction: column;
   padding: 2rem;
+  margin: 0px auto;
 }
 
-.products-grid {
-  display: flex;
-  right: 0;
-  position: absolute;
-  border: 1px solid red;
+.div-content {
+  margin: 32px;
+  padding: 12px;
 }
 
