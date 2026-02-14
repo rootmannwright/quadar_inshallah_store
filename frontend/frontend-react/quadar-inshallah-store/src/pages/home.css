@@ -1,0 +1,60 @@
+/* ===== Home Global Layout ===== */
+@import "tailwindcss";
+
+body {
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.home {
+  min-height: 100vh;
+  background-color: #fff;
+}
+
+/* Branding */
+.home-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+}
+
+.logo_img {
+  display: flex;
+  margin: 0px auto;
+  width: 120px;
+  margin-bottom: 1rem;
+}
+
+.name-logo {
+  font-size: 1.2rem;
+  letter-spacing: 0.15em;
+  text-transform: initial;
+}
+
+/* Mensagem */
+.container_message {
+  text-align: center;
+  margin: 4rem 0;
+}
+
+.container_message h1 {
+  font-size: 3rem;
+  letter-spacing: 0.2em;
+}
+
+/* Produtos */
+.products {
+  border: 1px solid red;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+}
+
+.products-grid {
+  display: flex;
+  right: 0;
+  position: absolute;
+  border: 1px solid red;
+}
+

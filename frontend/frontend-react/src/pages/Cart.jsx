@@ -1,1 +1,0 @@
-// create cart page here, with the products added to the cart and the checkout button that will redirect to the checkout page
