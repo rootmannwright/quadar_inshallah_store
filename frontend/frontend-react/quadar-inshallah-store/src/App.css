@@ -75,7 +75,8 @@ main {
 
 /* Scroll mais elegante (opcional) */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 0px;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {

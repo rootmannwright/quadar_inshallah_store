@@ -284,6 +284,7 @@ export default function Home() {
                     </svg>
                     <span className="sr-only">Loading...</span>
                 </div>
+                Em andamento - documentação, testes e otimizações...
             </li>
         </ul>
     </div>

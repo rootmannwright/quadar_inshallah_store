@@ -26,40 +26,60 @@ export default function VideoPlayer() {
 
   return (
     <div className="relative rounded-xl overflow-hidden shadow-2xl">
-      {/* THUMBNAIL */}
-      <div ref={thumbnailRef} id="thumbnail" className="relative">
-        <img
-          src="https://i.ytimg.com/vi/yk43rMG3hvs/maxresdefault.jpg"
-          alt="Video thumbnail"
-          className="w-full aspect-video object-cover"
-        />
+        <div ref={thumbnailRef} className="relative">
+          <img
+            src="https://yt3.googleusercontent.com/LBHod_gSyAz8lQTcoWYmp6N654s43VXskc50p8EWRL8ux7DIDJdJ6uhduQ6_NcsN_H0X6rh7=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
+            alt="Quadar Inshallah store promotional video thumbnail featuring the brand logo and imagery representing the store, with a play button overlay ready to launch video content"
+            className="w-full aspect-video object-cover"
+          />
 
+          {/* PLAY BUTTON */}
         <div
           ref={playButtonRef}
-          id="play-button"
-          className="absolute inset-0 bg-black/30 flex items-center justify-center cursor-pointer"
+          className="
+            absolute inset-0 
+            flex items-center justify-center 
+            cursor-pointer 
+            group
+            bg-black/30
+            transition-all duration-300
+          "
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-16 w-16 text-[#b03536]"
-            fill="currentColor"
-            viewBox="0 0 20 20"
+          <div
+            className="
+              flex items-center justify-center
+              w-20 h-20
+              rounded-full
+              bg-black/60 backdrop-blur-md
+              border border-white/20
+              shadow-2xl
+              transition-all duration-300 ease-out
+              group-hover:scale-110
+              group-hover:bg-[#b03536]/80
+              active:scale-95
+            "
           >
-            <path d="M4 4l12 6-12 6V4z" />
-          </svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-8 h-8 text-white translate-x-[1px]"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M4 4l12 6-12 6V4z" />
+            </svg>
+          </div>
         </div>
       </div>
 
       {/* VIDEO */}
       <div
         ref={videoRef}
-        id="video"
         className="hidden aspect-video relative"
       >
         <iframe
           className="absolute inset-0 w-full h-full"
-          src="https://youtube.com/embed/Q2tjQdizayE?list=RDmMjcKIAk5Jc"
-          title="The Artist Barefoot Showcase"
+          src="https://www.youtube.com/embed/watch?v=6HgonwiDlbE&list=RDmMjcKIAk5Jc&index=9"
+          title="Video Player"
           frameBorder="0"
           allow="autoplay; encrypted-media; picture-in-picture"
           allowFullScreen
