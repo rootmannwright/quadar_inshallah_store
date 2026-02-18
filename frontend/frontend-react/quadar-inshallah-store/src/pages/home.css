@@ -1,6 +1,9 @@
 /* ===== Home Global Layout ===== */
-@import "tailwindcss";
 
+
+/* Imports */
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Monsieur+La+Doulaise&display=swap');
 body {
   overflow-x: hidden;
   overflow-y: scroll;
@@ -44,16 +47,91 @@ body {
 }
 
 /* Produtos */
+.products-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-family: "Monsieur La Doulaise", cursive;
+  font-size: 2.5rem;
+  line-height: 1.5;
+}
 
-
-.product-content {
+.products-container {
   display: flex;
+  flex-wrap: wrap;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
   padding: 2rem;
-  margin: 0px auto;
 }
 
-.div-content {
-  margin: 32px;
-  padding: 12px;
+.products {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Progress */
+.progress-content {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-title {
+  font-family: "Monsieur La Doulaise", cursive;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.progress-list {
+  max-width: 400px;
+  text-align: left;
+  color: #555;
+}
+
+.progress-list li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.progress-list li svg {
+  margin-right: 0.5rem;
+  color: #4CAF50;
+}
+
+/* Video */
+.video {
+  container: mx-auto;
+  padding: 0 1rem;
+  position: relative;
+  z-index: 10;
+  margin-bottom: 7rem;
+}
+
+.video-text {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.video-text h2 {
+  font-family: "Monsieur La Doulaise", cursive;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.video-text p {
+  max-width: 600px;
+  margin: 0 auto;
+  color: #555;
+}
+
+.player {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
