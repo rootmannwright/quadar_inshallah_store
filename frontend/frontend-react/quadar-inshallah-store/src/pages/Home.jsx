@@ -1,13 +1,15 @@
 // imports
 import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
 import Sidebar from '../components/Sidebar'
 import ScrambleText from '../components/ScrambleText'
 import './home.css'
 import VideoPlayer from '../components/VideoPlayer'
 
+
 export default function Home() {
   const [setProducts] = useState([])
+
+
 
   useEffect(() => {
     fetch("http://localhost:3000/api/products")
@@ -33,7 +35,7 @@ export default function Home() {
         </header>
 
         {/* ===== Menu Principal ===== */}
-        <nav className="home-menu">
+        <nav className="home-menu opacity-0 translate-x-16">
           <ul className="nav-links">
             <li>
               <a href="#">
@@ -66,17 +68,19 @@ export default function Home() {
         </nav>
 
         {/* ===== Mensagem Institucional ===== */}
-        <section className="container_message">
+        <section 
+        className="container_message">
           <Sidebar />
-
           <ScrambleText text="2026" as="h1" />
           <ScrambleText text="Em breve." as="p" />
           <ScrambleText
             text="A arte move. A fé guia. Inshallah."
             as="p"
           />
-        </section>
 
+          {/* Produtos */}
+        </section>
+          {/* Current Drops */}
         <div className="text-center p-10">
           <h1 className="products-title font-bold text-4xl mb-4">Drops Recentes</h1>
           <h1 className="products-subtitle font-bold text-3xl">Quadar Inshallah Co. & Records</h1>
@@ -86,6 +90,7 @@ export default function Home() {
         <section id="Projects"
           className="products-container w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center justify-center gap-y-20 gap-x-14 mt-10 mb-5">
 
+            {/* Começo da div */}
           <div className="products w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
             <a href="#">
               <img src="/images/bag_quadar_inshallah_elipse_icon.jpg"
@@ -109,7 +114,8 @@ export default function Home() {
               </div>
             </a>
           </div>
-          <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
+            {/* Fim da div */}
+          <div className="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
             <a href="#">
               <img src="/images/meia_branca_quadar_inshallah_elipse_icon.jpg"
                 alt="Product" className="h-80 w-72 object-cover rounded-t-xl" />

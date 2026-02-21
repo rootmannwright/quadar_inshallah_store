@@ -15,18 +15,7 @@
     margin: 0 auto;
 }
 
-.images {
-    margin-top: 10px;
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    width: 100%;
-}
 
-.images img {
-    height: 12em;
-
-}
 
 .social {
     margin-top: 10px;
@@ -35,9 +24,87 @@
     gap: 20px;
 }
 
+.footer-brand {
+    font-family: "Monsieur La Doulaise", cursive;
+    font-size: 1.5em;
+    text-transform: initial;
+    letter-spacing: 0.05em;
+    font-weight: bold;
+    color: #000000;
+}
+
+.images {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4rem 1rem;
+}
+
+.images img {
+    height: 8em;
+    width: auto;
+    padding: 0 10px;
+}
+
+.images img:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+.images img:first-child {
+    margin-right: 20px;
+}
+
+.images img:last-child {
+    margin-left: 20px;
+}
+
 .author-content {
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 32px auto;
+}
+
+.footer-logo {
+    height: 3em;
+    width: auto;
+}
+
+
+.politcs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.politcs a {
+    color: #000000;
+    text-decoration: none;
+}
+
+.politcs a:hover {
+    text-decoration: underline;
+    transform: scale(1.05);
+}
+
+.social-icons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 2rem 1rem;
+}
+
+.social-icons a {
+    color: #000000;
+    font-size: 1.5rem;
+    margin: 0.5rem;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.social-icons a:hover {
+    color: #cde405;
+    transform: scale(1.2);
 }

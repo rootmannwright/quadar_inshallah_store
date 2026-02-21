@@ -78,7 +78,7 @@ export default function VideoPlayer() {
       >
         <iframe
           className="absolute inset-0 w-full h-full"
-          src="https://www.youtube.com/embed/watch?v=6HgonwiDlbE&list=RDmMjcKIAk5Jc&index=9"
+          src="https://www.youtube.com/embed/watch?v=6HgonwiDlbE&list=RD6HgonwiDlbE&start_radio=1"
           title="Video Player"
           frameBorder="0"
           allow="autoplay; encrypted-media; picture-in-picture"

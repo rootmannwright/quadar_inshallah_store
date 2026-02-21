@@ -4,6 +4,12 @@
 /* Imports */
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Monsieur+La+Doulaise&display=swap');
+
+*, *::before, *::after { 
+  box-sizing: border-box;
+  border: 0;
+}
+
 body {
   overflow-x: hidden;
   overflow-y: scroll;
@@ -134,3 +140,4 @@ body {
   max-width: 800px;
   margin: 0 auto;
 }
+
