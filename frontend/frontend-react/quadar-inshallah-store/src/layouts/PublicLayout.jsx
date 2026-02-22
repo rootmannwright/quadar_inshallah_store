@@ -1,12 +1,13 @@
 import Header from "../components/Header"
 import Footer from "../components/Footer"
+import { Outlet } from "react-router-dom"
 
-export default function PublicLayout({ children }) {
+export default function PublicLayout() {
   return (
     <>
       <Header />
-      <main className="pt-[120px] min-h-screen">
-        {children}
+      <main style={{ paddingTop: "var(--header-height)" }} className="min-h-screen">
+        <Outlet />
       </main>
       <Footer />
     </>
