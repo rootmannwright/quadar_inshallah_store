@@ -6,3 +6,7 @@ html, body {
   box-sizing: border-box;
   border: 0;
 }
+
+:root {
+  --header-height: 160px;
+}

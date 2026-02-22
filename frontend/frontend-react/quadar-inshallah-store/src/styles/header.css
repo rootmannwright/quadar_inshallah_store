@@ -1,0 +1,74 @@
+/* ===== HEADER GLOBAL ===== */
+.home {
+    padding-top: var(--header-height);
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--header-height); /* altura previsível */
+  background-color: #ffffff;
+  z-index: 1000;
+  display: row;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+
+}
+
+/* ===== CONTAINER INTERNO ===== */
+.home-menu {
+  width: 100%;
+  max-width: 1280px;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 32px auto;
+}
+
+/* ===== LOGO ===== */
+.header-logo img {
+  height: 48px;
+  width: auto;
+
+  margin: 0px auto;
+}
+
+/* ===== MENU ===== */
+.nav-links {
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.nav-links li a {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  color: #111;
+  text-decoration: none;
+
+  opacity: 0.85;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.nav-links a:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+/* ===== ÍCONES ===== */
+.header-nav img {
+  width: 18px;
+  height: 18px;
+}

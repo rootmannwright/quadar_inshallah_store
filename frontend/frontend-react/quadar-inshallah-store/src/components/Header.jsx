@@ -1,6 +1,8 @@
 import { useState } from "react"
-import {  useScroll, useMotionValueEvent } from "framer-motion"
-import logo from "../assets/logos/about.svg"
+import { motion, useScroll, useMotionValueEvent } from "framer-motion"
+import { Link } from "react-router-dom"
+import logo from "/logos/logo-letreiro.png"
+import '../styles/header.css'
 
 export default function Header() {
   const { scrollY } = useScroll()
@@ -10,21 +12,39 @@ export default function Header() {
     const previous = scrollY.getPrevious() ?? 0
 
     if (current > previous && current > 150) {
-      setHidden(true) // rolando pra baixo → esconde
+      setHidden(true)
     } else {
-      setHidden(false) // rolando pra cima → mostra
+      setHidden(false)
     }
   })
 
   return (
     <motion.header
+      className="header"
       animate={{ y: hidden ? "-100%" : "0%" }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="fixed top-0 left-0 w-full bg-white shadow z-50"
+      transition={{ duration: 0.35, ease: "easeInOut" }}
     >
-      <div className="p-4 flex justify-center items-center">
-        <img src={logo} alt="Quadar Inshallah Co. & Records Logo" className="h-12" />
+      {/* LOGO */}
+      <div className="header-logo">
+        <img src={logo} alt="Logo" />
       </div>
+
+      {/* MENU */}
+      <motion.nav
+        className="home-menu"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: hidden ? 0 : 1, y: hidden ? -20 : 0 }}
+        transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 }}
+      >
+        <ul className="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/stories">Stories</a></li>
+          <li>
+            <Link to="/login">Login</Link>
+          </li>
+          <li><a href="/cart">Carrinho</a></li>
+        </ul>
+      </motion.nav>
     </motion.header>
   )
 }

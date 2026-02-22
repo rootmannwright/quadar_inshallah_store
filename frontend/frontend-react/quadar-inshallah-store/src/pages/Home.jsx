@@ -5,7 +5,6 @@ import ScrambleText from '../components/ScrambleText'
 import './home.css'
 import VideoPlayer from '../components/VideoPlayer'
 
-
 export default function Home() {
   const [setProducts] = useState([])
 
@@ -20,53 +19,6 @@ export default function Home() {
 
   return (
       <div className="home">
-
-        {/* ===== Branding ===== */}
-        <header className="home-header"><div className="logo">
-          <img
-            className="logo_img"
-            src="../public/logos/logo-letreiro.png"
-            alt="Quadar Inshallah Co. & Records Logo"
-          />
-
-          <div className='name-logo'>Quadar Inshallah Co. & Records</div>
-        </div>
-
-        </header>
-
-        {/* ===== Menu Principal ===== */}
-        <nav className="home-menu opacity-0 translate-x-16">
-          <ul className="nav-links">
-            <li>
-              <a href="#">
-                <img src="/logos/home.svg" alt="Home" />
-                <span>Home</span>
-              </a>
-            </li>
-
-            <li>
-              <a href="#">
-                <img src="/logos/stories.svg" alt="Stories" />
-                <span>Stories</span>
-              </a>
-            </li>
-
-            <li>
-              <a href="#">
-                <img src="/logos/login.svg" alt="Login" />
-                <span>Login</span>
-              </a>
-            </li>
-
-            <li>
-              <a href="#">
-                <img src="/logos/carrinho.svg" alt="Carrinho" />
-                <span>Carrinho</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
-
         {/* ===== Mensagem Institucional ===== */}
         <section 
         className="container_message">
