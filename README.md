@@ -24,7 +24,10 @@ Este projeto tem como objetivo propor um pouco das minhas habilidades em fullsta
 Segue abaixo link para nossa documentação oficial para que usuários possam deleitar-se da melhor maneira no nosso site.
 
 ## Imagens do Projeto
-EM BREVE...
+<p align="center">
+  <img src=".github/video-preview.gif" alt="Preview do projeto" width="900" />
+</p>
+
 ## Features
 
 | Logo | Tecnologia | Uso |
@@ -114,7 +117,7 @@ EM BREVE...
 ## 👥 Contribuidores
 
 <p align="center">
-  <a href="https://github.com/lucasmarques">
+  <a href="https://github.com/rootmannwright">
     <img src="https://avatars.githubusercontent.com/u/185736091?v=4" width="100" /><br/>
     <strong>Lucas Marques</strong>
   </a>
