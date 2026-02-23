@@ -1,0 +1,94 @@
+/* === VIDEO THUMBNAIL === */
+.video-thumb {
+  position: relative;
+  max-width: 900px;
+  width: 100%;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.video-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.video-thumb:hover img {
+  transform: scale(1.05);
+}
+
+/* === PLAY BUTTON === */
+.play-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.play-circle {
+  width: 80px;
+  height: 80px;
+  background: white;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.3);
+  transition: transform .3s ease;
+}
+
+.video-thumb:hover .play-circle {
+  transform: scale(1.15);
+}
+
+/* === MODAL === */
+.video-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.85);
+  backdrop-filter: blur(6px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  aspect-ratio: 16 / 9;
+  background: black;
+  border-radius: 1.25rem;
+  overflow: hidden;
+}
+
+/* === CLOSE BUTTON === */
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 100000;
+  background: rgba(0,0,0,.6);
+  color: white;
+  font-size: 28px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform .2s ease, background .2s ease;
+}
+
+.close-btn:hover {
+  transform: scale(1.15);
+  background: rgba(0,0,0,.85);
+}
