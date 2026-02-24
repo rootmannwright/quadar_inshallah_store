@@ -1,3 +1,4 @@
+// ===================== IMPORTS =====================
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
@@ -7,123 +8,123 @@ import rateLimit from "express-rate-limit";
 import jwt from "jsonwebtoken";
 import path from "path";
 import { fileURLToPath } from "url";
+
+// Routes
 import paymentRoutes from "./routes/paymentRoutes.js";
 import webhookRoutes from "./routes/webhookRoutes.js";
-
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
+
+// Models
 import User from "./models/User.js";
 
+// Customized middlewares
 import { generalLimiter } from "./middleware/rateLimit.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { requestLogger } from "./middleware/requestLogger.js";
+import { cookieMiddleware } from "./middleware/cookies.js";
+import authMiddleware from "./middleware/authMiddleware.js";
+import { adminOnly } from "./middleware/adminOnly.js";
 
 dotenv.config();
+
+// ===================== CONFIGS =====================
 
 // Corrige __dirname em ESModules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// App
+// Create app
 const app = express();
-app.disable("x-powered-by"); // remove header que mostra Express
-app.set("trust proxy", 1);
+app.disable("x-powered-by"); // remove header Express
+app.set("trust proxy", 1);   // necessary to cookies secure + proxy
 
-// ===== Rotas Webhook =====
-app.use("/api/webhooks", webhookRoutes);
+// ===================== GLOBAL MIDDLEWARES=====================
 
-// ===== Middlewares Globais =====
+// Cookies (Before routes)
+app.use(cookieMiddleware);
+
+// Body parser
 app.use(express.json());
 
-// CORS restrito — resolve alerta "Access-Control-Allow-Origin: *"
+// CORS secure 
 app.use(cors({
-  origin: ["http://localhost:5500", "http://127.0.0.1:5500", "http://localhost:5173", "http://127.0.0.1:5173"],
-  methods: ["GET","POST","PUT","DELETE"],
+  origin: [
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
 
+// Logger
 app.use(requestLogger);
 
-// Rate Limit
+// Rate limit global
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100
 }));
 app.use(generalLimiter);
 
-// ===== Helmet Segurança (baseado no ZAP) =====
+// ===================== SECURITY (HELMET) =====================
 app.use(
   helmet({
-    // CSP completa — sem wildcard e sem fallback faltando
     contentSecurityPolicy: {
       useDefaults: false,
       directives: {
         defaultSrc: ["'self'"],
-
         scriptSrc: ["'self'"],
-
         styleSrc: ["'self'"],
-
         imgSrc: ["'self'", "data:", "https:"],
-
         fontSrc: ["'self'"],
-
         connectSrc: ["'self'", "http://localhost:3000"],
-
         frameAncestors: ["'none'"],
-
         frameSrc: ["'none'"],
-
-        mediaSrc: ["'self'"],
-
-        workerSrc: ["'self'"],
-
         objectSrc: ["'none'"],
-
         baseUri: ["'self'"],
-
         formAction: ["'self'"]
       }
     },
-
-    // Clickjacking protection
     frameguard: { action: "deny" },
-
-    // MIME sniffing protection
     noSniff: true,
-
-    // HSTS — só ativa em produção HTTPS
-    hsts: process.env.NODE_ENV === "production" ? {
-      maxAge: 31536000,
-      includeSubDomains: true,
-      preload: true
-    } : false
+    hsts: process.env.NODE_ENV === "production"
+      ? { maxAge: 31536000, includeSubDomains: true, preload: true }
+      : false
   })
 );
 
-// ===== Arquivos estáticos =====
+// ===================== STATIC FILES =====================
 app.use(express.static(path.join(__dirname, "public")));
 
-// ===== MongoDB =====
+// ===================== DATABASE =====================
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB conectado"))
   .catch(err => console.error("Erro MongoDB:", err));
 
-// ===== Rotas API =====
+// ===================== WEBHOOKS (BEFORE JSON) =====================
+app.use("/api/webhooks", webhookRoutes);
+
+// ===================== ROUTES =====================
 app.use("/api/users", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/payments", paymentRoutes);
 
-// ===== Login JWT =====
+// ===================== LOGIN =====================
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(401).json({ error: "Usuário não encontrado" });
+    if (!user) {
+      return res.status(401).json({ error: "Usuário não encontrado" });
+    }
 
-    if (user.password !== password)
+    if (user.password !== password) {
       return res.status(401).json({ error: "Senha inválida" });
+    }
 
     const token = jwt.sign(
       { userId: user._id, role: user.role || "user" },
@@ -131,8 +132,17 @@ app.post("/login", async (req, res) => {
       { expiresIn: "1h" }
     );
 
+    // JWT in COOKIE
+    req.cookies.set("auth_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      signed: true,
+      maxAge: 60 * 60 * 1000
+    });
+
     return res.json({
-      token,
+      message: "Login realizado com sucesso",
       user: {
         id: user._id,
         name: user.name,
@@ -147,21 +157,34 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// ===== Página principal =====
+// ===================== MAIN ROUTE =====================
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  const lastVisit = req.cookies.get("LastVisit", { signed: true });
+
+  req.cookies.set("LastVisit", new Date().toISOString(), {
+    signed: true,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax"
+  });
+
+  if (lastVisit) {
+    return res.send(`Bem-vindo de volta! Última visita: ${lastVisit}`);
+  }
+
+  return res.send("Bem-vindo à loja Quadar Inshallah! 👋");
 });
 
-// Robots
+// ===================== ROBOTS =====================
 app.get("/robots.txt", (req, res) => {
   res.type("text/plain");
   res.send(`User-agent: *\nDisallow: /admin/\nDisallow: /api/`.trim());
 });
 
-// ===== Error Handler =====
+// ===================== ERROR HANDLER =====================
 app.use(errorHandler);
 
-// ===== Start =====
+// ===================== START =====================
 app.listen(3000, "0.0.0.0", () => {
   console.log("Servidor rodando na porta 3000 🚀");
 });

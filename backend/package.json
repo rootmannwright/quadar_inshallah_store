@@ -20,6 +20,7 @@
     "color-convert": "^2.0.1",
     "color-name": "^1.1.4",
     "concat-map": "^0.0.1",
+    "cookies": "^0.9.1",
     "cords": "^1.0.4",
     "cors": "^2.8.6",
     "cross-spawn": "^7.0.6",

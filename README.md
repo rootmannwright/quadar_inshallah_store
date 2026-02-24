@@ -4,13 +4,22 @@
 
 Este projeto tem como objetivo propor um pouco das minhas habilidades em fullstack, com o uso de linguagens como JavaScript e frameworks como Node.JS, TailwindCSS, React e MongoDB.
 
-## Funcionalidades
+Para desenvolvedores que descobrirem códigos ou arquivos que atuam no vazamento de informações, sugiro que entre em contato comigo o mais breve possível, para que eu possa realizar a retificação do código e implemente as configurações de segurança necessárias.
+
+Deixarei o meu 
+[email profissional](https://adicionaremail.com/) e meu
+[WhatsApp](https://whatsappadicionar.com/)
+para reportar erros e entrar em contato para colaborações futuras.
+
+## 🧰Funcionalidades
 
 - Grid super interativo que busca produtos diretamente do banco de dados
 - Geração automática de tokens
 - Sistema de segurança máxima, com CORS totalmente programado, rate limit, helmet CORS e entre outros aspectos da segurança da rede
+- Implementação de cookies, com save de state para futuros logins, state de carrinho de compras e entre outros (AdminOnly, HttpOnly, security)
 - Utiliza JavaScript (Node.JS, React)
 - Interface web totalmente criada em TailwindCSS
+- Animações realizadas pela lib do Motion
 - Implementação de containers com Docker
 - Banco de Dados criado com MongoDB e page admin no Compass
 - Testes utilitários com base no JSLint
@@ -18,17 +27,21 @@ Este projeto tem como objetivo propor um pouco das minhas habilidades em fullsta
 - Implementação de rotas para clusters e deploys futuramente
 - Implementação de .env pública e .env de produção
 - Utilizado API Stripe e CorreiosAPI para processamento de pagamento e de frete, respectivamente
-
-## Documentação Oficial
+<br>
+<br>
+Adicionar barra de progresso das nossas funcionalidades
+## 📃Documentação Oficial
 
 Segue abaixo link para nossa documentação oficial para que usuários possam deleitar-se da melhor maneira no nosso site.
+<br>
+[Link da documentação oficial](https://documentaçãooficial.com/)
 
-## Imagens do Projeto
+## 📸Imagens do Projeto
 <p align="center">
   <img src=".github/video-preview.gif" alt="Preview do projeto" width="900" />
 </p>
 
-## Features
+## 🔧Features
 
 | Logo | Tecnologia | Uso |
 |------|-----------|-----|
@@ -37,7 +50,7 @@ Segue abaixo link para nossa documentação oficial para que usuários possam de
 | <img src="https://img.icons8.com/?size=100&id=54087&format=png&color=000000" width="40"/> | Node.js | Backend |
 | <img src="https://img.icons8.com/?size=100&id=tBBf3P8HL0vR&format=png&color=000000" width="40"/> | MongoDB | Database |
 
-## Links
+## 📎Links
 
 [LinkedIn](https://www.linkedin.com/in/lucasmarquesdev/)
 <br>
@@ -96,7 +109,7 @@ Segue abaixo link para nossa documentação oficial para que usuários possam de
 
 [TailwindFlex](https://tailwindflex.com/)
 
-## Licenses e Docs
+## 📃Licenses e Docs
 
 [MIT](https://mit-license.org/)
 <br>
