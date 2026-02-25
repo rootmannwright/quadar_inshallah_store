@@ -30,18 +30,18 @@ para reportar erros e entrar em contato para colaborações futuras.
 - Implementação de testes unitários e relatórios com SonarQube, JSLint, K6
 - Implementação de GitHub Actions, com automatizações para progress bar automático, segurança do repositório, escaneamento de erros e problemas de segurança no código, dependabot, ferramenta nativa do GitHub, arquivo para futuramente realizar os deploys
 
-## 📊 Progresso do projeto
+### 📊 Progresso do projeto
 
 <!-- PROGRESS_BAR_START -->
 [░░░░░░░░░░] 0%
 <!-- PROGRESS_BAR_END -->
 
-## Badges
-
+## Badged
 ![CI](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/ci-cd.yml/badge.svg)
 ![Security](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/dependency-security.yml/badge.svg)
-![Release](https://img.shields.io/github/v/release/rootmannwright/quadar_inshallah_store)
-![License](https://img.shields.io/github/license/rootmannwright/quadar_inshallah_store)
+![Release](./badge/release.svg)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Lint](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/lint.yml/badge.svg
 
 ## 📃Documentação Oficial
 

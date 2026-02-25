@@ -9,39 +9,35 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 router.post("/stripe", express.raw({ type: "application/json" }), async (req, res) => {
   const sig = req.headers["stripe-signature"];
 
-  let event;
-
   try {
-    event = stripe.webhooks.constructEvent(
+    const event = stripe.webhooks.constructEvent(
       req.body,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET
     );
-  } catch (err) {
-    return res.status(400).send("Webhook Error"); // return added
-  }
 
-  // Confirmed payment
-  if (event.type === "payment_intent.succeeded") {
-    const intent = event.data.object;
-    const orderId = intent.metadata.orderId;
+    // Confirmed payment
+    if (event.type === "payment_intent.succeeded") {
+      const intent = event.data.object;
+      const orderId = intent.metadata.orderId;
 
-    const order = await Order.findById(orderId);
+      const order = await Order.findById(orderId);
 
-    if (order && order.status !== "paid") {
-      // reduce stock for each item
-      for (const item of order.items) {
-        const product = await Product.findById(item.productId);
-        product.stock -= item.qty;
-        await product.save();
+      if (order && order.status !== "paid") {
+        // reduce stock for each item
+        for (const item of order.items) {
+          const product = await Product.findById(item.productId);
+          product.stock -= item.qty;
+          await product.save();
+        }
+
+        order.status = "paid";
+        await order.save();
       }
-
-      order.status = "paid";
-      await order.save();
     }
+
+    return res.json({ received: true });
+  } catch (err) {
+    return res.status(400).send("Webhook Error");
   }
-
-  return res.json({ received: true }); // return added
 });
-
-export default router;

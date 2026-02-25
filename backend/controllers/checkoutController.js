@@ -21,7 +21,7 @@ exports.createOrder = async (req, res) => {
       order
     });
 
-  } catch (error) {
+  } catch (_error) {
     return res.status(500).json({
       error: "Erro ao criar pedido"
     });

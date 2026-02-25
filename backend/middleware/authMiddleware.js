@@ -13,7 +13,6 @@ const authMiddleware = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
     req.user = await User.findById(decoded.userId).select("-password");
 
     if (!req.user) {
@@ -21,7 +20,7 @@ const authMiddleware = async (req, res, next) => {
     }
 
     return next();
-  } catch (err) {
+  } catch (_err) {
     return res.status(401).json({ error: "Token inválido" });
   }
 };
@@ -36,7 +35,6 @@ const adminOnly = (req, res, next) => {
     req.socket.remoteAddress;
 
   const adminKey = req.headers["x-admin-key"];
-
   const ipAllowed = ADMIN_IPS.includes(requestIp);
   const keyAllowed = ADMIN_KEYS.includes(adminKey);
 
