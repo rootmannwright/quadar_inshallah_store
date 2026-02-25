@@ -6,7 +6,7 @@ Este projeto tem como objetivo propor um pouco das minhas habilidades em fullsta
 
 Para desenvolvedores que descobrirem códigos ou arquivos que atuam no vazamento de informações, sugiro que entre em contato comigo o mais breve possível, para que eu possa realizar a retificação do código e implemente as configurações de segurança necessárias.
 
-Deixarei o meu 
+Deixarei o meu
 [email profissional](https://adicionaremail.com/) e meu
 [WhatsApp](https://whatsappadicionar.com/)
 para reportar erros e entrar em contato para colaborações futuras.
@@ -37,6 +37,7 @@ para reportar erros e entrar em contato para colaborações futuras.
 <!-- PROGRESS_BAR_END -->
 
 ## Badged
+
 ![CI](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/ci-cd.yml/badge.svg)
 ![Security](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/dependency-security.yml/badge.svg)
 ![Release](./badge/release.svg)
@@ -50,6 +51,7 @@ Segue abaixo link para nossa documentação oficial para que usuários possam de
 [Link da documentação oficial](https://documentaçãooficial.com/)
 
 ## 📸Imagens do Projeto
+
 <p align="center">
   <img src=".github/video-preview.gif" alt="Preview do projeto" width="900" />
 </p>

@@ -37,7 +37,7 @@ router.post("/stripe", express.raw({ type: "application/json" }), async (req, re
     }
 
     return res.json({ received: true });
-     // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
   } catch (err) {
     return res.status(400).send("Webhook Error");
   }

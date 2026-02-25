@@ -20,13 +20,13 @@ jobs:
           echo "Generating badge for release $RELEASE_TAG"
           mkdir -p badge
           cat <<EOF > badge/release.svg
-          <svg xmlns="http://www.w3.org/2000/svg" width="120" height="20">
-            <rect width="120" height="20" fill="#555"/>
-            <rect x="70" width="50" height="20" fill="#4c1"/>
-            <text x="35" y="14" fill="#fff" font-family="Verdana" font-size="11" text-anchor="middle">release</text>
-            <text x="95" y="14" fill="#fff" font-family="Verdana" font-size="11" text-anchor="middle">$RELEASE_TAG</text>
-          </svg>
-          EOF
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="20">
+  <rect width="120" height="20" fill="#555"/>
+  <rect x="70" width="50" height="20" fill="#4c1"/>
+  <text x="35" y="14" fill="#fff" font-family="Verdana" font-size="11" text-anchor="middle">release</text>
+  <text x="95" y="14" fill="#fff" font-family="Verdana" font-size="11" text-anchor="middle">$RELEASE_TAG</text>
+</svg>
+EOF
 
       - name: Commit badge
         run: |
@@ -34,4 +34,4 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add badge/release.svg
           git commit -m "Update release badge for $RELEASE_TAG" || echo "No changes to commit"
-          git push
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
