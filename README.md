@@ -28,9 +28,10 @@ para reportar erros e entrar em contato para colaborações futuras.
 - Implementação de .env pública e .env de produção
 - Utilizado API Stripe e CorreiosAPI para processamento de pagamento e de frete, respectivamente
 - Implementação de testes unitários e relatórios com SonarQube, JSLint, K6
-<br>
-<br>
-O progresso do nosso site está atualmente em:
+- Implementação de GitHub Actions, com automatizações para progress bar automático, segurança do repositório, escaneamento de erros e problemas de segurança no código, dependabot, ferramenta nativa do GitHub.
+
+### 📊 Progresso do projeto
+
 <!-- PROGRESS_BAR_START -->
 [░░░░░░░░░░] 0%
 <!-- PROGRESS_BAR_END -->
