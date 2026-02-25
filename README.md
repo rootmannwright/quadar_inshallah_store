@@ -28,7 +28,7 @@ para reportar erros e entrar em contato para colaborações futuras.
 - Implementação de .env pública e .env de produção
 - Utilizado API Stripe e CorreiosAPI para processamento de pagamento e de frete, respectivamente
 - Implementação de testes unitários e relatórios com SonarQube, JSLint, K6
-- Implementação de GitHub Actions, com automatizações para progress bar automático, segurança do repositório, escaneamento de erros e problemas de segurança no código, dependabot, ferramenta nativa do GitHub.
+- Implementação de GitHub Actions, com automatizações para progress bar automático, segurança do repositório, escaneamento de erros e problemas de segurança no código, dependabot, ferramenta nativa do GitHub, arquivo para futuramente realizar os deploys
 
 ### 📊 Progresso do projeto
 
@@ -36,8 +36,12 @@ para reportar erros e entrar em contato para colaborações futuras.
 [░░░░░░░░░░] 0%
 <!-- PROGRESS_BAR_END -->
 
+## Badges
 
-
+![CI](https://github.com/rootmannwright/quadar_inshalah_store/actions/workflows/ci-cd.yml/badge.svg)
+![Security](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/dependency-security.yml/badge.svg)
+![Release](https://img.shields.io/github/v/release/rootmannwright/quadar_inshallah_store)
+![License](https://img.shields.io/github/license/rootmannwright/quadar_inshallah_store)
 
 ## 📃Documentação Oficial
 

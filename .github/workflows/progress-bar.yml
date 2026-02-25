@@ -1,5 +1,9 @@
 name: Update progress bar
 
+permissions:
+  contents: write
+  issues: read
+
 on:
   issues:
     types: [opened, closed, reopened, labeled, unlabeled]
