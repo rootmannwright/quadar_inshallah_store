@@ -29,6 +29,7 @@ para reportar erros e entrar em contato para colaborações futuras.
 - Utilizado API Stripe e CorreiosAPI para processamento de pagamento e de frete, respectivamente
 - Implementação de testes unitários e relatórios com SonarQube, JSLint, K6
 - Implementação de GitHub Actions, com automatizações para progress bar automático, segurança do repositório, escaneamento de erros e problemas de segurança no código, dependabot, ferramenta nativa do GitHub, arquivo para futuramente realizar os deploys
+- Implementação de hooks
 
 ### 📊 Progresso do projeto
 
