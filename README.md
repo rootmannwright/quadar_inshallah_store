@@ -2,13 +2,13 @@
 
 # QUADAR INSHALLAH CO. & RECORDS
 
-Este projeto tem como objetivo propor um pouco das minhas habilidades em fullstack, com o uso de linguagens como JavaScript e frameworks como Node.JS, TailwindCSS, React e MongoDB.
+Este projeto tem como objetivo apresentar alguma das minhas habilidades em desenvolvimento fullstack, utilizando tecnologias como JavaScript, Node.js, React, TailwindCSS e MongoDB.
 
-Para desenvolvedores que descobrirem códigos ou arquivos que atuam no vazamento de informações, sugiro que entre em contato comigo o mais breve possível, para que eu possa realizar a retificação do código e implemente as configurações de segurança necessárias.
+Se você, desenvolvedor(a), encontrar algum código ou arquivo que possa comprometer a segurança ou vazar informações, por favor, entre em contato comigo o quanto antes. Assim, poderei corrigir o problema e implementar as medidas de segurança necessárias.
 
-Deixarei o meu
-[email profissional](https://adicionaremail.com/) e meu
-[WhatsApp](https://whatsappadicionar.com/)
+Para retorpar erros ou propor colaborações, recompensas, você pode me contatar pelo
+[email profissional](https://mail.google.com/mail/u/0/?fs=1&to=rootmannwright@gmail.com&tf=cm) ou pelo
+[WhatsApp](https://api.whatsapp.com/send/?phone=%2B5511930091377&text&type=phone_number&app_absent=0)
 para reportar erros e entrar em contato para colaborações futuras.
 
 ## 🧰Funcionalidades
@@ -44,11 +44,13 @@ para reportar erros e entrar em contato para colaborações futuras.
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Lint](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/lint.yml/badge.svg)
 
+OBS.: O CI/CD não funcionará porque ainda não fizemos o deploy do projeto.
+
 ## 📃Documentação Oficial
 
 Segue abaixo link para nossa documentação oficial para que usuários possam deleitar-se da melhor maneira no nosso site.
 <br>
-[Link da documentação oficial](https://documentaçãooficial.com/)
+[Link da documentação oficial](#licenses-e-docs)
 
 ## 📸Imagens do Projeto
 
@@ -64,6 +66,7 @@ Segue abaixo link para nossa documentação oficial para que usuários possam de
 | <img src="https://img.icons8.com/?size=100&id=CIAZz2CYc6Kc&format=png&color=000000" width="40"/> | Tailwind | UI |
 | <img src="https://img.icons8.com/?size=100&id=54087&format=png&color=000000" width="40"/> | Node.js | Backend |
 | <img src="https://img.icons8.com/?size=100&id=tBBf3P8HL0vR&format=png&color=000000" width="40"/> | MongoDB | Database |
+<img src="https://img.icons8.com/?size=100&id=cdYUlRaag9G9&format=png&color=000000" width="40"/> | Docker | Containers |
 
 ## 📎Links
 
@@ -152,10 +155,10 @@ Segue abaixo link para nossa documentação oficial para que usuários possam de
   <br/>
   Backend / Frontend / Banco de Dados
 </p>
-Dedico todo o tempo que investi neste projeto principalmente aos meus pais, que sempre cuidaram de mim, eduracam-me e tornaram-me o homem que sou, todas as experiências que desenvolvi, que adquiri; também para todos os meus professores que sempre me motivaram a estudar e tornar-me uma pessoa socialmente informada; para todos os meus colegas de trabalho, todos os contribuintes que me ajudaram nesse projeto, tanto diretamente quanto indiretamente; todos os fóruns e, principalmente, desenvolvedores individuais, que em breve farei neste repositório uma área especial para estes.
+Dedico todo o tempo que investi neste projeto principalmente aos meus pais, que sempre cuidaram de mim, eduracam-me e tornaram-me o homem que sou, todas as experiências que desenvolvi, que adquiri; também para todos os meus professores que sempre me motivaram a estudar e tornar-me uma pessoa socialmente informada; para todos os meus colegas de trabalho, todos os contribuintes que me ajudaram nesse projeto, tanto diretamente quanto indiretamente; todos os fóruns e, principalmente, desenvolvedores individuais, que em breve farei uma área especial neste repositório.
 
 <br>
-Sem vocês, este projeto não teria retomado a vida e a proporção que vêm sido tomada.
+Sem vocês, este projeto não teria retomado a vida e a proporção que a marca venho conquistando.
 
 <table>
   <tr>
