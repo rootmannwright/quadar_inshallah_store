@@ -7,13 +7,14 @@ on:
   schedule:
     - cron: "0 3 * * 1"
 
+# Permissions required for CodeQL analysis
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   analyze:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      security-events: write
 
     steps:
       - name: Checkout repository
@@ -25,9 +26,8 @@ jobs:
           languages: javascript
           source-root: backend
 
-      # Don't use autobuild
-      - name: Skip build (Node project)
-        run: echo "No build step required"
+      - name: Skip build
+        run: echo "No build required for Node backend"
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
