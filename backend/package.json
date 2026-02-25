@@ -96,7 +96,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node api.js",
-    "start": "node api.js"
+    "start": "node api.js",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
