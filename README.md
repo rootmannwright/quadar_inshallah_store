@@ -27,9 +27,18 @@ para reportar erros e entrar em contato para colaborações futuras.
 - Implementação de rotas para clusters e deploys futuramente
 - Implementação de .env pública e .env de produção
 - Utilizado API Stripe e CorreiosAPI para processamento de pagamento e de frete, respectivamente
+- Implementação de testes unitários e relatórios com SonarQube, JSLint, K6
 <br>
 <br>
-Adicionar barra de progresso das nossas funcionalidades
+O progresso do nosso site está atualmente em:
+<br>
+
+
+<!-- PROGRESS_BAR_START -->
+[░░░░░░░░░░] 0%
+<!-- PROGRESS_BAR_END -->
+
+
 ## 📃Documentação Oficial
 
 Segue abaixo link para nossa documentação oficial para que usuários possam deleitar-se da melhor maneira no nosso site.
@@ -137,3 +146,29 @@ Segue abaixo link para nossa documentação oficial para que usuários possam de
   <br/>
   Backend / Frontend / Banco de Dados
 </p>
+Dedico todo o tempo que investi neste projeto principalmente aos meus pais, que sempre cuidaram de mim, eduracam-me e tornaram-me o homem que sou, todas as experiências que desenvolvi, que adquiri; também para todos os meus professores que sempre me motivaram a estudar e tornar-me uma pessoa socialmente informada; para todos os meus colegas de trabalho, todos os contribuintes que me ajudaram nesse projeto, tanto diretamente quanto indiretamente; todos os fóruns e, principalmente, desenvolvedores individuais, que em breve farei neste repositório uma área especial para estes.
+
+<br>
+Sem vocês, este projeto não teria retomado a vida e a proporção que vêm sido tomada.
+
+<table>
+  <tr>
+    <td width="50%">
+      <h3>🛍️ Lucas M. Nascimento - @rootmannwright</h3>
+      <p>
+        Desenvolvedor Fullstack, com ênfase em Backend. Atualmente fundou e atua, como diretor executivo das marcas <em>Quadar Inshallah Co. & Records</em> e sua trademark <em>Quadar Inshallah Headshop™</em>.
+      </p>
+      <p>
+        <b>Tecnologias:</b> React • Node.js • MongoDB • TailwindCSS • JWT • Docker • JavaScript • TypeScript • PHP • MySQL • Kubernetes • Amazon AWS • Java • Java SpringBoot • Pentester • SHODAN • Wireshark • NMAP • Kali Linux • CLI Terminal (Windows e Linux).
+      </p>
+      <a href="https://github.com/rootmannwright/">
+        🔗 Ver repositório
+      </a>
+    </td>
+    <td width="50%">
+      <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExY2IyMGpmeDZjdnZrdXV5Nmdtd20ybnY1cjVqYzJ4dW9yZ2RxMW5oMCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/w8pZxPEBXlpt97Brjp/giphy.gif" alt="Quadar Inshallah Logo" width="600" />
+      <!-- add image preview into project -->
+    </td>
+  </tr>
+</table>
+<hr>
