@@ -11,7 +11,7 @@ Para retorpar erros ou propor colaborações, recompensas, você pode me contata
 [WhatsApp](https://api.whatsapp.com/send/?phone=%2B5511930091377&text&type=phone_number&app_absent=0)
 para reportar erros e entrar em contato para colaborações futuras.
 
-Todos os direitos reservados.
+Todos os direitos reservados. ®
 
 Em breve mais informações...
 
