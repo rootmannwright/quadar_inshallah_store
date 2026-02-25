@@ -1,6 +1,6 @@
-const Order = require("../models/Order.js");
+import Order from "../models/Order.js";
 
-exports.createOrder = async (req, res) => {
+export async function createOrder(req, res) {
   try {
     const { items, total } = req.body;
 
@@ -20,10 +20,10 @@ exports.createOrder = async (req, res) => {
       message: "Pedido criado com sucesso",
       order
     });
-    // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line no-unused-vars
   } catch (_error) {
     return res.status(500).json({
       error: "Erro ao criar pedido"
     });
   }
-};
+}

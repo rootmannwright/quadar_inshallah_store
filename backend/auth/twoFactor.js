@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-undef
 fetch("http://localhost:3000/login", {
     method: "POST",
     headers: {
