@@ -11,6 +11,8 @@ Para retorpar erros ou propor colaborações, recompensas, você pode me contata
 [WhatsApp](https://api.whatsapp.com/send/?phone=%2B5511930091377&text&type=phone_number&app_absent=0)
 para reportar erros e entrar em contato para colaborações futuras.
 
+Todos os direitos reservados.
+
 ## 🧰Funcionalidades
 
 - Grid super interativo que busca produtos diretamente do banco de dados
