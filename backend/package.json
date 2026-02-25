@@ -80,6 +80,7 @@
     "path-key": "^4.0.0",
     "prelude-ls": "^1.2.1",
     "punycode": "^2.3.1",
+    "qs": "^6.15.0",
     "resolve-from": "^5.0.0",
     "shebang-command": "^2.0.0",
     "shebang-regex": "^4.0.0",
