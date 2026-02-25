@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: snyk/actions/node@master
-        if: ${{ secrets.SNYK_TOKEN != '' }}
+      - name: Snyk Scan
+        uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}

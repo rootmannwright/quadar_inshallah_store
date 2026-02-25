@@ -1,6 +1,8 @@
-version: 2
-updates:
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "weekly"
+on:
+  schedule:
+    - cron: '0 0 * * 1'
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dependabot/fetch-metadata@v1
