@@ -39,7 +39,7 @@ para reportar erros e entrar em contato para colaborações futuras.
 
 ## Badged
 
-![CI](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/ci-cd.yml/badge.svg)
+![CI](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/ci.yml/badge.svg)
 ![Security](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/dependency-security.yml/badge.svg)
 ![Release](https://img.shields.io/github/v/release/quadar-inshallah-co-records/quadar_inshallah_store)
 ![License](https://img.shields.io/badge/license-MIT-green)
