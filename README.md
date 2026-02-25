@@ -31,9 +31,6 @@ para reportar erros e entrar em contato para colaborações futuras.
 <br>
 <br>
 O progresso do nosso site está atualmente em:
-<br>
-
-
 <!-- PROGRESS_BAR_START -->
 [░░░░░░░░░░] 0%
 <!-- PROGRESS_BAR_END -->
