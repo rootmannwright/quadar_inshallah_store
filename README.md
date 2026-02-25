@@ -37,6 +37,8 @@ para reportar erros e entrar em contato para colaborações futuras.
 <!-- PROGRESS_BAR_END -->
 
 
+
+
 ## 📃Documentação Oficial
 
 Segue abaixo link para nossa documentação oficial para que usuários possam deleitar-se da melhor maneira no nosso site.

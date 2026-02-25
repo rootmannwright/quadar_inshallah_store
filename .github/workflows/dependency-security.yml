@@ -10,6 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: snyk/actions/node@v3
+      - uses: snyk/actions/node@master
+        if: ${{ secrets.SNYK_TOKEN != '' }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
