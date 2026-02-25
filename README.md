@@ -12,7 +12,7 @@ Para retorpar erros ou propor colaborações, recompensas, você pode me contata
 para reportar erros e entrar em contato para colaborações futuras.
 
 Todos os direitos reservados. ®
-Guarulhos - SP
+Guarulhos - SP 2026
 
 Em breve mais informações...
 
