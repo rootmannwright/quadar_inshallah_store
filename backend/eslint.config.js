@@ -1,22 +1,14 @@
-// eslint.config.js
-import { defineConfig } from "eslint/config";
+import js from "@eslint/js";
 
-export default defineConfig({
-  root: true,
-  env: {
-    node: true,
-    es2023: true,
+export default [
+  {
+    files: ["**/*.js"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+    },
+    rules: {
+      ...js.configs.recommended.rules,
+    },
   },
-  parserOptions: {
-    ecmaVersion: 2023,
-    sourceType: "module",
-  },
-  extends: ["eslint:recommended"],
-  rules: {
-    "no-unused-vars": "warn",
-    "no-undef": "error",
-    "semi": ["error", "always"],
-    "quotes": ["error", "double"],
-    "no-console": "off"
-  }
-});
+];
