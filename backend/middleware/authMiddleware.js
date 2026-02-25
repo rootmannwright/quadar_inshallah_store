@@ -20,6 +20,7 @@ const authMiddleware = async (req, res, next) => {
     }
 
     return next();
+  // eslint-disable-next-line no-unused-vars
   } catch (_err) {
     return res.status(401).json({ error: "Token inválido" });
   }

@@ -20,7 +20,7 @@ exports.createOrder = async (req, res) => {
       message: "Pedido criado com sucesso",
       order
     });
-
+ // eslint-disable-next-line no-unused-vars
   } catch (_error) {
     return res.status(500).json({
       error: "Erro ao criar pedido"
