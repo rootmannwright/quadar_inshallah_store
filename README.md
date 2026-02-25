@@ -12,6 +12,7 @@ Para retorpar erros ou propor colaborações, recompensas, você pode me contata
 para reportar erros e entrar em contato para colaborações futuras.
 
 Todos os direitos reservados. ®
+Guarulhos - SP
 
 Em breve mais informações...
 
