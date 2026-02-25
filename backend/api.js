@@ -2,7 +2,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import dotenv from "dotenv";
+import "dotenv/config";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import jwt from "jsonwebtoken";
@@ -23,10 +23,7 @@ import { generalLimiter } from "./middleware/rateLimit.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { requestLogger } from "./middleware/requestLogger.js";
 import { cookieMiddleware } from "./middleware/cookies.js";
-import authMiddleware from "./middleware/authMiddleware.js";
-import { adminOnly } from "./middleware/adminOnly.js";
-
-dotenv.config();
+import "./middleware/authMiddleware.js";
 
 // ===================== CONFIGS =====================
 
@@ -178,7 +175,7 @@ app.get("/", (req, res) => {
 // ===================== ROBOTS =====================
 app.get("/robots.txt", (req, res) => {
   res.type("text/plain");
-  res.send(`User-agent: *\nDisallow: /admin/\nDisallow: /api/`.trim());
+  res.send("User-agent: *\nDisallow: /admin/\nDisallow: /api/".trim());
 });
 
 // ===================== ERROR HANDLER =====================

@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import Product from "../models/Product.js";
 import connectMongo from "../config/mongo";
 

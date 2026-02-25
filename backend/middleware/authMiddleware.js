@@ -1,11 +1,13 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
+// ================= AUTH MIDDLEWARE =================
 const authMiddleware = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader)
+  if (!authHeader) {
     return res.status(401).json({ error: "Token não fornecido" });
+  }
 
   const token = authHeader.split(" ")[1];
 
@@ -14,27 +16,19 @@ const authMiddleware = async (req, res, next) => {
 
     req.user = await User.findById(decoded.userId).select("-password");
 
-    if (!req.user)
+    if (!req.user) {
       return res.status(401).json({ error: "Usuário não encontrado" });
+    }
 
-    next();
+    return next();
   } catch (err) {
     return res.status(401).json({ error: "Token inválido" });
   }
-
 };
-export { authMiddleware};
 
-// Middleware for admin-only routes (used in productRoutes.js)
-const ADMIN_IPS = [
-  "127.0.0.1",
-  "::1",
-  "191.XXX.XXX.XXX", // seu IP fixo
-];
-
-const ADMIN_KEYS = [
-  process.env.ADMIN_KEY, // chave secreta
-];
+// ================= ADMIN-ONLY MIDDLEWARE =================
+const ADMIN_IPS = ["127.0.0.1", "::1"];
+const ADMIN_KEYS = [process.env.ADMIN_KEY];
 
 const adminOnly = (req, res, next) => {
   const requestIp =
@@ -52,9 +46,8 @@ const adminOnly = (req, res, next) => {
     });
   }
 
-  next();
+  return next();
 };
 
-export { adminOnly };
-
+export { authMiddleware, adminOnly };
 export default authMiddleware;

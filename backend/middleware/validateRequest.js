@@ -15,5 +15,5 @@ export function validateRequest(schema) {
                 errors: err.errors
             });
         }
-    }
+    };
 }

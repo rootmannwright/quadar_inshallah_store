@@ -18,10 +18,10 @@ router.post("/stripe", express.raw({ type: "application/json" }), async (req, re
       process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
-    return res.status(400).send(`Webhook Error`);
+    return res.status(400).send("Webhook Error"); // return added
   }
 
-  // Pagamento confirmado
+  // Confirmed payment
   if (event.type === "payment_intent.succeeded") {
     const intent = event.data.object;
     const orderId = intent.metadata.orderId;
@@ -29,7 +29,7 @@ router.post("/stripe", express.raw({ type: "application/json" }), async (req, re
     const order = await Order.findById(orderId);
 
     if (order && order.status !== "paid") {
-      // baixa estoque agora
+      // reduce stock for each item
       for (const item of order.items) {
         const product = await Product.findById(item.productId);
         product.stock -= item.qty;
@@ -41,7 +41,7 @@ router.post("/stripe", express.raw({ type: "application/json" }), async (req, re
     }
   }
 
-  res.json({ received: true });
+  return res.json({ received: true }); // return added
 });
 
 export default router;

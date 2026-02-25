@@ -4,6 +4,6 @@ import { auth } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post('/calculate-shipping', auth, calcShipping);
+router.post("/calculate-shipping", auth, calcShipping);
 
 export default router;

@@ -16,13 +16,13 @@ exports.createOrder = async (req, res) => {
 
     await order.save();
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Pedido criado com sucesso",
       order
     });
 
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       error: "Erro ao criar pedido"
     });
   }

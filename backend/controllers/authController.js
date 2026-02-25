@@ -22,14 +22,22 @@ export async function register(req, res) {
   try {
     const { name, email, password } = req.body;
     const exists = await User.findOne({ email });
-    if (exists) return res.status(400).json({ error: "Email já cadastrado" });
+
+    if (exists) {
+      return res.status(400).json({ error: "Email já cadastrado" });
+    }
 
     const hashed = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email, password: hashed, role: "user" });
+    const user = await User.create({
+      name,
+      email,
+      password: hashed,
+      role: "user",
+    });
 
     return res.status(201).json({
       message: "Usuário criado com sucesso",
-      user: { id: user._id, name: user.name, email: user.email, role: user.role }
+      user: { id: user._id, name: user.name, email: user.email, role: user.role },
     });
   } catch (err) {
     console.error(err);
@@ -44,13 +52,24 @@ export async function login(req, res) {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ error: "Usuário não encontrado" });
+
+    if (!user) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
 
     const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(401).json({ error: "Senha incorreta" });
+    if (!match) {
+      return res.status(401).json({ error: "Senha incorreta" });
+    }
 
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
-    return res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    return res.json({
+      token,
+      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Erro no login" });
@@ -69,8 +88,13 @@ export async function updateUserController(req, res) {
       updateData.password = await bcrypt.hash(updateData.password, 10);
     }
 
-    const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true }).select("-password");
-    if (!updatedUser) return res.status(404).json({ error: "Usuário não encontrado" });
+    const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true }).select(
+      "-password"
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
 
     return res.json({ message: "Usuário atualizado com sucesso", user: updatedUser });
   } catch (err) {
@@ -86,7 +110,10 @@ export async function deleteUserController(req, res) {
   try {
     const { id } = req.params;
     const user = await User.findByIdAndDelete(id);
-    if (!user) return res.status(404).json({ error: "Usuário não encontrado" });
+
+    if (!user) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
 
     return res.json({ message: "Usuário removido com sucesso" });
   } catch (err) {
@@ -94,4 +121,3 @@ export async function deleteUserController(req, res) {
     return res.status(500).json({ error: "Erro ao deletar usuário" });
   }
 }
-

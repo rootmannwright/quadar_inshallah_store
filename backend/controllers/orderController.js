@@ -1,6 +1,8 @@
-import Order from "../models/Order.js";
+// ================= IMPORTS =================
+import Order from "../models/Order.js"; 
 import Product from "../models/Product.js";
 
+// ================= CREATE ORDER =================
 export const createOrder = async (req, res, next) => {
   try {
     const { cart } = req.body;
@@ -8,15 +10,17 @@ export const createOrder = async (req, res, next) => {
     let items = [];
     let total = 0;
 
-    // Verifica produtos e calcula total
+    // verify products and calculate total
     for (const item of cart) {
       const product = await Product.findById(item.productId);
 
-      if (!product || !product.active)
+      if (!product || !product.active) {
         return res.status(400).json({ error: "Produto inválido" });
+      }
 
-      if (product.stock < item.quantity)
+      if (product.stock < item.quantity) {
         return res.status(400).json({ error: "Estoque insuficiente" });
+      }
 
       items.push({
         productId: product._id,
@@ -27,7 +31,7 @@ export const createOrder = async (req, res, next) => {
       total += product.price * item.quantity;
     }
 
-    // Cria pedido PENDENTE (não baixa estoque ainda)
+    // create order pending (don't reduce stock yet)
     const order = await Order.create({
       userId: req.user.id,
       items,
@@ -35,36 +39,37 @@ export const createOrder = async (req, res, next) => {
       status: "pending"
     });
 
-    res.status(201).json(order);
-
+    return res.status(201).json(order); // return added
   } catch (err) {
-    next(err);
+    return next(err); // return added for consistent-return
   }
 };
 
-
+// ================= GET ORDER BY ID =================
 export const getOrderById = async (req, res, next) => {
   try {
     const order = await Order.findById(req.params.id);
 
-    if (!order)
+    if (!order) {
       return res.status(404).json({ error: "Pedido não encontrado" });
+    }
 
-    if (order.userId.toString() !== req.user.id)
+    if (order.userId.toString() !== req.user.id) {
       return res.status(403).json({ error: "Acesso negado" });
+    }
 
-    res.json(order);
+    return res.json(order);
   } catch (err) {
-    next(err);
+    return next(err); // return added
   }
 };
 
-
+// ================= GET MY ORDERS =================
 export const getMyOrders = async (req, res, next) => {
   try {
     const orders = await Order.find({ userId: req.user.id });
-    res.json(orders);
+    return res.json(orders);
   } catch (err) {
-    next(err);
+    return next(err); // return added
   }
 };
