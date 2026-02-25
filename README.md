@@ -13,6 +13,8 @@ para reportar erros e entrar em contato para colaborações futuras.
 
 Todos os direitos reservados.
 
+Em breve mais informações...
+
 ## 🧰Funcionalidades
 
 - Grid super interativo que busca produtos diretamente do banco de dados
