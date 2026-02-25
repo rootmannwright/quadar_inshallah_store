@@ -41,7 +41,7 @@ para reportar erros e entrar em contato para colaborações futuras.
 ![Security](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/dependency-security.yml/badge.svg)
 ![Release](./badge/release.svg)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Lint](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/lint.yml/badge.svg
+![Lint](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/lint.yml/badge.svg)
 
 ## 📃Documentação Oficial
 
