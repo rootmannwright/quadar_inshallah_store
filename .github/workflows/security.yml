@@ -5,22 +5,15 @@ on:
     branches: ["main"]
   pull_request:
   schedule:
-    - cron: "0 3 * * 1" # toda segunda-feira
+    - cron: "0 3 * * 1"
 
 jobs:
   analyze:
-    name: Analyze
     runs-on: ubuntu-latest
 
     permissions:
-      actions: read
       contents: read
       security-events: write
-
-    strategy:
-      fail-fast: false
-      matrix:
-        language: ["javascript"]
 
     steps:
       - name: Checkout repository
@@ -29,7 +22,12 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: ${{ matrix.language }}
+          languages: javascript
+          source-root: backend
+
+      # Don't use autobuild
+      - name: Skip build (Node project)
+        run: echo "No build step required"
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
