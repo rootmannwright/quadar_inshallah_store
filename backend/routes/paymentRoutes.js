@@ -16,8 +16,7 @@ router.post("/create-intent/:orderId", authMiddleware, async (req, res) => {
       orderId: Joi.string().required(),
     });
     
-  
-    // eslint-disable-next-line no-undef
+   
     const { error, value } = createIntentSchema.validate(req.params);
 
     if (error) {
@@ -29,6 +28,7 @@ router.post("/create-intent/:orderId", authMiddleware, async (req, res) => {
     const order = await Order.findById(orderId).select("total userId status");
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
+    }
     if (!mongoose.Types.ObjectId.isValid(orderId)) {
       return res.status(400).json({ error: "Invalid order ID format" });
     }
@@ -40,7 +40,6 @@ router.post("/create-intent/:orderId", authMiddleware, async (req, res) => {
     });
 
     return res.json({ clientSecret: paymentIntent.client_secret });
-  // eslint-disable-next-line no-unused-vars
   } catch (err) {
     console.error("Error creating payment intent:", err);
     return res.status(500).json({ error: "Internal server error while creating payment" });

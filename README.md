@@ -24,6 +24,7 @@ para reportar erros e entrar em contato para colaborações futuras.
 - Adição de produtos ao carrinho com atualização de quantidade e valor total.
 - Checkout seguro integracom com Stripe para pagamentos online.
 - Possibilidade de criar pedidos e registrar históricos de compras no banco.
+- Joi cria sessão do Stripe.
 
 <h3>4. Autenticação e Contas</h3>
 - Registro e login de usuários com senha criptografada.
@@ -35,6 +36,7 @@ para reportar erros e entrar em contato para colaborações futuras.
 - Sanitização de entradas do usuário com express-mongo-sanitize.
 - Proteção contra HTTP Parameter Pollution (HHP).
 - Rate-limiting para evitar spams e ataques de negação de serviço.
+- Validações com o Joi.
 
 <h3>6. API RESTful</h3>
 - Endopoints para produtos, pagamentos, autenticação e webhooks.
