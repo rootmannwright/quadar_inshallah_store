@@ -45,7 +45,7 @@ para reportar erros e entrar em contato para colaborações futuras.
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Lint](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/lint.yml/badge.svg)
 ![Security](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/security.yml/badge.svg)
-
+![Docker Build](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/docker.yml/badge.svg)
 OBS.: Pipeline configurada para ambiente de produção. Deploy será habilitado nas próximas versões.
 
 ## 📃Documentação Oficial
