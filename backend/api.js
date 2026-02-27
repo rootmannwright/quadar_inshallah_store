@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+// eslint-disable-next-line no-unused-vars
 import mongoSanitize from "express-mongo-sanitize";
 import hpp from "hpp";
 import "dotenv/config";
@@ -66,7 +67,11 @@ app.use(
 // Enable CORS with strict origin control
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: [
+      process.env.CLIENT_URL || "http://localhost:5173",
+      "http://localhost:3000",
+      "http://localhost:5000"
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"]
   })
@@ -80,16 +85,16 @@ app.use(
 app.use(express.json({ limit: "10kb" }));
 
 // Sanitize request body and params (ignore query to avoid TypeError)
-app.use(
-  mongoSanitize({
-    replaceWith: "_",
-    ignoreQuery: true,
-    // eslint-disable-next-line no-unused-vars
-    onSanitize: ({ req, key, value }) => {
-      console.log(`Sanitized ${key}: ${value}`);
-    }
-  })
-);
+// app.use(
+//   mongoSanitize({
+//     replaceWith: "_",
+//     ignoreQuery: true,
+//     // eslint-disable-next-line no-unused-vars
+//     onSanitize: ({ req, key, value }) => {
+//       console.log(`Sanitized ${key}: ${value}`);
+//     }
+//   })
+// );
 
 // Prevent HTTP Parameter Pollution
 app.use(hpp());

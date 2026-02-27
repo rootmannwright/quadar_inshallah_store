@@ -19,7 +19,7 @@ services:
     environment:
       NODE_ENV: development
       JWT_SECRET: your_jwt_secret
-      MONGO_URI: mongodb://mongo:27017/quadardb
+      MONGO_URI: mongodb://mongo:27017/quadar-store
     volumes:
       - ./backend:/app
       - /app/node_modules

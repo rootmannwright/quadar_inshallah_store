@@ -6,7 +6,6 @@ import authMiddleware from "../middleware/authMiddleware.js";
 const router = express.Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-// eslint-disable-next-line no-undef
 router.post("/create-intent", authMiddleware, async (req, res) => {
   try {
     const { orderId } = req.body;
