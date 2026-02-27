@@ -57,6 +57,7 @@
     "is-extglob": "^2.1.1",
     "is-glob": "^4.0.3",
     "isexe": "^4.0.0",
+    "joi": "^18.0.2",
     "js-yaml": "^4.1.1",
     "json-buffer": "^3.0.1",
     "json-schema-traverse": "^1.0.0",
