@@ -1,14 +1,16 @@
 import express from "express";
+import Joi from "joi";
+import mongoose from "mongoose";
 import Product from "../models/Product.js";
 import { authMiddleware, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// ================= LISTAR TODOS =================
+// ================= LIST ALL =================
 router.get("/", async (req, res) => {
   try {
     const produtos = await Product.find();
-    return res.json(produtos); // return adicionado
+    return res.json(produtos);
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Erro ao buscar produtos" });
@@ -18,37 +20,68 @@ router.get("/", async (req, res) => {
 // ================= SEARCH FOR ID =================
 router.get("/:id", authMiddleware, async (req, res) => {
   try {
-    const produto = await Product.findById(req.params.id);
+    const idSchema = Joi.string().required();
+    const { error, value } = idSchema.validate(req.params.id);
+
+    if (error || !mongoose.Types.ObjectId.isValid(value)) {
+      return res.status(400).json({ error: "ID inválido" });
+    }
+
+    const produto = await Product.findById(value);
     if (!produto) {
       return res.status(404).json({ error: "Produto não encontrado" });
     }
     return res.json(produto);
   } catch (err) {
     console.error(err);
-    return res.status(400).json({ error: "ID inválido" });
+    return res.status(500).json({ error: "Erro ao buscar produto" });
   }
 });
 
 // ================= CREATE =================
 router.post("/", adminOnly, async (req, res) => {
   try {
-    const novoProduto = await Product.create(req.body);
+    const schema = Joi.object({
+      name: Joi.string().required(),
+      description: Joi.string().required(),
+      price: Joi.number().required(),
+      imageUrl: Joi.string().uri().required(),
+    });
+
+    const { error, value } = schema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const novoProduto = await Product.create(value);
     return res.status(201).json(novoProduto);
   } catch (err) {
     console.error(err);
-    return res.status(400).json({ error: "Erro ao criar produto" });
+    return res.status(500).json({ error: "Erro ao criar produto" });
   }
 });
 
 // ================= UPDATE =================
-router.put("/:id", async (req, res) => {
+router.put("/:id", adminOnly, async (req, res) => {
   try {
-    const produtoAtualizado = await Product.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "ID inválido" });
+    }
 
+    const schema = Joi.object({
+      name: Joi.string(),
+      description: Joi.string(),
+      price: Joi.number(),
+      imageUrl: Joi.string().uri(),
+    });
+
+    const { error, value } = schema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const produtoAtualizado = await Product.findByIdAndUpdate(id, value, { new: true });
     if (!produtoAtualizado) {
       return res.status(404).json({ error: "Produto não encontrado" });
     }
@@ -56,21 +89,26 @@ router.put("/:id", async (req, res) => {
     return res.json(produtoAtualizado);
   } catch (err) {
     console.error(err);
-    return res.status(400).json({ error: "Erro ao atualizar produto" });
+    return res.status(500).json({ error: "Erro ao atualizar produto" });
   }
 });
 
 // ================= DELETE =================
 router.delete("/:id", adminOnly, async (req, res) => {
   try {
-    const produto = await Product.findByIdAndDelete(req.params.id);
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "ID inválido" });
+    }
+
+    const produto = await Product.findByIdAndDelete(id);
     if (!produto) {
       return res.status(404).json({ error: "Produto não encontrado" });
     }
     return res.status(204).end();
   } catch (err) {
     console.error(err);
-    return res.status(400).json({ error: "Erro ao deletar produto" });
+    return res.status(500).json({ error: "Erro ao deletar produto" });
   }
 });
 
