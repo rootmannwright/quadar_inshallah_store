@@ -18,38 +18,55 @@ para reportar erros e entrar em contato para colaborações futuras.
 
 <h3>2. Gerenciamento de Estoque</h3>
 - Controle de quantidade disponível de cada produto (stock).
+<br>
 - Possibilidade de marcar produtos como ativos/inativos, permitindo promoções ou exclusões temporárias.
 
 <h3>3. Carrinho e Checkout</h3>
 - Adição de produtos ao carrinho com atualização de quantidade e valor total.
+<br>
 - Checkout seguro integracom com Stripe para pagamentos online.
+Nr
 - Possibilidade de criar pedidos e registrar históricos de compras no banco.
-- Joi cria sessão do Stripe.
+<br>
+- Joi cria sessão no Stripe
 
 <h3>4. Autenticação e Contas</h3>
 - Registro e login de usuários com senha criptografada.
+<br>
 - Proteção contra ataques de força bruta com limite de tentativas de login.
+<br>
 - Gestão de tokens de autenticação para segurança e controle de sessões.
 
 <h3>5. Segurança</h3>
 - Uso de Helmet para cabeçalhos HTTP seguros.
+<br>
 - Sanitização de entradas do usuário com express-mongo-sanitize.
+<br>
 - Proteção contra HTTP Parameter Pollution (HHP).
+<br>
 - Rate-limiting para evitar spams e ataques de negação de serviço.
+<br>
 - Validações com o Joi.
+<br>
+- Criação de Rate Limiter nas rotas.
 
 <h3>6. API RESTful</h3>
 - Endopoints para produtos, pagamentos, autenticação e webhooks.
+<br>
 - Estrutura modular que facilita escala e manutenção de código.
+<br>
 - Respostas em JSON, permitindo integração com frontend, apps mobile ou outras plataformas.
 
 <h3>7. Gerenciamento de Imagens</h3>
 - Armazenamento de imagens de produtos na pasta public/images.
+<br>
 - Cada produto referencia sua imagem via caminho relativo ou URL completa.
+<br>
 - Serve imagens de forma rápida e segura pelo servidor Express.
 
 <h3>8. Monitoramento e Logs</h3>
 - Registro de requisições com requestLogger, facilitando auditoria e depuração.
+<br>
 - Tratamento global de erros com middleware customizado.
 
 
