@@ -62,6 +62,11 @@ Enforced in production environment
   <img src=".github/video-preview.gif" alt="Preview do projeto" width="900" />
 </p>
 
+<br>
+
+<p align="center">
+  <img src=".github/backend-preview.gif" alt="Preview do projeto" width="900" />
+
 ## 🔧Features
 
 | Logo | Tecnologia | Uso |
