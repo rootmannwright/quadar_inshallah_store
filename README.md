@@ -46,13 +46,15 @@ para reportar erros e entrar em contato para colaborações futuras.
 ![Lint](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/lint.yml/badge.svg)
 ![Security](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/security.yml/badge.svg)
 
-OBS.: O CI/CD não funcionará porque ainda não fizemos o deploy do projeto.
+OBS.: Pipeline configurada para ambiente de produção. Deploy será habilitado nas próximas versões.
 
 ## 📃Documentação Oficial
 
 Segue abaixo link para nossa documentação oficial para que usuários possam deleitar-se da melhor maneira no nosso site.
 <br>
 [Link da documentação oficial](#licenses-e-docs)
+<br>
+Enforced in production environment
 
 ## 📸Imagens do Projeto
 
