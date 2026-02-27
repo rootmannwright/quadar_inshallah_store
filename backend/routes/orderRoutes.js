@@ -10,39 +10,42 @@ import {
 } from "../controllers/orderController.js";
 
 const router = express.Router();
-const orderRateLimiter = rateLimiter({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+
+// Rate limiter para POSTs e GETs
+const orderPostLimiter = rateLimiter({
+  windowMs: 15 * 60 * 1000, // 15 min
+  max: 100,
   message: "Too many requests from this IP, please try again later."
 });
 
-// Create order
-router.post("/", authMiddleware, orderRateLimiter, createOrder);
+const orderGetLimiter = rateLimiter({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  message: "Too many requests from this IP, please try again later."
+});
 
+// ================= CREATE ORDER =================
+router.post("/", authMiddleware, orderPostLimiter, createOrder);
 
-// Get specific order by ID
-router.get("/:id", authMiddleware, async (req, res, next) => {
+// ================= GET ORDER BY ID =================
+router.get("/:id", authMiddleware, orderGetLimiter, async (req, res, next) => {
   try {
-    const schema = Joi.object({
-      id: Joi.string().required(),
-    });
-
+    const schema = Joi.object({ id: Joi.string().required() });
     const { error, value } = schema.validate(req.params);
+
     if (error || !mongoose.Types.ObjectId.isValid(value.id)) {
-      return res.status(400).json({ error: "Invalid order ID"});
+      return res.status(400).json({ error: "Invalid order ID" });
     }
 
     req.params.id = value.id;
     return getOrderById(req, res, next);
   } catch (err) {
     console.error("Error validating order ID:", err);
-    return res.status(500).json({ error: "Internal server error while fetching order"});
+    return res.status(500).json({ error: "Internal server error while fetching order" });
   }
-    });
+});
 
-// Get all orders for the authenticated user
-router.get("/", authMiddleware, getMyOrders);
+// ================= GET MY ORDERS =================
+router.get("/", authMiddleware, orderGetLimiter, getMyOrders);
 
 export default router;
-
-
