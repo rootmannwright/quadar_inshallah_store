@@ -13,23 +13,43 @@ para reportar erros e entrar em contato para colaborações futuras.
 
 ## 🧰Funcionalidades
 
-- Grid super interativo que busca produtos diretamente do banco de dados
-- Geração automática de tokens
-- Sistema de segurança máxima, com CORS totalmente programado, rate limit, helmet CORS e entre outros aspectos da segurança da rede
-- Implementação de cookies, com save de state para futuros logins, state de carrinho de compras e entre outros (AdminOnly, HttpOnly, security)
-- Utiliza JavaScript (Node.JS, React)
-- Interface web totalmente criada em TailwindCSS
-- Animações realizadas pela lib do Motion
-- Implementação de containers com Docker
-- Banco de Dados criado com MongoDB e page admin no Compass
-- Testes utilitários com base no JSLint
-- Versionamento Git e GitHub
-- Implementação de rotas para clusters e deploys futuramente
-- Implementação de .env pública e .env de produção
-- Utilizado API Stripe e CorreiosAPI para processamento de pagamento e de frete, respectivamente
-- Implementação de testes unitários e relatórios com SonarQube, JSLint, K6
-- Implementação de GitHub Actions, com automatizações para progress bar automático, segurança do repositório, escaneamento de erros e problemas de segurança no código, dependabot, ferramenta nativa do GitHub, arquivo para futuramente realizar os deploys
-- Implementação de hooks
+<h3>1. Catálogo de Produtos</h3>
+- Visualização de produtos com nome, descrição, categoria, preço e imagem.
+
+<h3>2. Gerenciamento de Estoque</h3>
+- Controle de quantidade disponível de cada produto (stock).
+- Possibilidade de marcar produtos como ativos/inativos, permitindo promoções ou exclusões temporárias.
+
+<h3>3. Carrinho e Checkout</h3>
+- Adição de produtos ao carrinho com atualização de quantidade e valor total.
+- Checkout seguro integracom com Stripe para pagamentos online.
+- Possibilidade de criar pedidos e registrar históricos de compras no banco.
+
+<h3>4. Autenticação e Contas</h3>
+- Registro e login de usuários com senha criptografada.
+- Proteção contra ataques de força bruta com limite de tentativas de login.
+- Gestão de tokens de autenticação para segurança e controle de sessões.
+
+<h3>5. Segurança</h3>
+- Uso de Helmet para cabeçalhos HTTP seguros.
+- Sanitização de entradas do usuário com express-mongo-sanitize.
+- Proteção contra HTTP Parameter Pollution (HHP).
+- Rate-limiting para evitar spams e ataques de negação de serviço.
+
+<h3>6. API RESTful</h3>
+- Endopoints para produtos, pagamentos, autenticação e webhooks.
+- Estrutura modular que facilita escala e manutenção de código.
+- Respostas em JSON, permitindo integração com frontend, apps mobile ou outras plataformas.
+
+<h3>7. Gerenciamento de Imagens</h3>
+- Armazenamento de imagens de produtos na pasta public/images.
+- Cada produto referencia sua imagem via caminho relativo ou URL completa.
+- Serve imagens de forma rápida e segura pelo servidor Express.
+
+<h3>8. Monitoramento e Logs</h3>
+- Registro de requisições com requestLogger, facilitando auditoria e depuração.
+- Tratamento global de erros com middleware customizado.
+
 
 ### 📊 Progresso do projeto
 
