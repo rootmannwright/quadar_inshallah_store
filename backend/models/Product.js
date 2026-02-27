@@ -6,6 +6,7 @@ const ProductSchema = new mongoose.Schema(
     preco: { type: Number, required: true },
     descricao: { type: String, required: true },
     imagem: { type: String },
+    category: { type: String },
   },
   {
     collection: "products",
@@ -15,4 +16,4 @@ const ProductSchema = new mongoose.Schema(
 
 const Product = mongoose.model("Product", ProductSchema);
 
-export default Product; // 👈 CORRETO
+export default Product;

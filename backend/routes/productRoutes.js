@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ================= BUSCAR POR ID =================
+// ================= SEARCH FOR ID =================
 router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const produto = await Product.findById(req.params.id);
@@ -29,7 +29,7 @@ router.get("/:id", authMiddleware, async (req, res) => {
   }
 });
 
-// ================= CRIAR =================
+// ================= CREATE =================
 router.post("/", adminOnly, async (req, res) => {
   try {
     const novoProduto = await Product.create(req.body);
@@ -40,7 +40,7 @@ router.post("/", adminOnly, async (req, res) => {
   }
 });
 
-// ================= ATUALIZAR =================
+// ================= UPDATE =================
 router.put("/:id", async (req, res) => {
   try {
     const produtoAtualizado = await Product.findByIdAndUpdate(
@@ -60,14 +60,14 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// ================= DELETAR =================
+// ================= DELETE =================
 router.delete("/:id", adminOnly, async (req, res) => {
   try {
     const produto = await Product.findByIdAndDelete(req.params.id);
     if (!produto) {
       return res.status(404).json({ error: "Produto não encontrado" });
     }
-    return res.status(204).end(); // return adicionado
+    return res.status(204).end();
   } catch (err) {
     console.error(err);
     return res.status(400).json({ error: "Erro ao deletar produto" });

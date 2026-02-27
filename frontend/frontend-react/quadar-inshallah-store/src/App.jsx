@@ -4,6 +4,7 @@ import Login from "./pages/Login"
 import Cart from "./pages/Cart"
 import Stories from "./pages/Stories"
 import PublicLayout from "./layouts/PublicLayout"
+import Products from "./pages/Products"
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/stories" element={<Stories />} />
+          <Route path="/products" element={<Products />} />
         </Route>
 
         <Route path="/login" element={<Login />} />

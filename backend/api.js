@@ -72,16 +72,31 @@ app.use(
   })
 );
 
-// Prevent MongoDB Operator Injection
-app.use(mongoSanitize());
+// ==========================
+// BODY PARSING & SANITIZATION
+// ==========================
+
+// Parse JSON body first
+app.use(express.json({ limit: "10kb" }));
+
+// Sanitize request body and params (ignore query to avoid TypeError)
+app.use(
+  mongoSanitize({
+    replaceWith: "_",
+    ignoreQuery: true,
+    // eslint-disable-next-line no-unused-vars
+    onSanitize: ({ req, key, value }) => {
+      console.log(`Sanitized ${key}: ${value}`);
+    }
+  })
+);
 
 // Prevent HTTP Parameter Pollution
 app.use(hpp());
 
-// Parse JSON body
-app.use(express.json({ limit: "10kb" })); // Limit payload size to prevent abuse
-
-// Request logging
+// ==========================
+// REQUEST LOGGING
+// ==========================
 app.use(requestLogger);
 
 // ==========================
@@ -98,7 +113,6 @@ const globalLimiter = rateLimit({
     error: "Too many requests. Please try again later."
   }
 });
-
 app.use("/api", globalLimiter);
 
 // Strict limiter for authentication endpoints
@@ -109,7 +123,6 @@ const authLimiter = rateLimit({
     error: "Too many login attempts. Account temporarily locked."
   }
 });
-
 app.use("/api/auth/login", authLimiter);
 
 // ==========================
@@ -122,7 +135,16 @@ app.use(express.static(path.join(__dirname, "public")));
 // ==========================
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected successfully"))
+  .then(() => {
+    console.log("MongoDB connected successfully");
+
+    mongoose.connection.once("open", async () => {
+      console.log("MongoDB connected to DB:", mongoose.connection.name);
+
+      const colls = await mongoose.connection.db.listCollections().toArray();
+      console.log("Collections in this DB:", colls.map(c => c.name));
+    });
+  })
   .catch((err) => {
     console.error("MongoDB connection error:", err);
     process.exit(1);
@@ -131,7 +153,6 @@ mongoose
 // ==========================
 // WEBHOOK ROUTES
 // ==========================
-// IMPORTANT: If using Stripe or similar, raw body parsing must be configured inside webhookRoutes
 app.use("/api/webhooks", webhookRoutes);
 
 // ==========================
@@ -159,7 +180,6 @@ app.use(errorHandler);
 // SERVER START
 // ==========================
 const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, () => {
   console.log(`Secure server running on port ${PORT}`);
 });

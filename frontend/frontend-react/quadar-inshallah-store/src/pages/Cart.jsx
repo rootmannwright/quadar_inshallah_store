@@ -1,4 +1,5 @@
 import { useState } from "react"
+import CheckoutButton from "../components/CheckoutButton"
 
 export default function Cart() {
   const [cartItems, setCartItems] = useState([
@@ -163,9 +164,7 @@ export default function Cart() {
             <span>${total.toFixed(2)}</span>
           </div>
 
-          <button className="mt-6 w-full bg-black text-white py-3 rounded-lg">
-            Proceed to Checkout
-          </button>
+          <CheckoutButton cartItems={cartItems} />
         </div>
       )}
     </div>

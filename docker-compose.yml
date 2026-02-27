@@ -1,0 +1,44 @@
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: quadar-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+    networks:
+      - quadar-net
+
+  backend:
+    build: ./backend
+    container_name: quadar-backend
+    expose:
+      - "3000"
+    environment:
+      NODE_ENV: development
+      JWT_SECRET: your_jwt_secret
+      MONGO_URI: mongodb://mongo:27017/quadardb
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - mongo
+    networks:
+      - quadar-net
+
+  mongo:
+    image: mongo:6
+    container_name: quadar-mongo
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - quadar-net
+
+volumes:
+  mongo_data:
+
+networks:
+  quadar-net:
+    driver: bridge
