@@ -7,41 +7,49 @@ export const createOrder = async (req, res, next) => {
   try {
     const { cart } = req.body;
 
+    // Basic validation
+    if (!Array.isArray(cart) || cart.length === 0) {
+      return res.status(400).json({ error: "Cart cannot be empty" });
+    }
+
     let items = [];
     let total = 0;
 
-    // verify products and calculate total
     for (const item of cart) {
+      if (!item.productId || !item.quantity || item.quantity <= 0) {
+        return res.status(400).json({ error: "Invalid cart item" });
+      }
+
       const product = await Product.findById(item.productId);
 
       if (!product || !product.active) {
-        return res.status(400).json({ error: "Produto inválido" });
+        return res.status(400).json({ error: "Invalid product" });
       }
 
       if (product.stock < item.quantity) {
-        return res.status(400).json({ error: "Estoque insuficiente" });
+        return res.status(400).json({ error: "Insufficient stock" });
       }
 
       items.push({
-        productId: product._id,
-        qty: item.quantity,
-        price: product.price
+        product: product._id,      // aligned with schema
+        quantity: item.quantity,   // aligned
+        price: product.price       // snapshot price
       });
 
       total += product.price * item.quantity;
     }
 
-    // create order pending (don't reduce stock yet)
     const order = await Order.create({
-      userId: req.user.id,
+      user: req.user.id, // aligned with schema
       items,
       total,
-      status: "pending"
+      status: "pending_payment"
     });
 
-    return res.status(201).json(order); // return added
+    return res.status(201).json(order);
+
   } catch (err) {
-    return next(err); // return added for consistent-return
+    return next(err);
   }
 };
 
@@ -54,22 +62,23 @@ export const getOrderById = async (req, res, next) => {
       return res.status(404).json({ error: "Pedido não encontrado" });
     }
 
-    if (order.userId.toString() !== req.user.id) {
+    // Ensure user owns this order
+    if (order.user.toString() !== req.user.id) {
       return res.status(403).json({ error: "Acesso negado" });
     }
 
     return res.json(order);
   } catch (err) {
-    return next(err); // return added
+    return next(err);
   }
 };
 
 // ================= GET MY ORDERS =================
 export const getMyOrders = async (req, res, next) => {
   try {
-    const orders = await Order.find({ userId: req.user.id });
+    const orders = await Order.find({ user: req.user.id });
     return res.json(orders);
   } catch (err) {
-    return next(err); // return added
+    return next(err);
   }
 };

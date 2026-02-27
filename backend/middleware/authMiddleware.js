@@ -1,45 +1,56 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-// ================= AUTH MIDDLEWARE =================
+/* =====================================================
+   AUTH MIDDLEWARE
+===================================================== */
 const authMiddleware = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader) {
-    return res.status(401).json({ error: "Token não fornecido" });
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({
+      error: "Token não fornecido ou formato inválido",
+    });
   }
 
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decoded.userId).select("-password");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, {
+      algorithms: ["HS256"],
+    });
 
-    if (!req.user) {
-      return res.status(401).json({ error: "Usuário não encontrado" });
+    if (!decoded.userId) {
+      return res.status(401).json({
+        error: "Token inválido",
+      });
     }
 
+    const user = await User.findById(decoded.userId).select("-password");
+
+    if (!user) {
+      return res.status(401).json({
+        error: "Usuário não encontrado",
+      });
+    }
+
+    // Anexa usuário completo ao request
+    req.user = user;
+
     return next();
-    // eslint-disable-next-line no-unused-vars
-  } catch (_err) {
-    return res.status(401).json({ error: "Token inválido" });
+  // eslint-disable-next-line no-unused-vars
+  } catch (err) {
+    return res.status(401).json({
+      error: "Token inválido ou expirado",
+    });
   }
 };
 
-// ================= ADMIN-ONLY MIDDLEWARE =================
-const ADMIN_IPS = ["127.0.0.1", "::1"];
-const ADMIN_KEYS = [process.env.ADMIN_KEY];
-
+/* =====================================================
+   ADMIN ONLY (Role-Based Access Control)
+===================================================== */
 const adminOnly = (req, res, next) => {
-  const requestIp =
-    req.headers["x-forwarded-for"]?.split(",")[0] ||
-    req.socket.remoteAddress;
-
-  const adminKey = req.headers["x-admin-key"];
-  const ipAllowed = ADMIN_IPS.includes(requestIp);
-  const keyAllowed = ADMIN_KEYS.includes(adminKey);
-
-  if (!ipAllowed && !keyAllowed) {
+  if (!req.user || req.user.role !== "admin") {
     return res.status(403).json({
       error: "Acesso restrito a administradores",
     });

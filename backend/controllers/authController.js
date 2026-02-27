@@ -62,9 +62,14 @@ export async function login(req, res) {
       return res.status(401).json({ error: "Senha incorreta" });
     }
 
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+const token = jwt.sign(
+  { userId: user._id, role: user.role },
+  process.env.JWT_SECRET,
+  {
+    expiresIn: "7d",
+    algorithm: "HS256"
+  }
+);
 
     return res.json({
       token,
@@ -80,23 +85,49 @@ export async function login(req, res) {
    UPDATE USER
 ========================= */
 export async function updateUserController(req, res) {
-  const userId = req.params.id;
-  const updateData = req.body;
-
   try {
-    if (updateData.password) {
-      updateData.password = await bcrypt.hash(updateData.password, 10);
+    const { id } = req.params;
+    const loggedUser = req.user;
+
+    // 1️⃣ Only admins can update any user
+    // Common users can only update themselves
+    if (loggedUser.role !== "admin" && loggedUser._id.toString() !== id) {
+      return res.status(403).json({ error: "Acesso negado" });
     }
 
-    const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true }).select(
-      "-password"
-    );
+    // 2️⃣ Allow fields that can be updated
+    const allowedUpdates = ["name", "email", "password"];
+    const updates = {};
+
+    for (const key of allowedUpdates) {
+      if (req.body[key] !== undefined) {
+        updates[key] = req.body[key];
+      }
+    }
+
+    // 3️⃣ Never allows role updates through this endpoint
+    if (req.body.role) {
+      return res.status(403).json({ error: "Não é permitido alterar a role" });
+    }
+
+    // 4️⃣ If refresh tokens and password is being updated
+    if (updates.password) {
+      updates.password = await bcrypt.hash(updates.password, 10);
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(id, updates, {
+      new: true,
+      runValidators: true,
+    }).select("-password");
 
     if (!updatedUser) {
       return res.status(404).json({ error: "Usuário não encontrado" });
     }
 
-    return res.json({ message: "Usuário atualizado com sucesso", user: updatedUser });
+    return res.json({
+      message: "Usuário atualizado com sucesso",
+      user: updatedUser,
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Erro ao atualizar usuário" });
