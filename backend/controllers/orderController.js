@@ -1,4 +1,6 @@
 // ================= IMPORTS =================
+import Joi from "joi";
+import mongoose from "mongoose";
 import Order from "../models/Order.js"; 
 import Product from "../models/Product.js";
 
@@ -20,23 +22,35 @@ export const createOrder = async (req, res, next) => {
         return res.status(400).json({ error: "Invalid cart item" });
       }
 
-      const product = await Product.findById(item.productId);
+      const schema = Joi.object({
+        productId: Joi.string().required(),
+        quantity: Joi.number().integer().min(1).required()
+      });
+      if(!mongoose.Types.ObjectId.isValid(item.productId)) {
+        return res.status(400).json({ error: "Invalid product ID format" });
+      }
+
+      const { error, value } = schema.validate(item);
+      if (error) {
+        return res.status(400).json({ error: "Invalid cart item", details: error.details });
+      }
+      const product = await Product.findById(value.productId);
 
       if (!product || !product.active) {
         return res.status(400).json({ error: "Invalid product" });
       }
 
-      if (product.stock < item.quantity) {
+      if (product.stock < value.quantity) {
         return res.status(400).json({ error: "Insufficient stock" });
       }
 
       items.push({
         product: product._id,      // aligned with schema
-        quantity: item.quantity,   // aligned
+        quantity: value.quantity,   // aligned
         price: product.price       // snapshot price
       });
 
-      total += product.price * item.quantity;
+      total += product.price * value.quantity;
     }
 
     const order = await Order.create({
