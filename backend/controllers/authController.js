@@ -1,5 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import Joi from "joi";
+import mongoose from "mongoose";
 import User from "../models/User.js";
 
 /* =========================
@@ -20,17 +22,27 @@ export async function getAllUsers(req, res) {
 ========================= */
 export async function register(req, res) {
   try {
-    const { name, email, password } = req.body;
-    const exists = await User.findOne({ email });
+    const schema = Joi.object({
+      name: Joi.string().min(3).max(50).required(),
+      email: Joi.string().email().required(),
+      password: Joi.string().min(6).required(),
+    });
 
-    if (exists) {
-      return res.status(400).json({ error: "Email já cadastrado" });
+    const { error, value } = schema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: "Dados inválidos", details: error.details });
     }
 
-    const hashed = await bcrypt.hash(password, 10);
+    const exists = await User.findOne({ email: value.email });
+    if (exists) {
+      return res.status(409).json({ error: "Email já registrado" });
+    }
+
+    const hashed = await bcrypt.hash(value.password, 10);
+
     const user = await User.create({
-      name,
-      email,
+      name: value.name,
+      email: value.email,
       password: hashed,
       role: "user",
     });
@@ -87,35 +99,26 @@ const token = jwt.sign(
 export async function updateUserController(req, res) {
   try {
     const { id } = req.params;
-    const loggedUser = req.user;
 
-    // 1️⃣ Only admins can update any user
-    // Common users can only update themselves
-    if (loggedUser.role !== "admin" && loggedUser._id.toString() !== id) {
-      return res.status(403).json({ error: "Acesso negado" });
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "ID de usuário inválido" });
     }
 
-    // 2️⃣ Allow fields that can be updated
-    const allowedUpdates = ["name", "email", "password"];
-    const updates = {};
+    const schema = Joi.object({
+      name: Joi.string().min(3).max(50),
+      email: Joi.string().email(),
+      password: Joi.string().min(6),
+    });
 
-    for (const key of allowedUpdates) {
-      if (req.body[key] !== undefined) {
-        updates[key] = req.body[key];
-      }
+    const { error, value } = schema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: "Dados inválidos", details: error.details });
+    }
+    if (value.password) {
+      value.password = await bcrypt.hash(value.password, 10);
     }
 
-    // 3️⃣ Never allows role updates through this endpoint
-    if (req.body.role) {
-      return res.status(403).json({ error: "Não é permitido alterar a role" });
-    }
-
-    // 4️⃣ If refresh tokens and password is being updated
-    if (updates.password) {
-      updates.password = await bcrypt.hash(updates.password, 10);
-    }
-
-    const updatedUser = await User.findByIdAndUpdate(id, updates, {
+    const updatedUser = await User.findByIdAndUpdate(id, value, {
       new: true,
       runValidators: true,
     }).select("-password");
@@ -140,6 +143,11 @@ export async function updateUserController(req, res) {
 export async function deleteUserController(req, res) {
   try {
     const { id } = req.params;
+    
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "ID de usuário inválido" });
+    }
+
     const user = await User.findByIdAndDelete(id);
 
     if (!user) {
@@ -147,8 +155,8 @@ export async function deleteUserController(req, res) {
     }
 
     return res.json({ message: "Usuário removido com sucesso" });
+  // eslint-disable-next-line no-unused-vars
   } catch (err) {
-    console.error(err);
     return res.status(500).json({ error: "Erro ao deletar usuário" });
   }
 }

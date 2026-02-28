@@ -25,10 +25,10 @@ const orderGetLimiter = rateLimiter({
 });
 
 // ================= CREATE ORDER =================
-router.post("/", authMiddleware, orderPostLimiter, createOrder);
+router.post("/", orderPostLimiter, authMiddleware, createOrder);
 
 // ================= GET ORDER BY ID =================
-router.get("/:id", authMiddleware, orderGetLimiter, async (req, res, next) => {
+router.get("/:id", orderGetLimiter, authMiddleware, async (req, res, next) => {
   try {
     const schema = Joi.object({ id: Joi.string().required() });
     const { error, value } = schema.validate(req.params);
@@ -39,13 +39,13 @@ router.get("/:id", authMiddleware, orderGetLimiter, async (req, res, next) => {
 
     req.params.id = value.id;
     return getOrderById(req, res, next);
+    // eslint-disable-next-line no-unused-vars
   } catch (err) {
-    console.error("Error validating order ID:", err);
     return res.status(500).json({ error: "Internal server error while fetching order" });
   }
 });
 
 // ================= GET MY ORDERS =================
-router.get("/", authMiddleware, orderGetLimiter, getMyOrders);
+router.get("/", orderGetLimiter, authMiddleware, getMyOrders);
 
 export default router;
