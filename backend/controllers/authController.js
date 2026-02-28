@@ -62,26 +62,33 @@ export async function register(req, res) {
 ========================= */
 export async function login(req, res) {
   try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
+
+    const schema = Joi.object({
+      email: Joi.string().email().required(),
+      password: Joi.string().min(6).required(),
+    });
+
+    const { error, value } = schema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: "Dados inválidos", details: error.details });
+    }
+
+    const user = await User.findOne({ email: value.email });
 
     if (!user) {
       return res.status(404).json({ error: "Usuário não encontrado" });
     }
 
-    const match = await bcrypt.compare(password, user.password);
+    const match = await bcrypt.compare(value.password, user.password);
     if (!match) {
       return res.status(401).json({ error: "Senha incorreta" });
     }
 
-const token = jwt.sign(
-  { userId: user._id, role: user.role },
-  process.env.JWT_SECRET,
-  {
-    expiresIn: "7d",
-    algorithm: "HS256"
-  }
-);
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d", algorithm: "HS256" }
+    );
 
     return res.json({
       token,
@@ -143,7 +150,7 @@ export async function updateUserController(req, res) {
 export async function deleteUserController(req, res) {
   try {
     const { id } = req.params;
-    
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "ID de usuário inválido" });
     }
@@ -155,7 +162,7 @@ export async function deleteUserController(req, res) {
     }
 
     return res.json({ message: "Usuário removido com sucesso" });
-  // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
   } catch (err) {
     return res.status(500).json({ error: "Erro ao deletar usuário" });
   }
