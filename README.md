@@ -73,7 +73,7 @@ Nr
 ### 📊 Progresso do projeto
 
 <!-- PROGRESS_BAR_START -->
-[████░░░░░░] 35%
+[███░░░░░░░] 33%
 <!-- PROGRESS_BAR_END -->
 
 ## Badged
