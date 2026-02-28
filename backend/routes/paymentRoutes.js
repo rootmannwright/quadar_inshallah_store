@@ -4,64 +4,107 @@ import Joi from "joi";
 import mongoose from "mongoose";
 import authMiddleware from "../middleware/authMiddleware.js";
 import Order from "../models/Order.js";
+
 const router = express.Router();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-// ==========================
-// 1️⃣ PaymentIntent (Integrating Stripe Elements)
-// ==========================
-router.post("/create-intent/:orderId", authMiddleware, async (req, res) => {
-  try {
-    const createIntentSchema = Joi.object({
-      orderId: Joi.string().required(),
-    });
-    
-   
-    const { error, value } = createIntentSchema.validate(req.params);
 
-    if (error) {
-      return res.status(400).json({ error: error.details[0].message });
-    }
-
-    const { orderId } = value;
-
-    const order = await Order.findById(orderId).select("total userId status");
-    if (!order) {
-      return res.status(404).json({ error: "Order not found" });
-    }
-    if (!mongoose.Types.ObjectId.isValid(orderId)) {
-      return res.status(400).json({ error: "Invalid order ID format" });
-    }
-
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(order.total * 100),
-      currency: "brl",
-      metadata: { orderId: order._id.toString() },
-    });
-
-    return res.json({ clientSecret: paymentIntent.client_secret });
-  } catch (err) {
-    console.error("Error creating payment intent:", err);
-    return res.status(500).json({ error: "Internal server error while creating payment" });
+const getStripe = () => {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error("Stripe secret key not defined");
   }
-});
 
-// ==========================
-// 2️⃣ Checkout Session (Redirecting to Stripe's hosted page)
-// ==========================
+  return new Stripe(process.env.STRIPE_SECRET_KEY);
+};
+
+/**
+ * ==========================
+ * 1️⃣ Create PaymentIntent (Stripe Elements)
+ * ==========================
+ */
+router.post(
+  "/create-intent/:orderId",
+  authMiddleware,
+  async (req, res) => {
+    try {
+      const schema = Joi.object({
+        orderId: Joi.string().required(),
+      });
+
+      const { error, value } = schema.validate(req.params);
+
+      if (error) {
+        return res.status(400).json({ error: error.details[0].message });
+      }
+
+      const { orderId } = value;
+
+      // Validate ObjectId BEFORE querying DB
+      if (!mongoose.Types.ObjectId.isValid(orderId)) {
+        return res.status(400).json({ error: "Invalid order ID format" });
+      }
+
+      const order = await Order.findById(orderId).select(
+        "total userId status"
+      );
+
+      if (!order) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+
+      // Optional security check (recommended)
+      if (order.userId.toString() !== req.user.id) {
+        return res.status(403).json({ error: "Unauthorized access to order" });
+      }
+
+      if (order.status === "paid") {
+        return res.status(400).json({ error: "Order already paid" });
+      }
+
+      const stripe = getStripe();
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(order.total * 100),
+        currency: "brl",
+        metadata: {
+          orderId: order._id.toString(),
+          userId: req.user.id,
+        },
+      });
+
+      return res.json({
+        clientSecret: paymentIntent.client_secret,
+      });
+    } catch (err) {
+      console.error("Error creating payment intent:", err.message);
+
+      return res.status(500).json({
+        error: "Internal server error while creating payment",
+      });
+    }
+  }
+);
+
+/**
+ * ==========================
+ * 2️⃣ Create Checkout Session (Stripe Hosted Page)
+ * ==========================
+ */
 router.post("/checkout-session", async (req, res) => {
   try {
-    const checkoutSchema = Joi.object({
-      items: Joi.array().items(
-        Joi.object({
-          name: Joi.string().required(),
-          price: Joi.number().required(),
-          quantity: Joi.number().required(),
-        })
-      ).min(1).required(),
+    const schema = Joi.object({
+      items: Joi.array()
+        .items(
+          Joi.object({
+            name: Joi.string().required(),
+            price: Joi.number().positive().required(),
+            quantity: Joi.number().integer().min(1).required(),
+          })
+        )
+        .min(1)
+        .required(),
     });
 
-    const { error, value } = checkoutSchema.validate(req.body);
+    const { error, value } = schema.validate(req.body);
 
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
@@ -69,10 +112,14 @@ router.post("/checkout-session", async (req, res) => {
 
     const { items } = value;
 
-    const line_items = items.map(item => ({
+    const stripe = getStripe();
+
+    const line_items = items.map((item) => ({
       price_data: {
         currency: "brl",
-        product_data: { name: item.name },
+        product_data: {
+          name: item.name,
+        },
         unit_amount: Math.round(item.price * 100),
       },
       quantity: item.quantity,
@@ -86,10 +133,13 @@ router.post("/checkout-session", async (req, res) => {
       cancel_url: `${process.env.CLIENT_URL}/cancel`,
     });
 
-    res.json({ url: session.url });
-  } catch (error) {
-    console.error("Checkout session error:", error);
-    res.status(500).json({ error: error.message });
+    return res.json({ url: session.url });
+  } catch (err) {
+    console.error("Checkout session error:", err.message);
+
+    return res.status(500).json({
+      error: "Internal server error while creating checkout session",
+    });
   }
 });
 
