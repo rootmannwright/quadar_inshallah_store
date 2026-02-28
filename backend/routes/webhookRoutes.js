@@ -6,7 +6,13 @@ import Order from "../models/Order.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const getStripe = () => {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error("Stripe secret key not defined");
+  }
+
+  return new Stripe(process.env.STRIPE_SECRET_KEY);
+};
 
 // Rate limiter para pagamentos (protege endpoint de abuso)
 const paymentLimiter = rateLimiter({
@@ -41,6 +47,8 @@ router.post("/create-intent", authMiddleware, paymentLimiter, async (req, res) =
     if (order.status === "paid") {
       return res.status(400).json({ error: "This order has already been paid" });
     }
+
+    const stripe = getStripe();
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(order.total * 100),
