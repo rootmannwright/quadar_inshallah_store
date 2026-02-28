@@ -88,6 +88,10 @@ Nr
 <br>
 OBS.: Pipeline configurada para ambiente de produção. Deploy será habilitado nas próximas versões.
 
+Coverage
+<br>
+![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/SEU_USUARIO/SEU_REPO/main/coverage-badge.json)
+
 ## 📃Documentação Oficial
 
 Segue abaixo link para nossa documentação oficial para que usuários possam deleitar-se da melhor maneira no nosso site.

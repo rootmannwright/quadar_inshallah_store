@@ -28,16 +28,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run lint
-        run: npm run lint
+      # Só roda lint se existir
+      - name: Run lint (if exists)
+        run: npm run lint --if-present
 
-      # só roda se existir
-      - name: Run tests
+      # Só roda test se existir
+      - name: Run tests (if exists)
         run: npm test --if-present
 
-      # backend NÃO precisa de build
-      - name: Skip build
-        run: echo "Backend does not require build step"
+      - name: Done
+        run: echo "Backend CI passed"
 
   deploy:
     name: Deploy

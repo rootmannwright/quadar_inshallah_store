@@ -1,0 +1,45 @@
+name: Test Coverage
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: backend
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+        working-directory: backend
+
+      - name: Extract coverage percentage
+        run: |
+          COVERAGE=$(cat backend/coverage/coverage-summary.json | jq '.total.lines.pct')
+          echo "COVERAGE=$COVERAGE" >> $GITHUB_ENV
+
+      - name: Generate coverage badge JSON
+        run: |
+          echo "{\"schemaVersion\": 1, \"label\": \"coverage\", \"message\": \"$COVERAGE%\", \"color\": \"green\"}" > coverage-badge.json
+
+      - name: Commit coverage badge
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add coverage-badge.json
+          git commit -m "Update coverage badge" || echo "No changes"
+          git push
