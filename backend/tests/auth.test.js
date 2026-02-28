@@ -7,6 +7,7 @@ import app from "../api.js";
 let mongoServer;
 
 // ======= SETUP E TEARDOWN DO BANCO =======
+// eslint-disable-next-line no-undef
 beforeAll(async () => {
   // Cria um MongoDB em memória
   mongoServer = await MongoMemoryServer.create();
@@ -14,11 +15,13 @@ beforeAll(async () => {
   await mongoose.connect(uri);
 });
 
+// eslint-disable-next-line no-undef
 afterAll(async () => {
   await mongoose.disconnect();
   await mongoServer.stop();
 });
 
+// eslint-disable-next-line no-undef
 afterEach(async () => {
   // Limpa todas as collections após cada teste
   const collections = mongoose.connection.collections;
@@ -28,6 +31,7 @@ afterEach(async () => {
 });
 
 // ======= TESTE DE REGISTER =======
+// eslint-disable-next-line no-undef
 describe("Auth - Register", () => {
   it("should create a new user", async () => {
     const res = await request(app).post("/api/auth/register").send({
@@ -36,11 +40,14 @@ describe("Auth - Register", () => {
       password: "123456"
     });
 
+    // eslint-disable-next-line no-undef
     expect(res.statusCode).toBe(201);
-    expect(res.body.user).toHaveProperty("email");
-    expect(res.body.user.email).toBe("lucas@test.com");
+    // eslint-disable-next-line no-undef
+expect(res.body.user).toHaveProperty("email");
+    // eslint-disable-next-line no-undef
+expect(res.body.user.email).toBe("lucas@test.com");
   });
-
+// eslint-disable-next-line no-undef
   it("should not allow duplicate email", async () => {
     // Cria usuário inicial
     await request(app).post("/api/auth/register").send({
@@ -55,8 +62,9 @@ describe("Auth - Register", () => {
       email: "lucas@test.com",
       password: "123456"
     });
-
+  // eslint-disable-next-line no-undef
     expect(res.statusCode).toBe(400);
-    expect(res.body).toHaveProperty("error");
+    // eslint-disable-next-line no-undef
+expect(res.body).toHaveProperty("error");
   });
 });
