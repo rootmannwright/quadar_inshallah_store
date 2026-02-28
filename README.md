@@ -94,7 +94,7 @@ Segue abaixo link para nossa documentação oficial para que usuários possam de
 <br>
 [Link da documentação oficial](#licenses-e-docs)
 <br>
-Enforced in production environment
+<em>Enforced in production environment.</em>
 
 ## 📸Imagens do Projeto
 
