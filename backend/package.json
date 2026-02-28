@@ -109,7 +109,7 @@
     "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
     "dev": "node api.js",
     "start": "node api.js",
-    "lint": "eslint ."
+    "lint": "eslint . --ext .js, .mjs"
   },
   "jest": {
     "testEnvironment": "node",
