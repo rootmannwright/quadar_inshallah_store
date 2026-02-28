@@ -11,6 +11,7 @@ jobs:
         runs-on: ubuntu-latest
 
         env:
+            MONGO_URI: ${{ secrets.MONGO_URI }}
             STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
             CLIENT_URL: ${{ secrets.CLIENT_URL }}
 
