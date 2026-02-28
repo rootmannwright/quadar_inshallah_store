@@ -2,14 +2,10 @@
 // CORE IMPORTS
 // ==========================
 import express from "express";
-import mongoose from "mongoose";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-// eslint-disable-next-line no-unused-vars
-import mongoSanitize from "express-mongo-sanitize";
 import hpp from "hpp";
-import "dotenv/config";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -41,8 +37,6 @@ const __dirname = path.dirname(__filename);
 // ==========================
 // GLOBAL SECURITY MIDDLEWARES
 // ==========================
-
-// Enable secure HTTP headers
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -64,7 +58,9 @@ app.use(
   })
 );
 
-// Enable CORS with strict origin control
+// ==========================
+// CORS CONFIGURATION
+// ==========================
 app.use(
   cors({
     origin: [
@@ -80,23 +76,7 @@ app.use(
 // ==========================
 // BODY PARSING & SANITIZATION
 // ==========================
-
-// Parse JSON body first
 app.use(express.json({ limit: "10kb" }));
-
-// Sanitize request body and params (ignore query to avoid TypeError)
-// app.use(
-//   mongoSanitize({
-//     replaceWith: "_",
-//     ignoreQuery: true,
-//     // eslint-disable-next-line no-unused-vars
-//     onSanitize: ({ req, key, value }) => {
-//       console.log(`Sanitized ${key}: ${value}`);
-//     }
-//   })
-// );
-
-// Prevent HTTP Parameter Pollution
 app.use(hpp());
 
 // ==========================
@@ -107,26 +87,19 @@ app.use(requestLogger);
 // ==========================
 // RATE LIMITING
 // ==========================
-
-// General API rate limit
 const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   standardHeaders: true,
   legacyHeaders: false,
-  message: {
-    error: "Too many requests. Please try again later."
-  }
+  message: { error: "Too many requests. Try again later." }
 });
 app.use("/api", globalLimiter);
 
-// Strict limiter for authentication endpoints
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
-  message: {
-    error: "Too many login attempts. Account temporarily locked."
-  }
+  message: { error: "Too many login attempts. Account temporarily locked." }
 });
 app.use("/api/auth/login", authLimiter);
 
@@ -136,33 +109,9 @@ app.use("/api/auth/login", authLimiter);
 app.use(express.static(path.join(__dirname, "public")));
 
 // ==========================
-// DATABASE CONNECTION
-// ==========================
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("MongoDB connected successfully");
-
-    mongoose.connection.once("open", async () => {
-      console.log("MongoDB connected to DB:", mongoose.connection.name);
-
-      const colls = await mongoose.connection.db.listCollections().toArray();
-      console.log("Collections in this DB:", colls.map(c => c.name));
-    });
-  })
-  .catch((err) => {
-    console.error("MongoDB connection error:", err);
-    process.exit(1);
-  });
-
-// ==========================
-// WEBHOOK ROUTES
+// ROUTES
 // ==========================
 app.use("/api/webhooks", webhookRoutes);
-
-// ==========================
-// MAIN API ROUTES
-// ==========================
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/payments", paymentRoutes);
@@ -171,9 +120,7 @@ app.use("/api/payments", paymentRoutes);
 // ROOT ROUTE
 // ==========================
 app.get("/", (req, res) => {
-  res.json({
-    message: "Quadar Inshallah API running securely 🚀"
-  });
+  res.json({ message: "Quadar Inshallah API running securely 🚀" });
 });
 
 // ==========================
@@ -182,11 +129,6 @@ app.get("/", (req, res) => {
 app.use(errorHandler);
 
 // ==========================
-// SERVER START
+// EXPORT APP
 // ==========================
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Secure server running on port ${PORT}`);
-});
-
 export default app;
