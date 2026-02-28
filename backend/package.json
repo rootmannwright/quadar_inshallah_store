@@ -113,13 +113,9 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "transform": {
-      "^.+\\.js$": "babel-jest"
-    },
-    "moduleFileExtensions": [
-      "js",
-      "json"
-    ]
+  "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"],
+  "transform": { "^.+\\.js$": "babel-jest" },
+  "moduleFileExtensions": ["js", "json"]
   },
   "keywords": [],
   "author": "",
