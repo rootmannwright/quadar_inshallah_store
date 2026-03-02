@@ -90,7 +90,7 @@ OBS.: Pipeline configurada para ambiente de produção. Deploy será habilitado 
 
 Coverage
 <br>
-![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/SEU_USUARIO/SEU_REPO/main/coverage-badge.json)
+![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/rootmannwright/quadar_inshallah_store/main/coverage-badge.json)
 
 ## 📃Documentação Oficial
 
