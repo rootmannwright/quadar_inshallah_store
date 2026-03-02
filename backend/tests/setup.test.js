@@ -42,7 +42,7 @@ describe("Auth - Register", () => {
     });
 
     // eslint-disable-next-line no-undef
-    expect(res.statusCode).toBe(409);
+    expect(res.statusCode).toBe(201);
     // eslint-disable-next-line no-undef
 expect(res.body.user).toHaveProperty("email");
     // eslint-disable-next-line no-undef
@@ -64,7 +64,7 @@ expect(res.body.user.email).toBe("lucas@test.com");
       password: "123456"
     });
   // eslint-disable-next-line no-undef
-    expect(res.statusCode).toBe(400);
+    expect(res.statusCode).toBe(409);
     // eslint-disable-next-line no-undef
 expect(res.body).toHaveProperty("error");
   });
