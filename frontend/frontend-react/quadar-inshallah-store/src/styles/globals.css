@@ -73,3 +73,16 @@ p {
 main {
   padding-top: var(--header-height);
 }
+
+.high-contrast {
+  background-color: #000 !important;
+  color: #fff;
+}
+
+.high-contrast a {
+  color: yellow !important;
+}
+
+.high-contrast button {
+  border: 2px solid #fff !important;
+}
