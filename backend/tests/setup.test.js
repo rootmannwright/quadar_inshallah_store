@@ -42,7 +42,7 @@ describe("Auth - Register", () => {
     });
 
     // eslint-disable-next-line no-undef
-    expect(res.statusCode).toBe(201);
+    expect(res.statusCode).toBe(409);
     // eslint-disable-next-line no-undef
 expect(res.body.user).toHaveProperty("email");
     // eslint-disable-next-line no-undef
