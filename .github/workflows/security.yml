@@ -9,6 +9,7 @@ on:
 
 # Permissions required for CodeQL analysis
 permissions:
+  actions: read
   contents: read
   security-events: write
 
