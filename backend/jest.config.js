@@ -2,7 +2,7 @@
 export default {
   testEnvironment: "node",
   transform: {},
-  setupFilesAfterEnv: ["<rootDir>/tests/auth.test.js"],
+  setupFilesAfterEnv: ["<rootDir>/tests/setup.js"],
   testTimeout: 15000,
   collectCoverage: true,
   coverageDirectory: "coverage",
