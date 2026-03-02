@@ -3,6 +3,7 @@
     "@babel/preset-env": "^7.29.0",
     "@eslint/js": "^10.0.1",
     "babel-jest": "^30.2.0",
+    "eslint": "^10.0.2",
     "globals": "^17.3.0",
     "jest": "^30.2.0",
     "mongodb-memory-server": "^11.0.1",
@@ -106,16 +107,28 @@
   },
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "test:coverage": "jest --coverage",
+    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
     "dev": "node api.js",
     "start": "node api.js",
     "lint": "eslint . --ext .js, .mjs"
   },
-  "jest": {
-    "testEnvironment": "node",
-  "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"],
-  "transform": { "^.+\\.js$": "babel-jest" },
-  "moduleFileExtensions": ["js", "json"]
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "es2021": true,
+      "node": true
+    },
+    "extends": [
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 12,
+      "sourceType": "module"
+    },
+    "rules": {
+      "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+      "no-console": "off"
+    }
   },
   "keywords": [],
   "author": "",

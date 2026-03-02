@@ -33,6 +33,7 @@ afterEach(async () => {
 // ======= TESTE DE REGISTER =======
 // eslint-disable-next-line no-undef
 describe("Auth - Register", () => {
+  // eslint-disable-next-line no-undef
   it("should create a new user", async () => {
     const res = await request(app).post("/api/auth/register").send({
       name: "Lucas",
