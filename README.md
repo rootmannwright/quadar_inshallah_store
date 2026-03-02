@@ -88,10 +88,11 @@ Nr
 <br>
 OBS.: Pipeline configurada para ambiente de produção. Deploy será habilitado nas próximas versões.
 
-Coverage
-<br>
+Coverage:
 
 ![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/rootmannwright/quadar_inshallah_store/main/coverage-badge.json)
+<br>
+Os testes ainda estão em andamento.
 
 ## 📃Documentação Oficial
 
