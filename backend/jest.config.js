@@ -4,5 +4,5 @@ export default {
   testTimeout: 15000,
   collectCoverage: true,
   coverageDirectory: "coverage",
-  coverageReporters: ["json", "lcov", "text", "clover"],
+  coverageReporters: ["json-summary", "lcov", "text", "clover"],
 };
