@@ -2,7 +2,6 @@ import React from "react";
 import { useBreadcrumbs, useBreadcrumbItem } from "react-aria";
 import { Link, useLocation } from "react-router-dom";
 
-/* 🔥 Função fora dos componentes */
 function formatLabel(text) {
   return decodeURIComponent(text)
     .replace(/-/g, " ")

@@ -85,6 +85,13 @@ Nr
 - Dividida em styles.
 <br>
 - Responsive Website (EM ANDAMENTO)
+<br>
+- Breadcrumbs feito com React Aria
+
+<h3>12. Deployment</h3>
+- CI/CD feito, com pipelines e workflows
+<br>
+- Suporta Vercel, Cloudfare, Firebase Hosting, Railway
 
 
 ### 📊 Progresso do projeto
