@@ -97,6 +97,8 @@
     "strip-json-comments": "^5.0.3",
     "stripe": "^20.3.1",
     "supports-color": "^10.2.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "type-check": "^0.4.0",
     "uri-js": "^4.4.1",
     "which": "^6.0.1",
@@ -108,7 +110,7 @@
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
-    "dev": "node api.js",
+    "dev": "node server.js",
     "start": "node api.js",
     "lint": "eslint . --ext .js"
   },
@@ -126,7 +128,12 @@
       "sourceType": "module"
     },
     "rules": {
-      "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+      "no-unused-vars": [
+        "error",
+        {
+          "argsIgnorePattern": "^_"
+        }
+      ],
       "no-console": "off"
     }
   },
