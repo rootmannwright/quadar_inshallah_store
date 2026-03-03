@@ -14,11 +14,11 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        working-directory: ./frontend/frontend-react/quadar-inshallah-store
+        working-directory: frontend/frontend-react/quadar-inshallah-store
 
       - name: Build project
         run: npm run build
-        working-directory: ./frontend/frontend-react/quadar-inshallah-store
+        working-directory: frontend/frontend-react/quadar-inshallah-store
 
       - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
@@ -27,4 +27,3 @@ jobs:
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
           channelId: live
           projectId: quadar-inshallah-store
-          entryPoint: .
