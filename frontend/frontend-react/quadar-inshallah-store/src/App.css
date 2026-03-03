@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Monsieur+La+Doulaise&display=swap');
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 /* Reset básico */
 * {
   margin: 0;
