@@ -109,6 +109,7 @@ Nr
 ![Lint](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/lint.yml/badge.svg)
 ![Security](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/security.yml/badge.svg)
 ![Docker Build](https://github.com/rootmannwright/quadar_inshallah_store/actions/workflows/docker.yml/badge.svg)
+![Deploy Firebase Status](https://github.com/seuusuario/seurepo/actions/workflows/firebase-deploy.yml/badge.svg)
 <br>
 OBS.: Pipeline configurada para ambiente de produção. Deploy será habilitado nas próximas versões.
 
