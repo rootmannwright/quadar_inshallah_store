@@ -16,7 +16,7 @@ export default function Stories() {
         <h2 className="text-4xl md:text-5xl font-bold mb-6">
           {""}
           <span className="text-yellow bg-clip-text bg-gradient-to-r from-primary to-primary-light">
-           A Quadar Inshallah Co. & Records
+            A Quadar Inshallah Co. & Records
           </span>
         </h2>
 
@@ -31,8 +31,8 @@ export default function Stories() {
             onClick={() => setModalOpen(true)}
           >
             <img
-              src="https://images.unsplash.com/photo-1573148195900-7845dcb9b127"
-              alt="Présentation Kela+"
+              src="../logos/mf-khaos-how-dare-you-bieutch.jpg"
+              alt="MF Khaos How Dare You Bieutch Album"
             />
             <div className="play-overlay">
               <div className="play-circle">▶</div>
@@ -60,18 +60,8 @@ export default function Stories() {
             >
               ✕
             </button>
-
-            <video
-              ref={videoRef}
-              controls
-              loop
-              className="w-full h-full object-cover"
-            >
-              <source
-                src="https://cruip-tutorials.vercel.app/modal-video/video.mp4"
-                type="video/mp4"
-              />
-            </video>
+            {/* Test video */}
+            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/e3KAn9iLdPo?list=RDFvumLzriXsY" title="ISM Interlude" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
           </div>
         </div>
       )}

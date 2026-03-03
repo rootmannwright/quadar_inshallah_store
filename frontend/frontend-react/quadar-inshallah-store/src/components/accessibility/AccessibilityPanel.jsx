@@ -78,12 +78,12 @@ export default function AccessibilityPanel() {
             🔊 Ler Página
           </button>
 
-          <button
-            onClick={resetAccessibility}
-            className="w-full bg-red-500 text-white p-2 rounded"
-          >
-            Resetar
+          <button onClick={() => {
+            window.speechSynthesis.cancel();
+          }} className="w-full bg-red-500 text-white p-2 rounded">
+            Reset
           </button>
+          
         </div>
       )}
     </div>
