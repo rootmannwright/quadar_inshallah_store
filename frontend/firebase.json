@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "frontend/frontend-react/quadar-inshallah-store/dist",
+    "public": "frontend-react/quadar-inshallah-store/dist",
     "ignore": [
       "firebase.json",
       "**/.*",
