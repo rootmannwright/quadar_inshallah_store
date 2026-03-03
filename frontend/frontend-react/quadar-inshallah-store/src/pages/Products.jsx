@@ -14,8 +14,8 @@ export default function Products() {
     <div>
       {/* Header */}
       <div className="text-center p-10">
-        <h1 className="font-bold text-4xl mb-4">Responsive Product card grid</h1>
-        <h1 className="text-3xl">Tailwind CSS</h1>
+        <h1 className="font-bold text-4xl mb-4">Produtos</h1>
+        <h1 className="text-3xl">Quadar Inshallah Co. & Records</h1>
       </div>
 
       {/* Grid Section */}
@@ -62,13 +62,6 @@ export default function Products() {
           </div>
         ))}
       </section>
-
-      {/* Footer credit */}
-      <div className="text-center py-10 px-10">
-        <h2 className="font-bold text-2xl md:text-4xl mb-4">
-          Thanks to <a href="https://unsplash.com/@nixcreative" className="underline font-black">Tyler Nix</a> for those AMAZING product images!
-        </h2>
-      </div>
     </div>
   );
 }

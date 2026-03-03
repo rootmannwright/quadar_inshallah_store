@@ -1,0 +1,29 @@
+.parallax-bg {
+  background: radial-gradient(circle at 20% 30%, #00000015 0%, transparent 40%),
+              radial-gradient(circle at 80% 70%, #00000010 0%, transparent 40%);
+  animation: floatBg 12s ease-in-out infinite alternate;
+}
+
+@keyframes floatBg {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-40px); }
+}
+
+/* Dark mode automático */
+@media (prefers-color-scheme: dark) {
+  .auto-dark {
+    background: linear-gradient(to bottom right, #0f0f0f, #1c1c1c);
+    color: white;
+  }
+
+  .card-dark {
+    background: rgba(20,20,20,0.7);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  input {
+    background: #1f1f1f !important;
+    color: white;
+    border-color: #333 !important;
+  }
+}
