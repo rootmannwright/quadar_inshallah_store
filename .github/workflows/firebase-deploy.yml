@@ -14,11 +14,11 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        working-directory: ./frontend
+        working-directory: ./frontend-react/quadar-inshallah-store
 
       - name: Build project
         run: npm run build
-        working-directory: ./frontend
+        working-directory: ./frontend-react/quadar-inshallah-store
 
       - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
