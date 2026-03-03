@@ -6,9 +6,9 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Botão que abre */}
+      {/* Open */}
       <button className="filter-btn" onClick={() => setOpen(true)}>
-        Abrir filtros
+        Menu
       </button>
 
       {/* Overlay */}
@@ -25,17 +25,22 @@ export default function Sidebar() {
         <ul>
           <li>
             <label>
-              <input type="checkbox" /> Novidades
+              <a href="">Novidades</a>
             </label>
           </li>
           <li>
             <label>
-              <input type="checkbox" /> Promoções
+              <a href="">Promoções</a>
             </label>
           </li>
           <li>
             <label>
-              <input type="checkbox" /> Mais vendidos
+              <a href="">Mais vendidos</a>
+            </label>
+          </li>
+          <li>
+            <label>
+              <a href="">Parceiros</a>
             </label>
           </li>
         </ul>

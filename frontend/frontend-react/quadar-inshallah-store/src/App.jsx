@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AccessibilityProvider } from "./components/accessibility/AcessibilityProvider";
 import AccessibilityPanel from "./components/accessibility/AccessibilityPanel";
+import { OverlayProvider } from "react-aria";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -12,20 +13,22 @@ import Products from "./pages/Products";
 function App() {
   return (
     <AccessibilityProvider>
-      <BrowserRouter>
-        <AccessibilityPanel />
+      <OverlayProvider>
+        <BrowserRouter>
+          <AccessibilityPanel />
 
-        <Routes>
-          <Route element={<PublicLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/stories" element={<Stories />} />
-            <Route path="/products" element={<Products />} />
-          </Route>
+          <Routes>
+            <Route element={<PublicLayout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/stories" element={<Stories />} />
+              <Route path="/products" element={<Products />} />
+            </Route>
 
-          <Route path="/login" element={<Login />} />
-        </Routes>
-      </BrowserRouter>
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </BrowserRouter>
+      </OverlayProvider>
     </AccessibilityProvider>
   );
 }

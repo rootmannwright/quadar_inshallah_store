@@ -3,7 +3,7 @@ import { useAccessibility } from "./AcessibilityProvider";
 
 export default function AccessibilityPanel() {
   const [open, setOpen] = useState(false);
-  const panelRef = useRef(null);
+  const containerRef = useRef(null);
 
   const {
     contrast,
@@ -15,57 +15,108 @@ export default function AccessibilityPanel() {
 
   // Fecha ao clicar fora
   useEffect(() => {
-    function handleClickOutside(e) {
-      if (panelRef.current && !panelRef.current.contains(e.target)) {
+    function handleClickOutside(event) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target)
+      ) {
         setOpen(false);
       }
     }
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
+    return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Fecha com ESC
+  useEffect(() => {
+    function handleEsc(event) {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("keydown", handleEsc);
+    return () => {
+      document.removeEventListener("keydown", handleEsc);
+    };
   }, []);
 
   const speakPage = () => {
     const text = document.body.innerText;
     const speech = new SpeechSynthesisUtterance(text);
+
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(speech);
   };
 
+  const handleReset = () => {
+    window.speechSynthesis.cancel();
+    resetAccessibility();
+  };
+
   return (
-    <div className="fixed bottom-6 right-6 z-50" ref={panelRef}>
+    <div
+      ref={containerRef}
+      className="fixed bottom-6 right-6 z-50"
+    >
       {/* Botão flutuante */}
       <button
-        onClick={() => setOpen(!open)}
+        onClick={() => setOpen((prev) => !prev)}
         aria-label="Abrir menu de acessibilidade"
-        className="bg-blue-600 text-white w-14 h-14 rounded-full shadow-lg text-xl flex items-center justify-center hover:scale-105 transition"
+        className="
+          bg-blue-600 text-white 
+          w-16 h-16 
+          rounded-full 
+          shadow-xl 
+          text-2xl 
+          flex items-center justify-center 
+          transition-all duration-200
+          hover:scale-110 hover:shadow-2xl
+          focus:outline-none focus:ring-4 focus:ring-blue-300
+        "
       >
-        ♿
+        <img src="https://img.icons8.com/?size=50&id=4355&format=png&color=FFFFFF" alt="Wheelchair" />
       </button>
 
       {/* Painel */}
       {open && (
-        <div className="mt-3 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-4 space-y-3">
-          <h2 className="font-semibold text-lg">Acessibilidade</h2>
+        <div
+          className="
+            absolute bottom-20 right-0 
+            w-72 
+            bg-white dark:bg-gray-800 
+            rounded-2xl 
+            shadow-2xl 
+            p-5 
+            space-y-4
+          "
+        >
+          <h2 className="font-semibold text-lg text-gray-800 dark:text-white">
+            Acessibilidade
+          </h2>
 
           <button
             onClick={() => setContrast(!contrast)}
-            className="w-full border p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="w-full border p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
           >
-            {contrast ? "Desativar Alto Contraste" : "Ativar Alto Contraste"}
+            {contrast
+              ? "Desativar Alto Contraste"
+              : "Ativar Alto Contraste"}
           </button>
 
           <div className="flex gap-2">
             <button
               onClick={increaseFont}
-              className="flex-1 border p-2 rounded"
+              className="flex-1 border p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
             >
               A+
             </button>
             <button
               onClick={decreaseFont}
-              className="flex-1 border p-2 rounded"
+              className="flex-1 border p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
             >
               A-
             </button>
@@ -73,17 +124,17 @@ export default function AccessibilityPanel() {
 
           <button
             onClick={speakPage}
-            className="w-full border p-2 rounded"
+            className="w-full border p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
           >
             🔊 Ler Página
           </button>
 
-          <button onClick={() => {
-            window.speechSynthesis.cancel();
-          }} className="w-full bg-red-500 text-white p-2 rounded">
-            Reset
+          <button
+            onClick={handleReset}
+            className="w-full bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition"
+          >
+            Resetar
           </button>
-          
         </div>
       )}
     </div>

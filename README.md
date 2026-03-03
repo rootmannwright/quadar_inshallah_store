@@ -33,6 +33,8 @@ Nr
 <h3>4. Autenticação e Contas</h3>
 - Registro e login de usuários com senha criptografada.
 <br>
+- Página de login feita com integração com Firebase e components de Motion.
+<br>
 - Proteção contra ataques de força bruta com limite de tentativas de login.
 <br>
 - Gestão de tokens de autenticação para segurança e controle de sessões.
@@ -68,6 +70,21 @@ Nr
 - Registro de requisições com requestLogger, facilitando auditoria e depuração.
 <br>
 - Tratamento global de erros com middleware customizado.
+
+<h3>9. Testes</h3>
+- Testes com Lint, Jest e CodeQL.
+<br>
+- Badge coverage adicionado como badge no README.md
+
+<h3>10. Acessibilidade</h3>
+- Acessibilidade feita totalmente com React.
+<br>
+- Implementação do React Aria.
+
+<h3>11. Estilização do site</h3>
+- Dividida em styles.
+<br>
+- Responsive Website (EM ANDAMENTO)
 
 
 ### 📊 Progresso do projeto
@@ -178,10 +195,11 @@ Segue abaixo link para nossa documentação oficial para que usuários possam de
     </td>
 </table>
 
-<p>Agradeço a todos os colaboradores do fórum da página <em>TailwindFlex</em>. <br>Todos os direitos reservados.</p>
+<p>Agradeço a todos os colaboradores do fórum da página <em>TailwindFlex</em>.</p>
 
 [TailwindFlex](https://tailwindflex.com/)
 
+Todos os direitos reservados.
 ## 📃Licenses e Docs
 
 [MIT](https://mit-license.org/)
@@ -199,6 +217,19 @@ Segue abaixo link para nossa documentação oficial para que usuários possam de
 [Helmet](https://www.npmjs.com/package/helmet)
 <br>
 [K6](https://k6.io/)
+<br>
+[Cookies](https://www.npmjs.com/package/js-cookie)
+<br>
+[Jest](https://jestjs.io/pt-BR/)
+<br>
+[Lint](https://en.wikipedia.org/wiki/Lint_(software))
+<br>
+[YAML Docs](https://www.redhat.com/pt-br/topics/automation/what-is-yaml)
+<br>
+[CodeQL](https://codeql.github.com/)
+
+[React Aria](https://react-aria.adobe.com/GridList)
+
 
 ## 👥 Contribuidores
 
