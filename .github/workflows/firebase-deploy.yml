@@ -14,9 +14,11 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        working-directory: ./frontend
 
       - name: Build project
         run: npm run build
+        working-directory: ./frontend
 
       - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
