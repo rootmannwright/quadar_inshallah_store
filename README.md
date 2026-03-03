@@ -247,9 +247,9 @@ Todos os direitos reservados.
     <strong>Lucas Marques</strong>
   </a>
   <br/>
-  Backend / Frontend / Banco de Dados
+  Backend / Frontend / Banco de Dados / DevOPS
 </p>
-Dedico todo o tempo que investi neste projeto principalmente aos meus pais, que sempre cuidaram de mim, eduracam-me e tornaram-me o homem que sou, todas as experiências que desenvolvi, que adquiri; também para todos os meus professores que sempre me motivaram a estudar e tornar-me uma pessoa socialmente informada; para todos os meus colegas de trabalho, todos os contribuintes que me ajudaram nesse projeto, tanto diretamente quanto indiretamente; todos os fóruns e, principalmente, desenvolvedores individuais, que em breve farei uma área especial neste repositório.
+Dedico todo o tempo que investi neste projeto principalmente aos meus pais, que sempre cuidaram de mim, educaram-me e tornaram-me o homem que sou, todas as experiências que desenvolvi, que adquiri; também para todos os meus professores que sempre me motivaram a estudar e tornar-me uma pessoa socialmente informada; para todos os meus colegas de trabalho, todos os contribuintes que me ajudaram nesse projeto, tanto diretamente quanto indiretamente; todos os fóruns e, principalmente, desenvolvedores individuais, que em breve farei uma área especial neste repositório.
 
 <br>
 Sem vocês, este projeto não teria retomado a vida e a proporção que a marca venho conquistando.
@@ -257,7 +257,7 @@ Sem vocês, este projeto não teria retomado a vida e a proporção que a marca 
 <table>
   <tr>
     <td width="50%">
-      <h3>🛍️ Lucas M. Nascimento - @rootmannwright</h3>
+      <h3>🛍️ Lucas M. Nascimento - @homiemannwright</h3>
       <p>
         Desenvolvedor Fullstack, com ênfase em Backend. Atualmente fundou e atua, como diretor executivo das marcas <em>Quadar Inshallah Co. & Records</em> e sua trademark <em>Quadar Inshallah Headshop™</em>.
       </p>
