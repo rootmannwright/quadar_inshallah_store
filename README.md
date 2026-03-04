@@ -235,7 +235,7 @@ Todos os direitos reservados.
 [YAML Docs](https://www.redhat.com/pt-br/topics/automation/what-is-yaml)
 <br>
 [CodeQL](https://codeql.github.com/)
-
+<br>
 [React Aria](https://react-aria.adobe.com/GridList)
 
 
