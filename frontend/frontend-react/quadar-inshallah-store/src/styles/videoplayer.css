@@ -1,0 +1,13 @@
+.video-container {
+  display: flex;
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center; /* Centraliza verticalmente */
+  height: 80vh; /* Ajusta a altura do contêiner */
+  margin: 0 auto;
+}
+
+.video-player {
+  width: 100%; /* Reduz a largura do vídeo */
+  height: 100%; /* Ajusta a altura do vídeo */
+  border-radius: 12px;
+}

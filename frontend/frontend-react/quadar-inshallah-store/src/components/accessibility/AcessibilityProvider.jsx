@@ -1,50 +1,43 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const AccessibilityContext = createContext();
 
+export function useAccessibility() {
+  return useContext(AccessibilityContext);
+}
+
 export function AccessibilityProvider({ children }) {
-  const [contrast, setContrast] = useState(
-    localStorage.getItem("contrast") === "true"
-  );
-  const [fontSize, setFontSize] = useState(
-    Number(localStorage.getItem("fontSize")) || 100
-  );
+  const [isOpen, setIsOpen] = useState(false);
+  const [highContrast, setHighContrast] = useState(false);
+  const [fontSize, setFontSize] = useState("normal");
 
   useEffect(() => {
-    document.body.classList.toggle("high-contrast", contrast);
-    localStorage.setItem("contrast", contrast);
-  }, [contrast]);
+    const root = document.documentElement;
 
-  useEffect(() => {
-    document.documentElement.style.fontSize = `${fontSize}%`;
-    localStorage.setItem("fontSize", fontSize);
-  }, [fontSize]);
+    // contraste
+    root.classList.toggle("high-contrast", highContrast);
 
-  const increaseFont = () =>
-    setFontSize((prev) => Math.min(prev + 10, 150));
+    // fonte
+    root.style.fontSize =
+      fontSize === "small"
+        ? "14px"
+        : fontSize === "large"
+        ? "18px"
+        : "16px";
+  }, [highContrast, fontSize]);
 
-  const decreaseFont = () =>
-    setFontSize((prev) => Math.max(prev - 10, 80));
-
-  const resetAccessibility = () => {
-    setContrast(false);
-    setFontSize(100);
+  const value = {
+    isOpen,
+    setIsOpen,
+    highContrast,
+    setHighContrast,
+    fontSize,
+    setFontSize,
   };
 
   return (
-    <AccessibilityContext.Provider
-      value={{
-        contrast,
-        setContrast,
-        increaseFont,
-        decreaseFont,
-        resetAccessibility,
-      }}
-    >
+    <AccessibilityContext.Provider value={value}>
       {children}
     </AccessibilityContext.Provider>
   );
 }
-
-export const useAccessibility = () =>
-  useContext(AccessibilityContext);

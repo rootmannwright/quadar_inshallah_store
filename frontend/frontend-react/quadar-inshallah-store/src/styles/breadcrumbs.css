@@ -1,0 +1,42 @@
+.breadcrumbs {
+  padding: 16px 24px;
+  animation: fade 0.4s ease;
+}
+
+@keyframes fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.breadcrumbs-list {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.breadcrumb-link {
+  padding: 6px 12px;
+  border-radius: 999px;
+
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(10px);
+
+  text-decoration: none;
+  color: #555;
+  transition: 0.25s;
+}
+
+.breadcrumb-link:hover {
+  background: rgba(255,255,255,0.9);
+  color: #000;
+}
+
+.breadcrumb-current {
+  font-weight: 600;
+  color: #000;
+}
+
+.breadcrumb-separator {
+  margin: 0 4px;
+  color: #bbb;
+}

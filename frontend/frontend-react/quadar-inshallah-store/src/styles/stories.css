@@ -1,95 +1,224 @@
-/* === VIDEO THUMBNAIL === */
+/* ============================= */
+/* VIDEO THUMBNAIL */
+/* ============================= */
+
 .video-thumb {
   position: relative;
   max-width: 900px;
   width: 100%;
-  border-radius: 1.25rem;
+  margin: 0 auto; /* CENTRALIZA */
+  border-radius: 1.5rem;
   overflow: hidden;
   cursor: pointer;
+
+  box-shadow: 0 10px 40px rgba(0,0,0,.15);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.video-thumb:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
 }
 
 .video-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  transition: transform 0.6s ease;
 }
 
 .video-thumb:hover img {
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
-/* === PLAY BUTTON === */
+/* ============================= */
+/* OVERLAY + PLAY BUTTON */
+/* ============================= */
+
 .play-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,.6),
+    rgba(0,0,0,.2)
+  );
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  transition: background .3s ease;
+}
+
+.video-thumb:hover .play-overlay {
+  background: rgba(0,0,0,.5);
 }
 
 .play-circle {
   width: 80px;
   height: 80px;
-  background: white;
   border-radius: 999px;
+
+  background: rgba(255,255,255,.9);
+  backdrop-filter: blur(10px);
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   font-size: 32px;
-  box-shadow: 0 20px 40px rgba(0,0,0,.3);
-  transition: transform .3s ease;
+  color: black;
+
+  box-shadow: 0 15px 40px rgba(0,0,0,.3);
+
+  transition: all .3s ease;
 }
 
 .video-thumb:hover .play-circle {
-  transform: scale(1.15);
+  transform: scale(1.2);
 }
 
-/* === MODAL === */
+/* efeito de pulso leve */
+.play-circle::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  border: 2px solid rgba(255,255,255,.6);
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: .6;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+/* ============================= */
+/* MODAL */
+/* ============================= */
+
 .video-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.85);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
+
+  background: rgba(0,0,0,.9);
+  backdrop-filter: blur(8px);
+
   z-index: 99999;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+
+  padding: 1.5rem;
+
+  animation: fadeIn .3s ease;
 }
+
+/* animação suave */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================= */
+/* VIDEO CONTAINER */
+/* ============================= */
 
 .video-container {
   position: relative;
   width: 100%;
-  max-width: 1100px;
+  max-width: 1000px;
+
   aspect-ratio: 16 / 9;
+
   background: black;
-  border-radius: 1.25rem;
+  border-radius: 1.5rem;
   overflow: hidden;
+
+  box-shadow: 0 30px 80px rgba(0,0,0,.5);
+
+  animation: scaleIn .3s ease;
 }
 
-/* === CLOSE BUTTON === */
+@keyframes scaleIn {
+  from {
+    transform: scale(.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* iframe (IMPORTANTE pro YouTube) */
+.video-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* ============================= */
+/* CLOSE BUTTON */
+/* ============================= */
+
 .close-btn {
   position: absolute;
   top: 12px;
   right: 12px;
   z-index: 100000;
+
   background: rgba(0,0,0,.6);
+  backdrop-filter: blur(6px);
+
   color: white;
-  font-size: 28px;
-  width: 44px;
-  height: 44px;
+  font-size: 22px;
+
+  width: 42px;
+  height: 42px;
+
   border-radius: 999px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   cursor: pointer;
-  transition: transform .2s ease, background .2s ease;
+
+  transition: all .25s ease;
 }
 
 .close-btn:hover {
-  transform: scale(1.15);
-  background: rgba(0,0,0,.85);
+  transform: rotate(90deg) scale(1.15);
+  background: rgba(0,0,0,.9);
+}
+
+/* ============================= */
+/* RESPONSIVO */
+/* ============================= */
+
+@media (max-width: 768px) {
+  .play-circle {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
+
+  .video-container {
+    border-radius: 1rem;
+  }
 }
