@@ -1,15 +1,25 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+// Providers
 import { AccessibilityProvider } from "./components/accessibility/AcessibilityProvider";
-import AccessibilityPanel from "./components/accessibility/AccessibilityPanel";
 import { OverlayProvider } from "react-aria";
 import { AuthProvider } from "./context/AuthProvider";
+
+// Components
+import AccessibilityPanel from "./components/accessibility/AccessibilityPanel";
+
+// Routes
 import PrivateRoute from "./routes/PrivateRoute";
+
+// Pages
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Cart from "./pages/Cart";
 import Stories from "./pages/Stories";
 import Products from "./pages/Products";
 import Dashboard from "./pages/Dashboard";
+
+// Layout
 import PublicLayout from "./layouts/PublicLayout";
 
 function App() {
@@ -18,9 +28,12 @@ function App() {
       <OverlayProvider>
         <AuthProvider>
           <BrowserRouter>
+
+            {/* BOTÃO DE ACESSIBILIDADE GLOBAL */}
             <AccessibilityPanel />
 
             <Routes>
+
               {/* 🌐 ROTAS PÚBLICAS COM LAYOUT */}
               <Route element={<PublicLayout />}>
                 <Route path="/" element={<Home />} />
@@ -41,6 +54,7 @@ function App() {
                   </PrivateRoute>
                 }
               />
+
             </Routes>
           </BrowserRouter>
         </AuthProvider>
