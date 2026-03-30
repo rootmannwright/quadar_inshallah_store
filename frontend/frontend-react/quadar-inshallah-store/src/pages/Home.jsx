@@ -48,7 +48,8 @@ export default function Home() {
 
         <div className="hero-content">
           <ScrambleText text="QUADAR" as="h1" />
-          <ScrambleText text="INSHALLAH CO." as="h1" />
+          <ScrambleText text="INSHALLAH CO. &" as="h1" />
+          <ScrambleText text="RECORDS" as="h1" />
 
           <p className="hero-sub">
             A arte move. A fé guia.

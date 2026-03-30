@@ -1,46 +1,572 @@
-.container {
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@200;300;400;500&display=swap');
+
+/* ── CSS Custom Properties ─────────────────────────────────────────────── */
+
+:root[data-theme="dark"] {
+  --bg:             #0a0a0a;
+  --surface:        #111111;
+  --hero-bg:        #f5f0eb;
+  --hero-text:      #0a0a0a;
+  --hero-sub:       #5a5550;
+  --text:           #ffffff;
+  --text-muted:     #888888;
+  --border:         rgba(255, 255, 255, 0.1);
+  --accent:         #ffffff;
+  --btn-bg:         #ffffff;
+  --btn-text:       #0a0a0a;
+  --input-border:   rgba(255, 255, 255, 0.15);
+  --input-focus:    #ffffff;
+  --logo-filter:    invert(1);   /* logo preta → fica branca no dark */
+}
+
+:root[data-theme="light"] {
+  --bg:             #ffffff;
+  --surface:        #f9f8f6;
+  --hero-bg:        #0a0a0a;
+  --hero-text:      #ffffff;
+  --hero-sub:       #aaa8a4;
+  --text:           #0a0a0a;
+  --text-muted:     #666666;
+  --border:         rgba(0, 0, 0, 0.1);
+  --accent:         #0a0a0a;
+  --btn-bg:         #0a0a0a;
+  --btn-text:       #ffffff;
+  --input-border:   rgba(0, 0, 0, 0.15);
+  --input-focus:    #0a0a0a;
+  --logo-filter:    none;        /* logo preta → fica preta no light */
+}
+
+/* ── Reset ─────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: var(--bg);
+  color: var(--text);
   min-height: 100vh;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* ── Root layout ────────────────────────────────────────────────────────── */
+
+.login-root {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .login-root {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    display: none;
+  }
+}
+
+/* ── Hero panel ─────────────────────────────────────────────────────────── */
+
+.hero {
+  background: var(--hero-bg);
+  color: var(--hero-text);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2.5rem;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+.grid-lines {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  gap: calc(100% / 6);
+  pointer-events: none;
+}
+
+.grid-line {
+  width: 1px;
+  height: 100%;
+  background: var(--line-color);
+  transition: background 0.4s ease;
+}
+
+.hero-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 1;
+}
+
+.brand-eyebrow {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 400;
+  letter-spacing: 0.25em;
+  opacity: 0.5;
+}
+
+.brand-year {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  opacity: 0.4;
+}
+
+.hero-center {
+  z-index: 1;
+}
+
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: clamp(4rem, 7vw, 8rem);
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+  display: flex;
+  flex-direction: column;
+}
+
+.title-line {
+  display: block;
+}
+
+.italic {
+  font-style: italic;
+}
+
+.hero-sub {
+  margin-top: 2.5rem;
+  font-size: 0.7rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  line-height: 1.7;
+  max-width: 26ch;
+  color: var(--hero-sub);
+  transition: color 0.4s ease;
+}
+
+.hero-footer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.55rem;
+  letter-spacing: 0.25em;
+  opacity: 0.4;
+  font-weight: 400;
+  z-index: 1;
+}
+
+.hero-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.hero-circle {
+  position: absolute;
+  bottom: -15%;
+  right: -15%;
+  width: 55%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid var(--line-color);
+  pointer-events: none;
+  transition: border-color 0.4s ease;
+}
+
+/* ── Form panel ─────────────────────────────────────────────────────────── */
+
+.form-panel {
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  padding: 2.5rem clamp(2rem, 6vw, 5rem);
+  transition: background 0.4s ease;
+}
+
+.form-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.75rem;
+}
+
+.logo {
+  display: block;
+  height: 2rem;          /* altura fixa — largura escala proporcionalmente */
+  width: auto;
+  max-width: 140px;      /* impede logos muito horizontais de vazar */
+  object-fit: contain;
+  object-position: left center;
+
+  /* inverte a cor no dark mode para logos pretos ficarem visíveis */
+  filter: var(--logo-filter);
+
+  transition: filter 0.4s ease, opacity 0.2s ease;
+}
+
+.logo:hover {
+  opacity: 0.75;
+}
+
+/* ── Breadcrumbs ────────────────────────────────────────────────────────── */
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+  transition: border-color 0.4s ease;
+}
+
+.breadcrumb-item {
+  font-size: 0.55rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb-item:hover {
+  color: var(--text);
+}
+
+.breadcrumb-item.active {
+  color: var(--text);
+  cursor: default;
+  pointer-events: none;
+}
+
+.breadcrumb-separator {
+  font-size: 0.5rem;
+  color: var(--text-muted);
+  opacity: 0.5;
+  letter-spacing: 0;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ── Theme toggle ───────────────────────────────────────────────────────── */
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  font-weight: 400;
+  padding: 0.5rem 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.3s ease, color 0.4s ease, background 0.4s ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--text);
+}
+
+.toggle-label {
+  letter-spacing: 0.2em;
+}
+
+/* ── Form body ──────────────────────────────────────────────────────────── */
+
+.form-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  max-width: 360px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 0 4rem;
+}
+
+.form-header {
+  margin-bottom: 3rem;
+}
+
+.form-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.8rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.6rem;
+  transition: color 0.4s ease;
+}
+
+.form-sub {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  letter-spacing: 0.15em;
+  font-weight: 300;
+  transition: color 0.4s ease;
+}
+
+/* ── Floating fields ────────────────────────────────────────────────────── */
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 1.2rem;
+}
+
+.field {
+  position: relative;
+  padding-top: 1.2rem;
+}
+
+.field-label {
+  position: absolute;
+  top: 1.2rem;
+  left: 0;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  font-weight: 400;
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: top 0.25s ease, font-size 0.25s ease, color 0.25s ease;
+}
+
+.field.active .field-label {
+  top: 0;
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+}
+
+.field.focused .field-label {
+  color: var(--text);
+}
+
+.field-input {
+  width: 100%;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--input-border);
+  color: var(--text);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  padding: 0.6rem 0;
+  outline: none;
+  transition: border-color 0.3s ease, color 0.4s ease;
+}
+
+.field-input:focus {
+  border-color: transparent;
+}
+
+.field-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--input-focus);
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: background 0.4s ease;
+}
+
+/* ── Extras row ─────────────────────────────────────────────────────────── */
+
+.form-extras {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0.8rem 0 2.5rem;
+}
+
+.forgot-link {
+  font-size: 0.55rem;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 400;
+  transition: color 0.2s ease;
+}
+
+.forgot-link:hover {
+  color: var(--text);
+}
+
+/* ── Submit button ──────────────────────────────────────────────────────── */
+
+.submit-btn {
+  width: 100%;
+  height: 3.25rem;
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: none;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  font-weight: 500;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
+  transition: background 0.4s ease, color 0.4s ease;
 }
 
-.card {
+.submit-btn.loading {
+  cursor: default;
+}
+
+/* ── Dot loader ─────────────────────────────────────────────────────────── */
+
+.btn-loader {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--btn-text);
+  animation: bounce 0.8s infinite ease-in-out;
+}
+
+.dot:nth-child(2) { animation-delay: 0.15s; }
+.dot:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0.7); opacity: 0.5; }
+  40%           { transform: scale(1.1); opacity: 1;   }
+}
+
+/* ── Divider ────────────────────────────────────────────────────────────── */
+
+.form-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.8rem 0 1.5rem;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  transition: background 0.4s ease;
+}
+
+.divider-text {
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+/* ── Guest button ───────────────────────────────────────────────────────── */
+
+.guest-btn {
   width: 100%;
-  max-width: 400px;
-  padding: 40px;
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+  height: 3.25rem;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  font-weight: 400;
+  cursor: pointer;
+  transition: border-color 0.3s ease, background 0.3s ease, color 0.4s ease;
 }
 
-.input-group {
-  position: relative;
-  margin-bottom: 20px;
+.guest-btn:hover {
+  border-color: var(--text);
 }
 
-.input-group input {
+/* ── Sign-up prompt ─────────────────────────────────────────────────────── */
+
+.signup-prompt {
+  text-align: center;
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  font-weight: 300;
+  margin-top: 2rem;
+  transition: color 0.4s ease;
+}
+
+.signup-link {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  margin-left: 0.3rem;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 1px;
+  transition: opacity 0.2s ease;
+}
+
+.signup-link:hover {
+  opacity: 0.6;
+}
+
+/* ── Success state ──────────────────────────────────────────────────────── */
+
+.success-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 1rem;
+  text-align: center;
+  padding: 4rem 0;
+  max-width: 360px;
   width: 100%;
-  height: 50px;
-  padding: 16px 12px 6px;
+  margin: 0 auto;
 }
 
-.input-group label {
-  position: absolute;
-  left: 12px;
-  top: 16px;
-  transition: 0.2s;
+.success-mark {
+  width: 4rem;
+  height: 4rem;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: var(--text);
+  margin-bottom: 1rem;
+  transition: border-color 0.4s ease;
 }
 
-.input-group input:focus + label,
-.input-group input:not(:placeholder-shown) + label {
-  top: 5px;
-  font-size: 12px;
+.success-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.4rem;
+  font-weight: 300;
+  letter-spacing: 0.15em;
 }
 
-.submit {
-  width: 100%;
-  height: 50px;
-  background: black;
-  color: white;
+.success-sub {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  font-weight: 300;
+  transition: color 0.4s ease;
 }

@@ -10,10 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@stripe/stripe-js": "^8.8.0",
+    "@stripe/react-stripe-js": "^6.0.0",
+    "@stripe/stripe-js": "^9.0.0",
     "@tailwindcss/vite": "^4.1.18",
+    "@vitejs/plugin-react": "^5.0.0",
+    "axios": "^1.14.0",
     "firebase": "^12.10.0",
     "framer-motion": "^12.34.0",
+    "lucide-react": "^1.7.0",
     "motion": "^12.34.3",
     "react": "^19.2.0",
     "react-aria": "^3.46.0",

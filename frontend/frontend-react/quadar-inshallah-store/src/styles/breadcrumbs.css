@@ -1,42 +1,92 @@
+/*
+ * breadcrumbs.css
+ * Estilo ZARA para o componente Breadcrumbs (react-aria + react-router-dom)
+ *
+ * Classes geradas pelo componente:
+ *   nav.breadcrumbs
+ *   ul.breadcrumbs-list
+ *   li.breadcrumb-item
+ *   a.breadcrumb-link
+ *   a.breadcrumb-link.breadcrumb-current
+ *   span.breadcrumb-separator
+ *
+ * Depende das CSS custom properties definidas em Login.css
+ * (--text, --text-muted, --border)
+ */
+
+/* ── Container ──────────────────────────────────────────────────────────── */
+
 .breadcrumbs {
-  padding: 16px 24px;
-  animation: fade 0.4s ease;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+  transition: border-color 0.4s ease;
 }
 
-@keyframes fade {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+/* ── List ───────────────────────────────────────────────────────────────── */
 
 .breadcrumbs-list {
   display: flex;
-  gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
+/* ── Item ───────────────────────────────────────────────────────────────── */
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+/* ── Link ───────────────────────────────────────────────────────────────── */
+
 .breadcrumb-link {
-  padding: 6px 12px;
-  border-radius: 999px;
-
-  background: rgba(255,255,255,0.6);
-  backdrop-filter: blur(10px);
-
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.55rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
   text-decoration: none;
-  color: #555;
-  transition: 0.25s;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+
+  /* remove default focus outline and replace with subtle underline */
+  outline: none;
 }
 
 .breadcrumb-link:hover {
-  background: rgba(255,255,255,0.9);
-  color: #000;
+  color: var(--text);
 }
 
-.breadcrumb-current {
-  font-weight: 600;
-  color: #000;
+/* focus-visible for keyboard nav */
+.breadcrumb-link:focus-visible {
+  outline: 1px solid var(--text);
+  outline-offset: 3px;
 }
+
+/* ── Current page ───────────────────────────────────────────────────────── */
+
+.breadcrumb-link.breadcrumb-current {
+  color: var(--text);
+  cursor: default;
+  pointer-events: none;
+
+  /* Subtle underline marks the active page */
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 1px;
+}
+
+/* ── Separator ──────────────────────────────────────────────────────────── */
 
 .breadcrumb-separator {
-  margin: 0 4px;
-  color: #bbb;
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  opacity: 0.4;
+  -webkit-user-select: none;
+  user-select: none;
+  line-height: 1;
 }
