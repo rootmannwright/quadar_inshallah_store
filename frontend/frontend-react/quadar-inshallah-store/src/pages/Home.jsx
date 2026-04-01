@@ -3,6 +3,7 @@ import Sidebar from '../components/Sidebar'
 import ScrambleText from '../components/ScrambleText'
 import VideoPlayer from '../components/VideoPlayer'
 import './home.css'
+import logo from "/logos/logo-letreiro.png"
 
 export default function Home() {
   const productsRef = useRef(null)
@@ -47,6 +48,7 @@ export default function Home() {
         <div className="hero-overlay"></div>
 
         <div className="hero-content">
+          <img className="logo-hero" src={logo} alt="Logo" />
           <ScrambleText text="QUADAR" as="h1" />
           <ScrambleText text="INSHALLAH CO. &" as="h1" />
           <ScrambleText text="RECORDS" as="h1" />

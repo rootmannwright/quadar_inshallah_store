@@ -21,17 +21,13 @@
   z-index: 0;
 }
 
-/* ANTES: sem position — ficava no fluxo normal, deixava o fundo branco vazar */
-/* AGORA: position absolute cobrindo todo o hero por cima do vídeo            */
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(255,255,255,0.15), rgba(255,255,255,0.75));
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.75));
   z-index: 1;
 }
 
-/* ANTES: position relative + top: 40% — posicionava relativo ao fluxo       */
-/* AGORA: position absolute + flexbox centralizado dentro do hero             */
 .hero-content {
   position: absolute;
   inset: 0;
@@ -71,8 +67,8 @@
   border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 999px;
 
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 
   cursor: pointer;
   transition: all 0.3s ease;
@@ -88,6 +84,11 @@
 
 .hero-btn:active {
   transform: scale(0.96);
+}
+
+.logo-hero {
+  width: 200px;
+  margin-bottom: 40px;
 }
 
 /* ── SECTIONS ───────────────────────────────────────────────────────────── */

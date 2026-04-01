@@ -16,8 +16,8 @@
 
 /* 🔥 ESTADO COM SCROLL (blur + glass) */
 .header-scrolled {
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 
   background: rgba(255, 255, 255, 0.6);
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);

@@ -20,7 +20,7 @@ import webhookRoutes from "./routes/webhookRoutes.js";
 // ==========================
 // CUSTOM MIDDLEWARES
 // ==========================
-import { errorHandler } from "./middleware/errorHandler.js";
+import errorHandler from "./middleware/errorHandler.js";
 import { requestLogger } from "./middleware/requestLogger.js";
 
 // ==========================

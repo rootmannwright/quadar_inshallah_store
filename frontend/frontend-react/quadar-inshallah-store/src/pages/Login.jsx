@@ -93,6 +93,9 @@ function HeroPanel() {
       </div>
 
       <motion.div className="hero-brand" variants={stagger(0.1)}>
+        <div className="logo">
+          <img src={logoSrc} alt="Logo" className="logo" />
+        </div>
         <span className="brand-eyebrow">COLLECTION</span>
         <div className="brand-year">2026</div>
       </motion.div>
@@ -132,10 +135,10 @@ function LoginForm({ dark, onToggle }) {
   const { login, error: authError } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail]           = useState("");
-  const [password, setPassword]     = useState("");
-  const [submitted, setSubmitted]   = useState(false);
-  const [loading, setLoading]       = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [localError, setLocalError] = useState(null);
 
   const errorMsg = localError || authError;
@@ -150,9 +153,9 @@ function LoginForm({ dark, onToggle }) {
 
     if (result.success) {
       setSubmitted(true);
-      setTimeout(() => navigate("/"), 1600); // redireciona após animação de sucesso
+      setTimeout(() => navigate("/"), 1600);
     } else {
-      setLocalError(result.message); // ex: "Too many login attempts. Account temporarily locked."
+      setLocalError(result.message);
     }
   };
 
