@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AccessibilityProvider } from "./components/accessibility/AcessibilityProvider";
 import { OverlayProvider } from "react-aria";
 import { AuthProvider } from "./context/AuthProvider";
-import { CartProvider } from "./context/CartContext"; // ← adicionado
+import { CartProvider } from "./context/CartContext";
 
 // Components
 import AccessibilityPanel from "./components/accessibility/AccessibilityPanel";
@@ -15,12 +15,13 @@ import PrivateRoute from "./routes/PrivateRoute";
 // Pages
 import Home      from "./pages/Home";
 import Login     from "./pages/Login";
+import Register  from "./pages/Register";
 import Cart      from "./pages/Cart";
 import Stories   from "./pages/Stories";
 import Products  from "./pages/Products";
 import Dashboard from "./pages/Dashboard";
-import Checkout  from "./pages/Checkout";  // ← adicionado
-import Account   from "./pages/Account";   // ← adicionado
+import Checkout  from "./pages/Checkout";
+import Account   from "./pages/Account";
 
 // Layout
 import PublicLayout from "./layouts/PublicLayout";
@@ -30,10 +31,9 @@ function App() {
     <AccessibilityProvider>
       <OverlayProvider>
         <AuthProvider>
-          <CartProvider> {/* ← envolve tudo que usa o carrinho */}
+          <CartProvider>
             <BrowserRouter>
 
-              {/* BOTÃO DE ACESSIBILIDADE GLOBAL */}
               <AccessibilityPanel />
 
               <Routes>
@@ -46,8 +46,9 @@ function App() {
                   <Route path="/products" element={<Products />} />
                 </Route>
 
-                {/* 🔐 LOGIN — sem layout */}
-                <Route path="/login" element={<Login />} />
+                {/* 🔓 AUTH — sem layout */}
+                <Route path="/login"    element={<Login />} />
+                <Route path="/register" element={<Register />} />
 
                 {/* 🔒 ROTAS PROTEGIDAS */}
                 <Route

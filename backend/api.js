@@ -27,10 +27,9 @@ import { requestLogger } from "./middleware/requestLogger.js";
 // APP INITIALIZATION
 // ==========================
 const app = express();
-app.disable("x-powered-by"); // Hide Express signature
-app.set("trust proxy", 1);   // Required for secure cookies behind reverse proxy
+app.disable("x-powered-by");
+app.set("trust proxy", 1); 
 
-// Fix __dirname in ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -45,7 +44,7 @@ app.use(
         scriptSrc: ["'self'"],
         styleSrc: ["'self'"],
         imgSrc: ["'self'", "data:", "https:"],
-        connectSrc: ["'self'"],
+        connectSrc: ["'self'", "http://localhost:5173", "https://api.stripe.com"],
         objectSrc: ["'none'"],
         frameAncestors: ["'none'"],
         upgradeInsecureRequests: []

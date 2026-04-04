@@ -194,7 +194,12 @@ function LoginForm({ dark, onToggle }) {
             exit={{ opacity: 0, y: -20, transition: { duration: 0.3 } }}
           >
             <motion.div className="form-header" variants={stagger(0.2)}>
-              <h2 className="form-title">SIGN IN</h2>
+              <h2
+                className="form-title"
+                style={{ color: dark ? "#ffffff" : "#000000", transition: "color 0.3s ease" }}
+              >
+                SIGN IN
+              </h2>
               <p className="form-sub">Access your personal account</p>
             </motion.div>
 

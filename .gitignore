@@ -6,14 +6,20 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
 ####################################
 # ENVIRONMENT FILES (CRÍTICO)
 ####################################
 .env
 .env.*
-.env.example
 !.env.development
+.env.local
+.env.production
+.env.staging
+.env.test
 
 ####################################
 # BACKEND SPECIFIC
@@ -23,6 +29,8 @@ backend/public/uploads/
 backend/logs/
 backend/tmp/
 backend/cache/
+backend/.env
+backend/.env.*
 
 ####################################
 # BUILD / DIST
@@ -32,6 +40,11 @@ build/
 .vite/
 .out/
 coverage/
+storybook-static/
+.turbo/
+.next/
+.nuxt/
+.output/
 
 ####################################
 # DATABASE / ORM
@@ -41,6 +54,8 @@ coverage/
 *.db
 prisma/migrations/
 sequelize-data.json
+dump.rdb
+*.sql.gz
 
 ####################################
 # DOCKER
@@ -50,6 +65,35 @@ volumes/
 **/docker-data/
 **/volumes/
 *.pid
+.dockerignore
+docker-compose.override.yml
+
+####################################
+# CLOUD / INFRA
+####################################
+resources.yml
+resources.yaml
+serverless.yml
+serverless.yaml
+template.yml
+template.yaml
+cdk.out/
+.serverless/
+.aws-sam/
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
+.terraform/
+
+####################################
+# POSTMAN
+####################################
+*.postman_collection.json
+*.postman_environment.json
+*.postman_globals.json
+postman/
+postman_collection/
+postman_environment/
 
 ####################################
 # SYSTEM FILES
@@ -57,6 +101,9 @@ volumes/
 .DS_Store
 Thumbs.db
 desktop.ini
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 
 ####################################
 # IDE / EDITOR
@@ -65,12 +112,21 @@ desktop.ini
 .idea/
 *.swp
 *.swo
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.history/
+*.code-workspace
 
 ####################################
 # LOG FILES
 ####################################
 logs/
 *.log
+npm-debug.log*
+lerna-debug.log*
 
 ####################################
 # SECURITY
@@ -78,6 +134,13 @@ logs/
 *.pem
 *.key
 *.crt
+*.p12
+*.pfx
+secrets/
+credentials/
+serviceAccountKey.json
+firebase-adminsdk*.json
+google-credentials*.json
 
 ####################################
 # TEMP / CACHE
@@ -85,3 +148,11 @@ logs/
 tmp/
 temp/
 .cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+.npm/
+.pnp.*
+.yarn/cache
+.yarn/unplugged
