@@ -144,20 +144,39 @@ function LoginForm({ dark, onToggle }) {
   const errorMsg = localError || authError;
 
   const handleSubmit = async () => {
-    if (!email || !password) return;
-    setLocalError(null);
-    setLoading(true);
+  if (!email || !password) return;
 
+  setLocalError(null);
+  setLoading(true);
+
+  try {
     const result = await login(email, password);
+
     setLoading(false);
 
-    if (result.success) {
+    if (result?.success) {
       setSubmitted(true);
-      setTimeout(() => navigate("/"), 1600);
+
+      // 🔥 pega usuário salvo (ou vindo do login)
+      const user = result.user || JSON.parse(localStorage.getItem("user"));
+
+      setTimeout(() => {
+        if (user?.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/customer");
+        }
+      }, 1200);
+
     } else {
-      setLocalError(result.message);
+      setLocalError(result?.message || "Erro ao fazer login");
     }
-  };
+
+  } catch (err) {
+    setLoading(false);
+    setLocalError("Erro de conexão com servidor");
+  }
+};
 
   return (
     <div className="form-panel">

@@ -1,59 +1,73 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import Joi from "joi";
 import mongoose from "mongoose";
 import User from "../models/User.js";
 
 /* =========================
-   GET ALL USERS (admin)
+   HELPERS
 ========================= */
-export async function getAllUsers(req, res) {
-  try {
-    const users = await User.find().select("-password");
-    return res.json(users);
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Erro ao buscar usuários" });
-  }
-}
+const sendError = (res, status, message, details = null) => {
+  return res.status(status).json({
+    success: false,
+    message,
+    ...(details && { details }),
+  });
+};
+
+const sendSuccess = (res, status, message, data = {}) => {
+  return res.status(status).json({
+    success: true,
+    message,
+    ...data,
+  });
+};
 
 /* =========================
    REGISTER
 ========================= */
 export async function register(req, res) {
   try {
-    const schema = Joi.object({
-      name: Joi.string().min(3).max(50).required(),
-      email: Joi.string().email().required(),
-      password: Joi.string().min(6).required(),
-    });
+    let { name, email, password } = req.body;
 
-    const { error, value } = schema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ error: "Dados inválidos", details: error.details });
+    // normalização (🔥 evita bug silencioso)
+    email = email?.toLowerCase().trim();
+    name = name?.trim();
+    password = password?.trim();
+
+    if (!name || !email || !password) {
+      return sendError(res, 400, "Todos os campos são obrigatórios");
     }
 
-    const exists = await User.findOne({ email: value.email });
-    if (exists) {
-      return res.status(409).json({ error: "Email já registrado" });
+    if (password.length < 6) {
+      return sendError(res, 400, "Senha deve ter no mínimo 6 caracteres");
     }
 
-    const hashed = await bcrypt.hash(value.password, 10);
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return sendError(res, 409, "Email já registrado");
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
-      name: value.name,
-      email: value.email,
-      password: hashed,
+      name,
+      email,
+      password: hashedPassword,
       role: "user",
     });
 
-    return res.status(201).json({
-      message: "Usuário criado com sucesso",
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+    return sendSuccess(res, 201, "Usuário criado com sucesso", {
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Erro no registro" });
+    console.error("REGISTER ERROR:", err);
+    return sendError(res, 500, "Erro interno no servidor");
   }
 }
 
@@ -62,41 +76,73 @@ export async function register(req, res) {
 ========================= */
 export async function login(req, res) {
   try {
+    let { email, password } = req.body;
 
-    const schema = Joi.object({
-      email: Joi.string().email().required(),
-      password: Joi.string().min(6).required(),
-    });
+    // 🔥 normalização (isso resolve MUITO bug de "senha incorreta")
+    email = email?.toLowerCase().trim();
+    password = password?.trim();
 
-    const { error, value } = schema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ error: "Dados inválidos", details: error.details });
+    if (!email || !password) {
+      return sendError(res, 400, "Email e senha são obrigatórios");
     }
 
-    const user = await User.findOne({ email: value.email });
+    const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({ error: "Usuário não encontrado" });
+      return sendError(res, 401, "Credenciais inválidas"); // 🔥 não revela se email existe
     }
 
-    const match = await bcrypt.compare(value.password, user.password);
-    if (!match) {
-      return res.status(401).json({ error: "Senha incorreta" });
+    // 🔥 comparação segura
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return sendError(res, 401, "Credenciais inválidas");
+    }
+
+    if (!process.env.JWT_SECRET) {
+      console.error("JWT_SECRET não definido");
+      return sendError(res, 500, "Erro de configuração do servidor");
     }
 
     const token = jwt.sign(
-      { userId: user._id, role: user.role },
+      {
+        userId: user._id,
+        role: user.role,
+      },
       process.env.JWT_SECRET,
-      { expiresIn: "7d", algorithm: "HS256" }
+      {
+        expiresIn: "7d",
+      }
     );
 
-    return res.json({
+    return sendSuccess(res, 200, "Login realizado com sucesso", {
       token,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Erro no login" });
+    console.error("LOGIN ERROR:", err);
+    return sendError(res, 500, "Erro interno no servidor");
+  }
+}
+
+/* =========================
+   GET ALL USERS
+========================= */
+export async function getAllUsers(req, res) {
+  try {
+    const users = await User.find().select("-password");
+
+    return sendSuccess(res, 200, "Usuários listados com sucesso", {
+      users,
+    });
+  } catch (err) {
+    console.error("GET USERS ERROR:", err);
+    return sendError(res, 500, "Erro ao buscar usuários");
   }
 }
 
@@ -108,39 +154,36 @@ export async function updateUserController(req, res) {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ error: "ID de usuário inválido" });
+      return sendError(res, 400, "ID inválido");
     }
 
-    const schema = Joi.object({
-      name: Joi.string().min(3).max(50),
-      email: Joi.string().email(),
-      password: Joi.string().min(6),
-    });
+    const updateData = { ...req.body };
 
-    const { error, value } = schema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ error: "Dados inválidos", details: error.details });
-    }
-    if (value.password) {
-      value.password = await bcrypt.hash(value.password, 10);
+    // 🔥 normalização
+    if (updateData.email) {
+      updateData.email = updateData.email.toLowerCase().trim();
     }
 
-    const updatedUser = await User.findByIdAndUpdate(id, value, {
+    if (updateData.password) {
+      updateData.password = await bcrypt.hash(
+        updateData.password.trim(),
+        10
+      );
+    }
+
+    const user = await User.findByIdAndUpdate(id, updateData, {
       new: true,
       runValidators: true,
     }).select("-password");
 
-    if (!updatedUser) {
-      return res.status(404).json({ error: "Usuário não encontrado" });
+    if (!user) {
+      return sendError(res, 404, "Usuário não encontrado");
     }
 
-    return res.json({
-      message: "Usuário atualizado com sucesso",
-      user: updatedUser,
-    });
+    return sendSuccess(res, 200, "Usuário atualizado", { user });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Erro ao atualizar usuário" });
+    console.error("UPDATE ERROR:", err);
+    return sendError(res, 500, "Erro ao atualizar usuário");
   }
 }
 
@@ -152,18 +195,18 @@ export async function deleteUserController(req, res) {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ error: "ID de usuário inválido" });
+      return sendError(res, 400, "ID inválido");
     }
 
     const user = await User.findByIdAndDelete(id);
 
     if (!user) {
-      return res.status(404).json({ error: "Usuário não encontrado" });
+      return sendError(res, 404, "Usuário não encontrado");
     }
 
-    return res.json({ message: "Usuário removido com sucesso" });
-    // eslint-disable-next-line no-unused-vars
+    return sendSuccess(res, 200, "Usuário deletado com sucesso");
   } catch (err) {
-    return res.status(500).json({ error: "Erro ao deletar usuário" });
+    console.error("DELETE ERROR:", err);
+    return sendError(res, 500, "Erro ao deletar usuário");
   }
 }

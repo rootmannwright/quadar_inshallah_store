@@ -1,172 +1,266 @@
-import { useState } from "react"
-import CheckoutButton from "../components/CheckoutButton"
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import "../styles/cart.css";
 
-export default function Cart() {
-  const [cartItems, setCartItems] = useState([
-    {
-      name: "Laptop",
-      model: "XPS 13",
-      hsCode: "847130",
-      quantity: 1,
-      weight: 2.5,
-      perPieceRate: 999.99,
-      color: "Silver",
-      deliveryMethod: "Air",
-      description: "A powerful and lightweight laptop with excellent performance.",
-      showDescription: false,
-      image: "https://via.placeholder.com/150",
-    },
-    {
-      name: "Smartphone",
-      model: "iPhone 14",
-      hsCode: "851712",
-      quantity: 2,
-      weight: 0.5,
-      perPieceRate: 799.99,
-      color: "Black",
-      deliveryMethod: "Ship",
-      description: "The latest iPhone with advanced camera and processing power.",
-      showDescription: false,
-      image: "https://via.placeholder.com/150",
-    },
-  ])
+const TAX_RATE = 0.1;
+const SHIPPING_FLAT = 25.0;
 
-  const incrementQuantity = (index) => {
-    const updated = [...cartItems]
-    updated[index].quantity++
-    setCartItems(updated)
-  }
+// Controle de quantidade
+function QtyControl({ qty, onIncrease, onDecrease }) {
+  return (
+    <div className="cart-qty">
+      <button onClick={onDecrease} aria-label="Diminuir">−</button>
+      <span>{qty}</span>
+      <button onClick={onIncrease} aria-label="Aumentar">+</button>
+    </div>
+  );
+}
 
-  const decrementQuantity = (index) => {
-    const updated = [...cartItems]
-    if (updated[index].quantity > 1) {
-      updated[index].quantity--
-      setCartItems(updated)
-    }
-  }
+// Item do carrinho
+function CartItem({ item, onRemove, onUpdateQty }) {
+  const price = Number(item.price) || 0;
+  const qty = item.qty || 1;
 
-  const removeItem = (index) => {
-    if (confirm("Remove item?")) {
-      setCartItems(cartItems.filter((_, i) => i !== index))
-    }
-  }
-
-  const toggleDescription = (index) => {
-    const updated = [...cartItems]
-    updated[index].showDescription = !updated[index].showDescription
-    setCartItems(updated)
-  }
-
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.perPieceRate * item.quantity,
-    0
-  )
-
-  const tax = subtotal * 0.075
-  const shipping = 5
-  const total = subtotal + tax + shipping
+  // Corrige o caminho da imagem para funcionar sempre
+  const imgSrc = item.image
+    ? item.image.startsWith("http")
+      ? item.image
+      : `/images/${item.image.split("/").pop()}`
+    : null;
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
-      <h1 className="text-4xl font-bold mb-8">Shopping Cart</h1>
-
-      {cartItems.length === 0 && (
-        <p className="text-gray-500 text-center">Your cart is empty</p>
-      )}
-
-      {cartItems.map((item, index) => (
-        <div
-          key={index}
-          className="bg-white rounded-lg shadow-md p-6 mb-6"
-        >
-          <div className="flex justify-between items-start">
-            <div className="flex gap-4">
-              <img
-                src={item.image}
-                alt={item.name}
-                className="w-24 h-24 object-cover rounded"
-              />
-              <div>
-                <h2 className="text-xl font-semibold">{item.name}</h2>
-                <p className="text-sm text-gray-500">{item.model}</p>
-                <p className="text-sm text-gray-400">HS: {item.hsCode}</p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => removeItem(index)}
-              className="text-red-600"
-            >
-              Remove
-            </button>
-          </div>
-
-          <div className="mt-4 flex items-center gap-4">
-            <button
-              onClick={() => decrementQuantity(index)}
-              className="px-3 py-1 border"
-            >
-              -
-            </button>
-            <span>{item.quantity}</span>
-            <button
-              onClick={() => incrementQuantity(index)}
-              className="px-3 py-1 border"
-            >
-              +
-            </button>
-          </div>
-
-          <p className="mt-2 font-medium">
-            Price: ${item.perPieceRate.toFixed(2)}
-          </p>
-
-          <p className="font-bold">
-            Total: ${(item.perPieceRate * item.quantity).toFixed(2)}
-          </p>
-
-          <button
-            onClick={() => toggleDescription(index)}
-            className="text-blue-600 text-sm mt-2"
-          >
-            {item.showDescription ? "Hide" : "Show"} description
-          </button>
-
-          {item.showDescription && (
-            <p className="text-sm text-gray-600 mt-2">
-              {item.description}
-            </p>
+    <AnimatePresence>
+      <motion.div
+        className="cart-item"
+        layout
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, x: -40, transition: { duration: 0.25 } }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div className="cart-item-img-wrap">
+          {imgSrc ? (
+            <img src={imgSrc} alt={item.name || "Produto"} className="cart-item-img" />
+          ) : (
+            <div className="cart-item-img-placeholder" />
           )}
         </div>
-      ))}
 
-      {cartItems.length > 0 && (
-        <div className="bg-white p-6 rounded-lg shadow-md mt-10">
-          <h2 className="text-2xl font-bold mb-4">Order Summary</h2>
+        <div className="cart-item-info">
+          <p className="cart-item-category">{item.category || item.brand || "Categoria"}</p>
+          <p className="cart-item-name">{item.name || "Produto sem nome"}</p>
+          <p className="cart-item-desc">{item.description || ""}</p>
 
-          <div className="flex justify-between mb-2">
-            <span>Subtotal</span>
-            <span>${subtotal.toFixed(2)}</span>
+          <div className="cart-item-bottom">
+            <QtyControl
+              qty={qty}
+              onIncrease={() => onUpdateQty(item._id, qty + 1)}
+              onDecrease={() => {
+                if (qty <= 1) onRemove(item._id);
+                else onUpdateQty(item._id, qty - 1);
+              }}
+            />
+            <span className="cart-item-price">
+              R${(price * qty).toFixed(2).replace(".", ",")}
+            </span>
           </div>
+        </div>
 
-          <div className="flex justify-between mb-2">
-            <span>Tax</span>
-            <span>${tax.toFixed(2)}</span>
+        <button
+          className="cart-item-remove"
+          onClick={() => onRemove(item._id)}
+          aria-label="Remover item"
+        >
+          ✕
+        </button>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+// Resumo do pedido
+function OrderSummary({ subtotal, onCheckout }) {
+  const tax = subtotal * TAX_RATE;
+  const shipping = subtotal > 0 ? SHIPPING_FLAT : 0;
+  const total = subtotal + tax + shipping;
+  const fmt = (v) => `R$${v.toFixed(2).replace(".", ",")}`;
+
+  return (
+    <div className="cart-summary">
+      <h2 className="cart-summary-title">Resumo do pedido</h2>
+
+      <div className="cart-summary-rows">
+        <div className="cart-summary-row">
+          <span>Subtotal</span>
+          <span>{fmt(subtotal)}</span>
+        </div>
+        <div className="cart-summary-row">
+          <span>Impostos (10%)</span>
+          <span>{fmt(tax)}</span>
+        </div>
+        <div className="cart-summary-row">
+          <span>Frete</span>
+          <span>{subtotal > 0 ? fmt(shipping) : "—"}</span>
+        </div>
+      </div>
+
+      <div className="cart-summary-total">
+        <span>Total</span>
+        <span>{fmt(total)}</span>
+      </div>
+
+      <button
+        className="cart-checkout-btn"
+        onClick={onCheckout}
+        disabled={subtotal === 0}
+      >
+        Finalizar compra
+      </button>
+
+      <a href="/products" className="cart-continue-link">
+        ← Continuar comprando
+      </a>
+    </div>
+  );
+}
+
+// Carrinho vazio
+function EmptyCart() {
+  return (
+    <motion.div
+      className="cart-empty"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      <p className="cart-empty-icon">🛍</p>
+      <p className="cart-empty-text">Seu carrinho está vazio.</p>
+      <a href="/products" className="cart-empty-link">Ver produtos</a>
+    </motion.div>
+  );
+}
+
+// Componente principal
+export default function Cart() {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchCart = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Pega carrinho
+      const cartRes = await fetch("http://localhost:5000/api/cart", { credentials: "include" });
+      if (!cartRes.ok) throw new Error("Erro ao carregar o carrinho");
+      const cartData = await cartRes.json();
+      const cartArray = Array.isArray(cartData) ? cartData : cartData.items ?? [];
+
+      // Pega produtos
+      const productsRes = await fetch("http://localhost:5000/api/products");
+      if (!productsRes.ok) throw new Error("Erro ao carregar os produtos");
+      const productsData = await productsRes.json();
+
+      // Combina produtos com carrinho
+      const cartItems = cartArray.map(cartItem => {
+        const product = productsData.find(p => p._id === cartItem.productId);
+        if (!product) return null;
+        return {
+          ...product,
+          qty: cartItem.qty,
+          price: Number(product.price) || 0,
+        };
+      }).filter(Boolean);
+
+      setItems(cartItems);
+    } catch (err) {
+      setError(err.message);
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
+  const handleUpdateQty = async (productId, newQty) => {
+    try {
+      await fetch(`http://localhost:5000/api/cart/remove/${productId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      await fetch("http://localhost:5000/api/cart/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ productId, qty: newQty }),
+      });
+      await fetchCart();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleRemove = async (productId) => {
+    try {
+      await fetch(`http://localhost:5000/api/cart/remove/${productId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      await fetchCart();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleCheckout = () => {
+    window.location.href = "/checkout";
+  };
+
+  const subtotal = items.reduce((acc, i) => acc + (Number(i.price) || 0) * (i.qty || 1), 0);
+
+  return (
+    <div className="cart-page">
+      <motion.h1
+        className="cart-title"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45 }}
+      >
+        Carrinho
+        {items.length > 0 && (
+          <span className="cart-count">
+            {items.length} {items.length === 1 ? "item" : "itens"}
+          </span>
+        )}
+      </motion.h1>
+
+      {loading && <p>Carregando carrinho...</p>}
+      {error && <p className="cart-error">Erro: {error}</p>}
+      {!loading && !error && items.length === 0 && <EmptyCart />}
+
+      {!loading && !error && items.length > 0 && (
+        <div className="cart-layout">
+          <div className="cart-items">
+            <div className="cart-items-header">
+              <span>Produto</span>
+              <span>Total</span>
+            </div>
+            {items.map((item) => (
+              <CartItem
+                key={item._id}
+                item={item}
+                onRemove={handleRemove}
+                onUpdateQty={handleUpdateQty}
+              />
+            ))}
           </div>
-
-          <div className="flex justify-between mb-4">
-            <span>Shipping</span>
-            <span>${shipping.toFixed(2)}</span>
-          </div>
-
-          <div className="flex justify-between text-xl font-bold">
-            <span>Total</span>
-            <span>${total.toFixed(2)}</span>
-          </div>
-
-          <CheckoutButton cartItems={cartItems} />
+          <OrderSummary subtotal={subtotal} onCheckout={handleCheckout} />
         </div>
       )}
     </div>
-  )
+  );
 }

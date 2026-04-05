@@ -1,42 +1,119 @@
-export const getCartWithTotal = async (userId) => {
-  const cart = await cart.findOne({ user: userId }).populate("items.product");
+import Cart from "../models/Cart.js";
+import Product from "../models/Product.js";
 
-  if (!cart) return { items: [], total: 0 };
+// ==========================
+// IDENTIFICAR CARRINHO
+// ==========================
+async function findCart(identifier) {
+  // tenta como usuário
+  let cart = await Cart.findOne({ user: identifier }).populate("items.product");
 
-  let total = 0;
-
-  cart.items.forEach((item) => {
-    total += item.product.price * item.quantity;
-  });
-
-  return { ...cart.toObject(), total };
-};
-
-export const addToCartSafe = async (userId, { productId, quantity = 1 }) => {
-  const product = await product.findById(productId);
-  if (!product) throw { status: 404, message: "Produto não encontrado." };
-
-  if (product.stock < quantity) {
-    throw { status: 400, message: "Estoque insuficiente." };
+  if (!cart) {
+    // tenta como sessão
+    cart = await Cart.findOne({ sessionId: identifier }).populate("items.product");
   }
 
-  let cart = await cart.findOne({ user: userId });
-  if (!cart) cart = await cart.create({ user: userId, items: [] });
+  return cart;
+}
 
-  const index = cart.items.findIndex(i => i.product.toString() === productId);
+// ==========================
+// CRIAR CARRINHO
+// ==========================
+async function createCart(identifier) {
+  const isObjectId = identifier.length === 24;
 
-  if (index > -1) {
-    const newQty = cart.items[index].quantity + quantity;
+  const cart = await Cart.create({
+    user: isObjectId ? identifier : null,
+    sessionId: isObjectId ? null : identifier,
+    items: [],
+  });
 
-    if (product.stock < newQty) {
-      throw { status: 400, message: "Quantidade excede estoque." };
-    }
+  return cart;
+}
 
-    cart.items[index].quantity = newQty;
+// ==========================
+// GET CART
+// ==========================
+export async function getCart(identifier) {
+  let cart = await findCart(identifier);
+
+  if (!cart) {
+    cart = await createCart(identifier);
+  }
+
+  return cart;
+}
+
+// ==========================
+// ADD TO CART
+// ==========================
+export async function addToCart(identifier, body) {
+  const { productId, qty = 1 } = body;
+
+  const product = await Product.findById(productId);
+  if (!product) {
+    throw new Error("Produto não encontrado");
+  }
+
+  if (product.stock !== undefined && product.stock < qty) {
+    throw new Error("Estoque insuficiente");
+  }
+
+  let cart = await findCart(identifier);
+
+  if (!cart) {
+    cart = await createCart(identifier);
+  }
+
+  const existingItem = cart.items.find(
+    (item) => item.product.toString() === productId
+  );
+
+  if (existingItem) {
+    existingItem.qty += qty;
   } else {
-    cart.items.push({ product: productId, quantity });
+    cart.items.push({
+      product: productId,
+      qty,
+    });
   }
 
   await cart.save();
+
+  return await cart.populate("items.product");
+}
+
+// ==========================
+// REMOVE ITEM
+// ==========================
+export async function removeFromCart(identifier, productId) {
+  const cart = await findCart(identifier);
+
+  if (!cart) {
+    throw new Error("Carrinho não encontrado");
+  }
+
+  cart.items = cart.items.filter(
+    (item) => item.product.toString() !== productId
+  );
+
+  await cart.save();
+
+  return await cart.populate("items.product");
+}
+
+// ==========================
+// CLEAR CART
+// ==========================
+export async function clearCart(identifier) {
+  const cart = await findCart(identifier);
+
+  if (!cart) {
+    throw new Error("Carrinho não encontrado");
+  }
+
+  cart.items = [];
+  await cart.save();
+
   return cart;
-};
+}

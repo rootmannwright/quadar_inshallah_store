@@ -1,0 +1,193 @@
+/* ── Page ──────────────────────────────────────────────────────────────────── */
+.products-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 48px 32px 80px;
+}
+
+/* ── Heading ───────────────────────────────────────────────────────────────── */
+.products-heading {
+  text-align: left;
+  margin-bottom: 40px;
+}
+
+.products-heading h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.products-heading p {
+  font-size: 0.95rem;
+  color: #666;
+  margin: 6px 0 0;
+}
+
+/* ── Grid ──────────────────────────────────────────────────────────────────── */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px 24px;
+}
+
+@media (max-width: 1024px) {
+  .products-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 700px) {
+  .products-grid { grid-template-columns: repeat(2, 1fr); gap: 28px 14px; }
+}
+
+/* ── Product item ──────────────────────────────────────────────────────────── */
+.product-item {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  cursor: pointer;
+}
+
+/* ── Image wrapper ─────────────────────────────────────────────────────────── */
+.product-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background: #f4f4f4;
+  overflow: hidden;
+}
+
+.product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;           /* produto inteiro visível, sem corte */
+  padding: 16px;
+  transition: transform 0.45s ease;
+  display: block;
+}
+
+.product-item:hover .product-img {
+  transform: scale(1.04);
+}
+
+/* Sold out */
+.product-img-wrap.is-sold-out .product-img {
+  opacity: 0.45;
+}
+
+.sold-out-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #999;
+  pointer-events: none;
+}
+
+.product-img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #ccc;
+}
+
+/* ── Product info ──────────────────────────────────────────────────────────── */
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.product-name {
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #111;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.product-price {
+  font-size: 0.82rem;
+  color: #111;
+  margin: 0;
+}
+
+/* ── Stock label ───────────────────────────────────────────────────────────── */
+.product-stock {
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+}
+
+.product-stock.ok   { color: #2e7d32; }
+.product-stock.low  { color: #b45309; }
+.product-stock.out  { color: #c62828; }
+
+/* ── Add to cart button ────────────────────────────────────────────────────── */
+.product-add-btn {
+  display: none;                  /* aparece só no hover */
+  margin-top: 6px;
+  padding: 8px 0;
+  width: 100%;
+  background: #111;
+  color: #fff;
+  border: none;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.product-item:hover .product-add-btn {
+  display: block;
+}
+
+.product-add-btn:hover {
+  background: #333;
+}
+
+/* ── Skeleton ──────────────────────────────────────────────────────────────── */
+.skeleton-img {
+  aspect-ratio: 3 / 4;
+  background: #ebebeb;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-line {
+  height: 10px;
+  background: #ebebeb;
+  border-radius: 4px;
+  animation: pulse 1.5s ease-in-out infinite;
+  margin-bottom: 6px;
+}
+
+.skeleton-line.w-3\/4 { width: 75%; }
+.skeleton-line.w-1\/3 { width: 33%; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+/* ── States ────────────────────────────────────────────────────────────────── */
+.products-error,
+.products-empty {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #999;
+  padding: 80px 0;
+  letter-spacing: 0.05em;
+}
+
+.products-error { color: #c62828; }

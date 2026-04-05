@@ -33,24 +33,23 @@ function App() {
         <AuthProvider>
           <CartProvider>
             <BrowserRouter>
-
               <AccessibilityPanel />
 
               <Routes>
 
-                {/* 🌐 ROTAS PÚBLICAS COM LAYOUT */}
-                <Route element={<PublicLayout />}>
-                  <Route path="/"         element={<Home />} />
-                  <Route path="/cart"     element={<Cart />} />
-                  <Route path="/stories"  element={<Stories />} />
-                  <Route path="/products" element={<Products />} />
-                </Route>
-
-                {/* 🔓 AUTH — sem layout */}
+                {/* LOGIN / REGISTER — páginas únicas, sem layout */}
                 <Route path="/login"    element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
-                {/* 🔒 ROTAS PROTEGIDAS */}
+                {/* PÚBLICAS COM LAYOUT */}
+                <Route element={<PublicLayout />}>
+                  <Route path="/"         element={<Home />} />
+                  <Route path="/products" element={<Products />} />
+                  <Route path="/stories"  element={<Stories />} />
+                  <Route path="/cart"     element={<Cart />} />
+                </Route>
+
+                {/* PRIVADAS */}
                 <Route
                   path="/checkout"
                   element={
@@ -60,7 +59,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/account"
+                  path="/customer"
                   element={
                     <PrivateRoute>
                       <Account />
@@ -75,6 +74,9 @@ function App() {
                     </PrivateRoute>
                   }
                 />
+
+                {/* 404 */}
+                <Route path="*" element={<h1>404 - Página não encontrada</h1>} />
 
               </Routes>
             </BrowserRouter>

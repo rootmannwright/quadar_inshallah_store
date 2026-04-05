@@ -1,8 +1,20 @@
-const errorHandler = (err, req, res) => {
-  const statusCode = res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
-  res.status(statusCode).json({
-    message: err.message,
-    stack: process.env.NODE_ENV === 'production' ? null : err.stack,
+const errorHandler = (err, req, res,) => {
+  console.error("❌ ERROR:", err);
+
+  if (err.name === "CastError") {
+    return res.status(400).json({
+      message: "ID inválido"
+    });
+  }
+
+  if (err.name === "ValidationError") {
+    return res.status(400).json({
+      message: Object.values(err.errors).map(e => e.message).join(", ")
+    });
+  }
+
+  res.status(err.status || 500).json({
+    message: err.message || "Erro interno do servidor"
   });
 };
 

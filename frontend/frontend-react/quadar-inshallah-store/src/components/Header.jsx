@@ -48,6 +48,7 @@ export default function Header() {
       >
         <ul className="nav-links">
           <li><a href="/">Home</a></li>
+          <li><a href="/products">Produtos</a></li>
           <li><a href="/stories">Stories</a></li>
           <li><Link to="/login">Login</Link></li>
           <li><a href="/cart">Carrinho</a></li>

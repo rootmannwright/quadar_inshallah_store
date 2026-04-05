@@ -1,67 +1,166 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import api from "../api";
+import "../styles/products.css";
+
+const containerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.06 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+function StockLabel({ stock }) {
+  if (stock === undefined || stock === null) return null;
+  if (stock === 0) return <span className="product-stock out">Esgotado</span>;
+  if (stock <= 5) return <span className="product-stock low">Últimas {stock} unidades</span>;
+  return <span className="product-stock ok">Em estoque: {stock}</span>;
+}
+
+function ProductCard({ product, onAddToCart, adding }) {
+  const outOfStock = product.stock === 0;
+
+  return (
+    <motion.div variants={itemVariants} className="product-item">
+      <div className={`product-img-wrap ${outOfStock ? "is-sold-out" : ""}`}>
+        {product.image ? (
+          <img src={product.image} alt={product.name} className="product-img" />
+        ) : (
+          <div className="product-img-placeholder">Sem imagem</div>
+        )}
+        {outOfStock && <div className="sold-out-overlay">Esgotado</div>}
+      </div>
+
+      <div className="product-info">
+        <p className="product-name">{product.name}</p>
+        <p className="product-price">
+          R${Number(product.price).toFixed(2).replace(".", ",")}
+        </p>
+        <StockLabel stock={product.stock} />
+
+        {!outOfStock && (
+          <button
+            className="product-add-btn"
+            onClick={() => onAddToCart(product)}
+            disabled={adding === product._id}
+          >
+            {adding === product._id ? "Adicionando..." : "+ Adicionar ao carrinho"}
+          </button>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+function Skeleton() {
+  return (
+    <div className="product-item">
+      <div className="product-img-wrap skeleton-img" />
+      <div className="product-info">
+        <div className="skeleton-line w-3/4" />
+        <div className="skeleton-line w-1/3" />
+      </div>
+    </div>
+  );
+}
 
 export default function Products() {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [adding, setAdding] = useState(null);
 
+  // 🔥 GET PRODUCTS (agora usando api)
   useEffect(() => {
-    fetch("http://localhost:5000/api/products")
-      .then((res) => res.json())
-      .then((data) => setProducts(data))
-      .catch((err) => console.error(err));
+    async function fetchProducts() {
+      try {
+        const { data } = await api.get("/api/products");
+        setProducts(data);
+      } catch (err) {
+        setError("Erro ao carregar produtos");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProducts();
   }, []);
 
-  return (
-    <div>
-      {/* Header */}
-      <div className="text-center p-10">
-        <h1 className="font-bold text-4xl mb-4">Produtos</h1>
-        <h1 className="text-3xl">Quadar Inshallah Co. & Records</h1>
-      </div>
+  async function handleAddToCart(product) {
+  setAdding(product._id);
 
-      {/* Grid Section */}
-      <section
-        id="Projects"
-        className="w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center justify-center gap-y-20 gap-x-14 mt-10 mb-5"
+  try {
+    const res = await api.post(
+      "/api/cart/add",
+      {
+        productId: product._id,
+        qty: 1,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+
+    console.log("Adicionado:", res.data);
+
+  } catch (err) {
+    console.error("Erro completo:", err);
+
+    alert("Erro ao adicionar ao carrinho");
+  } finally {
+    setAdding(null);
+  }
+}
+
+  return (
+    <div className="products-page">
+      <motion.div
+        className="products-heading"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
       >
-        {products.map((product) => (
-          <div
-            key={product._id}
-            className="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl "
-          >
-            <a href="#">
-              <img src={`http://localhost:5000/${product.image}`} alt={product.name} />
-              <div className="px-4 py-3 w-72">
-                <span className="text-gray-400 mr-3 uppercase text-xs">Brand</span>
-                <p className="text-lg font-bold text-black truncate block capitalize">
-                  {product.name}
-                </p>
-                <p className="text-gray-500">{product.description}</p>
-                <div className="flex items-center">
-                  <p className="text-lg font-semibold text-black cursor-auto my-3">
-                    R${product.price.toFixed(2)}
-                  </p>
-                  <div className="ml-auto">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      fill="currentColor"
-                      className="bi bi-bag-plus"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z"
-                      />
-                      <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </div>
-        ))}
-      </section>
+        <h1>Produtos</h1>
+        <p>Quadar Inshallah Co. & Records</p>
+      </motion.div>
+
+      {error && <p className="products-error">{error}</p>}
+
+      {loading && (
+        <div className="products-grid">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <Skeleton key={i} />
+          ))}
+        </div>
+      )}
+
+      {!loading && !error && (
+        <motion.div
+          className="products-grid"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          {products.map((product) => (
+            <ProductCard
+              key={product._id}
+              product={product}
+              onAddToCart={handleAddToCart}
+              adding={adding}
+            />
+          ))}
+        </motion.div>
+      )}
+
+      {!loading && !error && products.length === 0 && (
+        <p className="products-empty">Nenhum produto encontrado.</p>
+      )}
     </div>
   );
 }

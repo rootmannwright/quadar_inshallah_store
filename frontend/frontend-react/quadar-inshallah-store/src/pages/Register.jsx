@@ -3,18 +3,29 @@ import { motion, AnimatePresence } from "framer-motion";
 import Cookies from "js-cookie";
 import "../styles/register.css";
 
-// ─── API ──────────────────────────────────────────────────────────────────────
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+// API
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 async function apiRegister({ name, email, password }) {
-  const res = await fetch(`${API_URL}/api/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, email, password, role: "user" }),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Erro ao criar conta.");
-  return data;
+  try {
+    const res = await fetch(`${API_URL}/api/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password }), // 🔥 sem role
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.log("ERRO BACKEND:", data); // 👈 debug real
+      throw new Error(data.message || "Erro ao criar conta.");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("ERRO FRONT:", error);
+    throw error;
+  }
 }
 
 // ─── Inline SVG Icons ─────────────────────────────────────────────────────────
@@ -294,7 +305,7 @@ export default function Register() {
       >
         {/* logo */}
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <img src="/logo.png" alt="Logo" className="logo" />
+          <img src="./public/logos/logo-letreiro.png" alt="Logo" className="logo" />
           <div style={{ display: "flex", gap: 20 }}>
             <span style={{ fontSize: 9, letterSpacing: "0.25em", textTransform: "uppercase", color: "#888" }}>
               Collection
