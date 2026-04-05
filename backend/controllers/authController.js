@@ -23,16 +23,21 @@ const sendSuccess = (res, status, message, data = {}) => {
 };
 
 /* =========================
+   INPUT VALIDATION
+========================= */
+const sanitizeEmail = (email) => email?.toLowerCase().trim();
+const sanitizeString = (str) => str?.trim();
+
+/* =========================
    REGISTER
 ========================= */
 export async function register(req, res) {
   try {
     let { name, email, password } = req.body;
 
-    // normalização (🔥 evita bug silencioso)
-    email = email?.toLowerCase().trim();
-    name = name?.trim();
-    password = password?.trim();
+    name = sanitizeString(name);
+    email = sanitizeEmail(email);
+    password = sanitizeString(password);
 
     if (!name || !email || !password) {
       return sendError(res, 400, "Todos os campos são obrigatórios");
@@ -42,8 +47,8 @@ export async function register(req, res) {
       return sendError(res, 400, "Senha deve ter no mínimo 6 caracteres");
     }
 
-    const existingUser = await User.findOne({ email });
-
+    // ✅ Proteção contra NoSQL Injection
+    const existingUser = await User.findOne({ email }).lean();
     if (existingUser) {
       return sendError(res, 409, "Email já registrado");
     }
@@ -78,23 +83,20 @@ export async function login(req, res) {
   try {
     let { email, password } = req.body;
 
-    // 🔥 normalização (isso resolve MUITO bug de "senha incorreta")
-    email = email?.toLowerCase().trim();
-    password = password?.trim();
+    email = sanitizeEmail(email);
+    password = sanitizeString(password);
 
     if (!email || !password) {
       return sendError(res, 400, "Email e senha são obrigatórios");
     }
 
-    const user = await User.findOne({ email });
-
+    // ✅ Proteção contra NoSQL Injection
+    const user = await User.findOne({ email }).lean();
     if (!user) {
-      return sendError(res, 401, "Credenciais inválidas"); // 🔥 não revela se email existe
+      return sendError(res, 401, "Credenciais inválidas");
     }
 
-    // 🔥 comparação segura
     const isMatch = await bcrypt.compare(password, user.password);
-
     if (!isMatch) {
       return sendError(res, 401, "Credenciais inválidas");
     }
@@ -105,14 +107,9 @@ export async function login(req, res) {
     }
 
     const token = jwt.sign(
-      {
-        userId: user._id,
-        role: user.role,
-      },
+      { userId: user._id, role: user.role },
       process.env.JWT_SECRET,
-      {
-        expiresIn: "7d",
-      }
+      { expiresIn: "7d" }
     );
 
     return sendSuccess(res, 200, "Login realizado com sucesso", {
@@ -135,11 +132,8 @@ export async function login(req, res) {
 ========================= */
 export async function getAllUsers(req, res) {
   try {
-    const users = await User.find().select("-password");
-
-    return sendSuccess(res, 200, "Usuários listados com sucesso", {
-      users,
-    });
+    const users = await User.find({}, "-password").lean();
+    return sendSuccess(res, 200, "Usuários listados com sucesso", { users });
   } catch (err) {
     console.error("GET USERS ERROR:", err);
     return sendError(res, 500, "Erro ao buscar usuários");
@@ -153,32 +147,25 @@ export async function updateUserController(req, res) {
   try {
     const { id } = req.params;
 
+    // ✅ Validação do ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return sendError(res, 400, "ID inválido");
     }
 
-    const updateData = { ...req.body };
-
-    // 🔥 normalização
-    if (updateData.email) {
-      updateData.email = updateData.email.toLowerCase().trim();
+    const updateData = {};
+    if (req.body.name) updateData.name = sanitizeString(req.body.name);
+    if (req.body.email) updateData.email = sanitizeEmail(req.body.email);
+    if (req.body.password) {
+      updateData.password = await bcrypt.hash(sanitizeString(req.body.password), 10);
     }
 
-    if (updateData.password) {
-      updateData.password = await bcrypt.hash(
-        updateData.password.trim(),
-        10
-      );
-    }
-
+    // ✅ Evita NoSQL Injection usando objetos simples
     const user = await User.findByIdAndUpdate(id, updateData, {
       new: true,
       runValidators: true,
-    }).select("-password");
+    }).select("-password").lean();
 
-    if (!user) {
-      return sendError(res, 404, "Usuário não encontrado");
-    }
+    if (!user) return sendError(res, 404, "Usuário não encontrado");
 
     return sendSuccess(res, 200, "Usuário atualizado", { user });
   } catch (err) {
@@ -198,11 +185,9 @@ export async function deleteUserController(req, res) {
       return sendError(res, 400, "ID inválido");
     }
 
-    const user = await User.findByIdAndDelete(id);
+    const user = await User.findByIdAndDelete(id).lean();
 
-    if (!user) {
-      return sendError(res, 404, "Usuário não encontrado");
-    }
+    if (!user) return sendError(res, 404, "Usuário não encontrado");
 
     return sendSuccess(res, 200, "Usuário deletado com sucesso");
   } catch (err) {
