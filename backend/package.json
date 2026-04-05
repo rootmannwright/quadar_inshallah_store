@@ -1,18 +1,16 @@
 {
-  "devDependencies": {
-    "@babel/preset-env": "^7.29.0",
-    "@eslint/js": "^10.0.1",
-    "babel-jest": "^30.2.0",
-    "eslint": "^10.0.2",
-    "globals": "^17.3.0",
-    "jest": "^30.2.0",
-    "mongodb-memory-server": "^11.0.1",
-    "supertest": "^7.2.2"
-  },
   "name": "quadar_inshallah_store",
   "version": "1.0.0",
   "description": "",
   "main": "script.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+    "dev": "node server.js",
+    "start": "node api.js",
+    "lint": "eslint . --ext .js"
+  },
   "dependencies": {
     "acorn": "^8.16.0",
     "acorn-jsx": "^5.3.2",
@@ -37,87 +35,32 @@
     "deep-is": "^0.1.4",
     "dotenv": "^17.3.1",
     "escape-string-regexp": "^5.0.0",
-    "eslint-scope": "^9.1.1",
-    "eslint-visitor-keys": "^5.0.1",
-    "espree": "^11.1.1",
-    "esquery": "^1.7.0",
-    "esrecurse": "^4.3.0",
-    "estraverse": "^5.3.0",
-    "esutils": "^2.0.3",
     "express": "^5.2.1",
     "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^8.2.1",
     "express-session": "^1.19.0",
     "express-validator": "^7.3.1",
-    "fast-deep-equal": "^3.1.3",
-    "fast-json-stable-stringify": "^2.1.0",
-    "fast-levenshtein": "^3.0.0",
-    "file-entry-cache": "^11.1.2",
-    "find-up": "^8.0.0",
-    "flat-cache": "^6.1.20",
-    "flatted": "^3.3.3",
-    "glob-parent": "^6.0.2",
-    "has-flag": "^5.0.1",
     "helmet": "^8.1.0",
     "hpp": "^0.2.3",
-    "ignore": "^7.0.5",
-    "import-fresh": "^4.0.0",
-    "imurmurhash": "^0.1.4",
-    "is-extglob": "^2.1.1",
-    "is-glob": "^4.0.3",
-    "isexe": "^4.0.0",
-    "joi": "^18.0.2",
-    "js-yaml": "^4.1.1",
-    "json-buffer": "^3.0.1",
-    "json-schema-traverse": "^1.0.0",
-    "json-stable-stringify-without-jsonify": "^1.0.1",
     "jsonwebtoken": "^9.0.3",
-    "keyv": "^5.6.0",
-    "levn": "^0.4.1",
-    "locate-path": "^8.0.0",
-    "lodash.merge": "^4.6.2",
-    "minimatch": "^10.2.3",
-    "mongo-sanitize": "^1.1.0",
-    "mongodb": "^7.1.0",
     "mongoose": "^9.2.2",
     "motion": "^12.34.3",
-    "ms": "^2.1.3",
-    "natural-compare": "^1.4.0",
-    "optionator": "^0.9.4",
-    "p-limit": "^7.3.0",
-    "p-locate": "^7.0.0",
-    "parent-module": "^3.2.0",
-    "path-exists": "^5.0.0",
-    "path-key": "^4.0.0",
-    "path-to-regexp": "^8.4.0",
-    "prelude-ls": "^1.2.1",
-    "punycode": "^2.3.1",
-    "qrcode": "^1.5.4",
-    "qs": "^6.15.0",
-    "resolve-from": "^5.0.0",
-    "shebang-command": "^2.0.0",
-    "shebang-regex": "^4.0.0",
-    "slugify": "^1.6.9",
-    "speakeasy": "^2.0.0",
-    "strip-json-comments": "^5.0.3",
-    "stripe": "^20.3.1",
-    "supports-color": "^10.2.2",
-    "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1",
-    "type-check": "^0.4.0",
-    "uri-js": "^4.4.1",
-    "which": "^6.0.1",
-    "word-wrap": "^1.2.5",
+    "mongo-sanitize": "^1.1.0",
     "xss": "^1.0.15",
-    "yocto-queue": "^1.2.2",
     "zod": "^4.3.6"
   },
-  "scripts": {
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
-    "dev": "node server.js",
-    "start": "node api.js",
-    "lint": "eslint . --ext .js"
+  "devDependencies": {
+    "@babel/preset-env": "^7.29.0",
+    "@eslint/js": "^10.0.1",
+    "babel-jest": "^30.2.0",
+    "eslint": "^10.0.2",
+    "globals": "^17.3.0",
+    "jest": "^30.2.0",
+    "mongodb-memory-server": "^11.0.1",
+    "supertest": "^7.2.2"
+  },
+  "overrides": {
+    "cookie": "0.7.0"
   },
   "eslintConfig": {
     "env": {
@@ -125,25 +68,14 @@
       "es2021": true,
       "node": true
     },
-    "extends": [
-      "eslint:recommended"
-    ],
+    "extends": ["eslint:recommended"],
     "parserOptions": {
       "ecmaVersion": 12,
       "sourceType": "module"
     },
     "rules": {
-      "no-unused-vars": [
-        "error",
-        {
-          "argsIgnorePattern": "^_"
-        }
-      ],
+      "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
       "no-console": "off"
     }
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module"
+  }
 }
