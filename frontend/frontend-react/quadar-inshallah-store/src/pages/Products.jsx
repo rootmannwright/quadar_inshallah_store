@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import api from "../api";
+import api from "../api"; // Axios instance
 import "../styles/products.css";
 
 const containerVariants = {
@@ -20,7 +20,8 @@ const itemVariants = {
 function StockLabel({ stock }) {
   if (stock === undefined || stock === null) return null;
   if (stock === 0) return <span className="product-stock out">Esgotado</span>;
-  if (stock <= 5) return <span className="product-stock low">Últimas {stock} unidades</span>;
+  if (stock <= 5)
+    return <span className="product-stock low">Últimas {stock} unidades</span>;
   return <span className="product-stock ok">Em estoque: {stock}</span>;
 }
 
@@ -77,7 +78,15 @@ export default function Products() {
   const [error, setError] = useState(null);
   const [adding, setAdding] = useState(null);
 
-  // 🔥 GET PRODUCTS (agora usando api)
+  // Pega token CSRF
+  const getCsrfToken = async () => {
+    const res = await fetch("http://localhost:5000/api/csrf-token", {
+      credentials: "include",
+    });
+    const data = await res.json();
+    return data.csrfToken;
+  };
+
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -93,31 +102,28 @@ export default function Products() {
     fetchProducts();
   }, []);
 
-  async function handleAddToCart(product) {
-  setAdding(product._id);
+  const handleAddToCart = async (product) => {
+    setAdding(product._id);
+    try {
+      const csrfToken = await getCsrfToken();
 
-  try {
-    const res = await api.post(
-      "/api/cart/add",
-      {
-        productId: product._id,
-        qty: 1,
-      },
-      {
-        withCredentials: true,
-      }
-    );
+      await api.post(
+        "/api/cart/add",
+        { productId: product._id, qty: 1 },
+        {
+          withCredentials: true,
+          headers: { "X-CSRF-Token": csrfToken },
+        }
+      );
 
-    console.log("Adicionado:", res.data);
-
-  } catch (err) {
-    console.error("Erro completo:", err);
-
-    alert("Erro ao adicionar ao carrinho");
-  } finally {
-    setAdding(null);
-  }
-}
+      alert("Produto adicionado ao carrinho!");
+    } catch (err) {
+      console.error("Erro completo:", err);
+      alert("Erro ao adicionar ao carrinho");
+    } finally {
+      setAdding(null);
+    }
+  };
 
   return (
     <div className="products-page">

@@ -83,10 +83,9 @@ app.use(
 );
 
 // ==========================
-// BODY PARSER
+// BODY PARSER & HPP
 // ==========================
 app.use(express.json({ limit: "10kb" }));
-app.use(express.urlencoded({ extended: true }));
 app.use(hpp());
 
 // ==========================
@@ -114,7 +113,7 @@ const authLimiter = rateLimit({
 app.use("/api/auth/login", authLimiter);
 
 // ==========================
-// SESSION (para carrinho ou CSRF)
+// SESSION (ESSENTIAL PRO CART)
 // ==========================
 app.use(
   session({
@@ -132,27 +131,14 @@ app.use(
 );
 
 // ==========================
-// CSRF (opcional)
+// CSRF PROTECTION
 // ==========================
-// Se você está usando API REST com JWT, comente estas linhas.
-// Se estiver usando cookies de sessão no front, mantenha.
-const csrfProtection = csurf({
-  cookie: false // usa session para armazenar token
-});
-app.use(csrfProtection);
-
-// Middleware para enviar token CSRF
-app.use((req, res, next) => {
-  res.locals.csrfToken = req.csrfToken ? req.csrfToken() : null;
-  next();
-});
+// Usando sessão para armazenar token CSRF
+app.use(csurf({ cookie: false }));
 
 // Endpoint para fornecer token CSRF ao frontend
 app.get("/api/csrf-token", (req, res) => {
-  if (req.csrfToken) {
-    return res.json({ csrfToken: req.csrfToken() });
-  }
-  res.json({ csrfToken: null });
+  res.json({ csrfToken: req.csrfToken() });
 });
 
 // ==========================
