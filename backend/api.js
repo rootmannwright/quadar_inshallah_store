@@ -9,6 +9,10 @@ import hpp from "hpp";
 import path from "path";
 import { fileURLToPath } from "url";
 import session from "express-session";
+import csurf from "csurf";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // ==========================
 // ROUTES
@@ -30,7 +34,7 @@ import { requestLogger } from "./middleware/requestLogger.js";
 // ==========================
 const app = express();
 app.disable("x-powered-by");
-app.set("trust proxy", 1);
+app.set("trust proxy", 1); // necessário se usar HTTPS reverso em produção
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -79,23 +83,6 @@ app.use(
 );
 
 // ==========================
-// SESSION (ESSENCIAL PRO CART)
-// ==========================
-app.use(
-  session({
-    name: "qid",
-    secret: "quadar-secret",
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-      httpOnly: true,
-      secure: false,       // HTTP local: precisa ser false
-      sameSite: "lax",     // necessário para React frontend localhost
-      maxAge: 1000 * 60 * 60 * 24 * 7 // 7 dias
-    }
-  })
-);
-// ==========================
 // BODY PARSER
 // ==========================
 app.use(express.json({ limit: "10kb" }));
@@ -126,9 +113,44 @@ const authLimiter = rateLimit({
 app.use("/api/auth/login", authLimiter);
 
 // ==========================
+// SESSION (ESSENCIAL PRO CART)
+// ==========================
+app.use(
+  session({
+    name: "qid",
+    secret: process.env.SESSION_SECRET || "quadar-secret",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // HTTPS somente em produção
+      sameSite: "strict", // protege contra CSRF
+      maxAge: 1000 * 60 * 60 * 24 * 7 // 7 dias
+    }
+  })
+);
+
+// ==========================
+// CSRF PROTECTION
+// ==========================
+const csrfProtection = csurf({
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict"
+  }
+});
+app.use(csrfProtection);
+
+// Endpoint para fornecer token CSRF ao frontend
+app.get("/api/csrf-token", (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
+
+// ==========================
 // STATIC FILES
 // ==========================
-app.use(express.static(path.join(__dirname, "public")));
+app.use("/images", express.static(path.join(__dirname, "public/images")));
 
 // ==========================
 // ROUTES
@@ -149,7 +171,12 @@ app.get("/", (req, res) => {
 // ==========================
 // ERROR HANDLER
 // ==========================
-app.use(errorHandler);
+app.use((err, req, res, next) => {
+  if (err.code === "EBADCSRFTOKEN") {
+    return res.status(403).json({ error: "CSRF token inválido" });
+  }
+  return errorHandler(err, req, res, next);
+});
 
 // ==========================
 // EXPORT
