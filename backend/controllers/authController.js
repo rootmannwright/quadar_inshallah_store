@@ -1,3 +1,4 @@
+// authController.js
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
@@ -23,21 +24,21 @@ const sendSuccess = (res, status, message, data = {}) => {
 };
 
 /* =========================
-   INPUT VALIDATION
+   INPUT SANITIZATION
 ========================= */
-const sanitizeEmail = (email) => email?.toLowerCase().trim();
-const sanitizeString = (str) => str?.trim();
+const sanitizeString = (str) =>
+  typeof str === "string" ? str.trim() : "";
+const sanitizeEmail = (email) =>
+  typeof email === "string" ? email.toLowerCase().trim() : "";
 
 /* =========================
    REGISTER
 ========================= */
 export async function register(req, res) {
   try {
-    let { name, email, password } = req.body;
-
-    name = sanitizeString(name);
-    email = sanitizeEmail(email);
-    password = sanitizeString(password);
+    const name = sanitizeString(req.body.name);
+    const email = sanitizeEmail(req.body.email);
+    const password = sanitizeString(req.body.password);
 
     if (!name || !email || !password) {
       return sendError(res, 400, "Todos os campos são obrigatórios");
@@ -47,11 +48,9 @@ export async function register(req, res) {
       return sendError(res, 400, "Senha deve ter no mínimo 6 caracteres");
     }
 
-    // ✅ Proteção contra NoSQL Injection
+    // ✅ Proteção NoSQL Injection
     const existingUser = await User.findOne({ email }).lean();
-    if (existingUser) {
-      return sendError(res, 409, "Email já registrado");
-    }
+    if (existingUser) return sendError(res, 409, "Email já registrado");
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -81,25 +80,19 @@ export async function register(req, res) {
 ========================= */
 export async function login(req, res) {
   try {
-    let { email, password } = req.body;
-
-    email = sanitizeEmail(email);
-    password = sanitizeString(password);
+    const email = sanitizeEmail(req.body.email);
+    const password = sanitizeString(req.body.password);
 
     if (!email || !password) {
       return sendError(res, 400, "Email e senha são obrigatórios");
     }
 
-    // ✅ Proteção contra NoSQL Injection
+    // ✅ Proteção NoSQL Injection
     const user = await User.findOne({ email }).lean();
-    if (!user) {
-      return sendError(res, 401, "Credenciais inválidas");
-    }
+    if (!user) return sendError(res, 401, "Credenciais inválidas");
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return sendError(res, 401, "Credenciais inválidas");
-    }
+    if (!isMatch) return sendError(res, 401, "Credenciais inválidas");
 
     if (!process.env.JWT_SECRET) {
       console.error("JWT_SECRET não definido");
@@ -147,23 +140,32 @@ export async function updateUserController(req, res) {
   try {
     const { id } = req.params;
 
-    // ✅ Validação do ID
+    // ✅ Valida ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return sendError(res, 400, "ID inválido");
     }
 
     const updateData = {};
-    if (req.body.name) updateData.name = sanitizeString(req.body.name);
-    if (req.body.email) updateData.email = sanitizeEmail(req.body.email);
-    if (req.body.password) {
-      updateData.password = await bcrypt.hash(sanitizeString(req.body.password), 10);
+    if (req.body.name && typeof req.body.name === "string") {
+      updateData.name = sanitizeString(req.body.name);
+    }
+    if (req.body.email && typeof req.body.email === "string") {
+      updateData.email = sanitizeEmail(req.body.email);
+    }
+    if (req.body.password && typeof req.body.password === "string") {
+      updateData.password = await bcrypt.hash(
+        sanitizeString(req.body.password),
+        10
+      );
     }
 
-    // ✅ Evita NoSQL Injection usando objetos simples
+    // ✅ Evita NoSQL Injection
     const user = await User.findByIdAndUpdate(id, updateData, {
       new: true,
       runValidators: true,
-    }).select("-password").lean();
+    })
+      .select("-password")
+      .lean();
 
     if (!user) return sendError(res, 404, "Usuário não encontrado");
 
