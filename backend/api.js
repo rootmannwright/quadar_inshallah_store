@@ -34,7 +34,7 @@ import { requestLogger } from "./middleware/requestLogger.js";
 // ==========================
 const app = express();
 app.disable("x-powered-by");
-app.set("trust proxy", 1); // necessário se usar HTTPS reverso em produção
+app.set("trust proxy", 1);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -86,6 +86,7 @@ app.use(
 // BODY PARSER
 // ==========================
 app.use(express.json({ limit: "10kb" }));
+app.use(express.urlencoded({ extended: true }));
 app.use(hpp());
 
 // ==========================
@@ -113,7 +114,7 @@ const authLimiter = rateLimit({
 app.use("/api/auth/login", authLimiter);
 
 // ==========================
-// SESSION (ESSENCIAL PRO CART)
+// SESSION (para carrinho ou CSRF)
 // ==========================
 app.use(
   session({
@@ -123,28 +124,35 @@ app.use(
     saveUninitialized: true,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // HTTPS somente em produção
-      sameSite: "strict", // protege contra CSRF
-      maxAge: 1000 * 60 * 60 * 24 * 7 // 7 dias
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 1000 * 60 * 60 * 24 * 7
     }
   })
 );
 
 // ==========================
-// CSRF PROTECTION
+// CSRF (opcional)
 // ==========================
+// Se você está usando API REST com JWT, comente estas linhas.
+// Se estiver usando cookies de sessão no front, mantenha.
 const csrfProtection = csurf({
-  cookie: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict"
-  }
+  cookie: false // usa session para armazenar token
 });
 app.use(csrfProtection);
 
+// Middleware para enviar token CSRF
+app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken ? req.csrfToken() : null;
+  next();
+});
+
 // Endpoint para fornecer token CSRF ao frontend
 app.get("/api/csrf-token", (req, res) => {
-  res.json({ csrfToken: req.csrfToken() });
+  if (req.csrfToken) {
+    return res.json({ csrfToken: req.csrfToken() });
+  }
+  res.json({ csrfToken: null });
 });
 
 // ==========================
