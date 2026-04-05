@@ -10,34 +10,38 @@ jobs:
     name: Backend CI
     runs-on: ubuntu-latest
 
+    # Caminho do backend (mude se sua pasta tiver outro nome)
     defaults:
       run:
         working-directory: backend
 
     steps:
-      - name: Checkout repo
+      # Pega o código
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      # Configura Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
           cache-dependency-path: backend/package-lock.json
 
+      # Instala dependências
       - name: Install dependencies
         run: npm ci
 
-      # Só roda lint se existir
+      # Lint opcional
       - name: Run lint (if exists)
         run: npm run lint --if-present
 
-      # Só roda test se existir
+      # Testes opcionais
       - name: Run tests (if exists)
         run: npm test --if-present
 
-      - name: Done
-        run: echo "Backend CI passed"
+      - name: Backend CI finished
+        run: echo "✅ Backend CI passed"
 
   deploy:
     name: Deploy
@@ -46,5 +50,8 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Deploy placeholder
-        run: echo "Deploy ready (Railway / VPS / PM2)"
+        run: echo "🚀 Deploy ready (substitua pelo comando real: Railway / VPS / PM2)"
