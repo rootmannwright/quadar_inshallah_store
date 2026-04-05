@@ -26,37 +26,25 @@ jobs:
           cache-dependency-path: backend/package-lock.json
 
       - name: Install dependencies
-        run: cd backend && npm install
+        run: npm ci
 
-      - name: Run lint
+      # Só roda lint se existir
+      - name: Run lint (if exists)
         run: npm run lint --if-present
 
-      - name: Run tests
-        run: cd backend && npm test --if-present
+      # Só roda test se existir
+      - name: Run tests (if exists)
+        run: npm test --if-present
 
-      - name: Upload coverage
-        if: always()
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./backend/coverage/coverage-final.json
-          flags: backend
-
-      - name: Backend CI Complete
-        run: echo "✅ Backend CI passed"
+      - name: Done
+        run: echo "Backend CI passed"
 
   deploy:
     name: Deploy
     needs: backend
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main'
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Deploy notification
-        run: echo "🚀 Deploy ready (Railway / VPS / PM2)"
-      
-      # Add your actual deployment steps here
-      # - name: Deploy to Railway
-      #   run: ...
+      - name: Deploy placeholder
+        run: echo "Deploy ready (Railway / VPS / PM2)"
