@@ -31,22 +31,22 @@ async function apiRegister({ name, email, password }) {
 // ─── Inline SVG Icons ─────────────────────────────────────────────────────────
 const IconEye = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-    <circle cx="12" cy="12" r="3"/>
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+    <circle cx="12" cy="12" r="3" />
   </svg>
 );
 
 const IconEyeOff = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
-    <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
-    <line x1="1" y1="1" x2="23" y2="23"/>
+    <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94" />
+    <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19" />
+    <line x1="1" y1="1" x2="23" y2="23" />
   </svg>
 );
 
 const IconChevron = () => (
   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="9 18 15 12 9 6"/>
+    <polyline points="9 18 15 12 9 6" />
   </svg>
 );
 
@@ -69,7 +69,7 @@ const slideErr = {
 
 // ─── Fonts ────────────────────────────────────────────────────────────────────
 const serif = "Georgia, 'Times New Roman', Times, serif";
-const sans  = "'Helvetica Neue', Helvetica, Arial, sans-serif";
+const sans = "'Helvetica Neue', Helvetica, Arial, sans-serif";
 
 // ─── useTheme ─────────────────────────────────────────────────────────────────
 function useTheme() {
@@ -240,11 +240,19 @@ export default function Register() {
   const theme = useTheme();
   const isLight = theme === "light";
 
-  const [form, setForm]         = useState({ name: "", email: "", password: "", confirm: "" });
-  const [errors, setErrors]     = useState({});
+ const [form, setForm] = useState({
+  name: "",
+  email: "",
+  password: "",
+  confirm: "",
+  phone: "",
+  address: "",
+  zip: ""
+});
+  const [errors, setErrors] = useState({});
   const [showPass, setShowPass] = useState(false);
   const [showConf, setShowConf] = useState(false);
-  const [loading, setLoading]   = useState(false);
+  const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
 
   const set = (field) => (e) => {
@@ -255,12 +263,12 @@ export default function Register() {
 
   const validate = () => {
     const e = {};
-    if (!form.name.trim())   e.name    = "Nome é obrigatório.";
-    if (!form.email.trim())  e.email   = "E-mail é obrigatório.";
+    if (!form.name.trim()) e.name = "Nome é obrigatório.";
+    if (!form.email.trim()) e.email = "E-mail é obrigatório.";
     else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = "E-mail inválido.";
-    if (!form.password)      e.password = "Senha é obrigatória.";
+    if (!form.password) e.password = "Senha é obrigatória.";
     else if (form.password.length < 6) e.password = "Mínimo de 6 caracteres.";
-    if (!form.confirm)       e.confirm  = "Confirme sua senha.";
+    if (!form.confirm) e.confirm = "Confirme sua senha.";
     else if (form.confirm !== form.password) e.confirm = "As senhas não coincidem.";
     return e;
   };
@@ -505,6 +513,33 @@ export default function Register() {
                 error={errors.confirm}
                 autoComplete="new-password"
                 rightSlot={<EyeBtn show={showConf} onToggle={() => setShowConf((p) => !p)} />}
+              />
+              <InputField
+                id="phone"
+                label="Phone Number"
+                type="tel"
+                value={form.phone}
+                onChange={set("phone")}
+                error={errors.phone}
+                autoComplete="tel"
+              />
+              <InputField
+                id="address"
+                label="Shipping Address"
+                value={form.address}
+                onChange={set("address")}
+                error={errors.address}
+                autoComplete="street-address"
+              />
+
+              <InputField
+                id="zip"
+                label="ZIP Code"
+                type="text"
+                value={form.zip}
+                onChange={set("zip")}
+                error={errors.zip}
+                autoComplete="postal-code"
               />
 
               {/* api error */}

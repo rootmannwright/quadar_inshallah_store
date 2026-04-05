@@ -1,9 +1,11 @@
+// context/AuthProvider.jsx
 import { createContext, useContext, useState } from "react";
-import api from "../api.js";
+import api from "../api.js"; // seu axios configurado com baseURL
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
+  // ─── Estado do usuário ───────────────────────────────
   const [user, setUser] = useState(() => {
     try {
       const stored = localStorage.getItem("user");
@@ -13,23 +15,28 @@ export function AuthProvider({ children }) {
     }
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState(null);
+  const [error, setError] = useState(null);
 
-  // ─── Login ───────────────────────────────────────────────────────────────
+  // ─── Login ───────────────────────────────────────────
   const login = async (email, password) => {
     setLoading(true);
     setError(null);
+
     try {
       const { data } = await api.post("/api/auth/login", { email, password });
+
+      // salva token e usuário no localStorage
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+
       setUser(data.user);
-      return { success: true };
+      return { success: true, user: data.user };
     } catch (err) {
-      // Repassa a mensagem exata da sua API (rate limit, credenciais, etc.)
-      const msg = err.response?.data?.message
-        || err.response?.data?.error
-        || "Sign in failed. Please try again.";
+      // mensagem da API ou fallback
+      const msg =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        "Login failed. Please try again.";
       setError(msg);
       return { success: false, message: msg };
     } finally {
@@ -37,20 +44,29 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // ─── Register ────────────────────────────────────────────────────────────
+  // ─── Register ────────────────────────────────────────
   const register = async (name, email, password) => {
     setLoading(true);
     setError(null);
+
     try {
-      const { data } = await api.post("/api/auth/register", { name, email, password });
+      const { data } = await api.post("/api/auth/register", {
+        name,
+        email,
+        password,
+      });
+
+      // salva token e usuário no localStorage
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+
       setUser(data.user);
-      return { success: true };
+      return { success: true, user: data.user };
     } catch (err) {
-      const msg = err.response?.data?.message
-        || err.response?.data?.error
-        || "Registration failed. Please try again.";
+      const msg =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        "Registration failed. Please try again.";
       setError(msg);
       return { success: false, message: msg };
     } finally {
@@ -58,20 +74,24 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // ─── Logout ──────────────────────────────────────────────────────────────
+  // ─── Logout ─────────────────────────────────────────
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
   };
 
+  // ─── Retorno do contexto ────────────────────────────
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading, error }}>
+    <AuthContext.Provider
+      value={{ user, login, register, logout, loading, error }}
+    >
       {children}
     </AuthContext.Provider>
   );
 }
 
+// Hook de acesso ao contexto
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");

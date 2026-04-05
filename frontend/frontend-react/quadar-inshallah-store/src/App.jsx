@@ -1,3 +1,4 @@
+// App.jsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Providers
@@ -13,15 +14,15 @@ import AccessibilityPanel from "./components/accessibility/AccessibilityPanel";
 import PrivateRoute from "./routes/PrivateRoute";
 
 // Pages
-import Home      from "./pages/Home";
-import Login     from "./pages/Login";
-import Register  from "./pages/Register";
-import Cart      from "./pages/Cart";
-import Stories   from "./pages/Stories";
-import Products  from "./pages/Products";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Cart from "./pages/Cart";
+import Stories from "./pages/Stories";
+import Products from "./pages/Products";
 import Dashboard from "./pages/Dashboard";
-import Checkout  from "./pages/Checkout";
-import Account   from "./pages/Account";
+import Checkout from "./pages/Checkout";
+import Account from "./pages/Account";
 
 // Layout
 import PublicLayout from "./layouts/PublicLayout";
@@ -37,46 +38,55 @@ function App() {
 
               <Routes>
 
-                {/* LOGIN / REGISTER — páginas únicas, sem layout */}
-                <Route path="/login"    element={<Login />} />
+                {/* LOGIN / REGISTER — sem layout */}
+                <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
-                {/* PÚBLICAS COM LAYOUT */}
+                {/* ROTAS COM LAYOUT (HEADER + FOOTER) */}
                 <Route element={<PublicLayout />}>
-                  <Route path="/"         element={<Home />} />
+
+                  {/* PÚBLICAS */}
+                  <Route path="/" element={<Home />} />
                   <Route path="/products" element={<Products />} />
-                  <Route path="/stories"  element={<Stories />} />
-                  <Route path="/cart"     element={<Cart />} />
+                  <Route path="/stories" element={<Stories />} />
+                  <Route path="/cart" element={<Cart />} />
+
+                  {/* PRIVADAS — conta, checkout, dashboard */}
+                  <Route
+                    path="/customer"
+                    element={
+                      <PrivateRoute>
+                        <Account />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/checkout"
+                    element={
+                      <PrivateRoute>
+                        <Checkout />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <PrivateRoute>
+                        <Dashboard />
+                      </PrivateRoute>
+                    }
+                  />
                 </Route>
 
-                {/* PRIVADAS */}
-                <Route
-                  path="/checkout"
-                  element={
-                    <PrivateRoute>
-                      <Checkout />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/customer"
-                  element={
-                    <PrivateRoute>
-                      <Account />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path="/dashboard"
-                  element={
-                    <PrivateRoute>
-                      <Dashboard />
-                    </PrivateRoute>
-                  }
-                />
-
                 {/* 404 */}
-                <Route path="*" element={<h1>404 - Página não encontrada</h1>} />
+                <Route
+                  path="*"
+                  element={
+                    <h1 style={{ padding: "4rem", textAlign: "center" }}>
+                      404 — Página não encontrada
+                    </h1>
+                  }
+                />
 
               </Routes>
             </BrowserRouter>
