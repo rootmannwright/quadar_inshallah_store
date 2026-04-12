@@ -4,6 +4,7 @@ import Joi from "joi";
 import mongoose from "mongoose";
 import authMiddleware from "../middleware/authMiddleware.js";
 import Order from "../models/Order.js";
+import Product from "../models/Product.js";
 
 const router = express.Router();
 
@@ -94,11 +95,17 @@ router.post("/checkout-session", async (req, res) => {
     const schema = Joi.object({
       items: Joi.array()
         .items(
-          Joi.object({
-            name: Joi.string().required(),
-            price: Joi.number().positive().required(),
-            quantity: Joi.number().integer().min(1).required(),
-          })
+          Joi.alternatives().try(
+            Joi.object({
+              productId: Joi.string().required(),
+              quantity: Joi.number().integer().min(1).required(),
+            }),
+            Joi.object({
+              name: Joi.string().required(),
+              price: Joi.number().positive().required(),
+              quantity: Joi.number().integer().min(1).required(),
+            })
+          )
         )
         .min(1)
         .required(),
@@ -112,18 +119,70 @@ router.post("/checkout-session", async (req, res) => {
 
     const { items } = value;
 
+    const usingProductIdPayload = items.every((item) => item.productId);
+    const usingInlinePayload = items.every((item) => item.name && item.price);
+
+    if (!usingProductIdPayload && !usingInlinePayload) {
+      return res.status(400).json({
+        error: "All checkout items must follow the same payload format",
+      });
+    }
+
+    let line_items = [];
+
+    if (usingProductIdPayload) {
+      const ids = items.map((item) => item.productId);
+
+      const products = await Product.find({
+        _id: { $in: ids.filter((id) => mongoose.Types.ObjectId.isValid(id)) },
+      }).select("name price");
+
+      if (!products.length) {
+        return res.status(404).json({ error: "Products not found" });
+      }
+
+      line_items = items.map((item) => {
+        const product = products.find((p) => p._id.toString() === item.productId);
+
+        if (!product) {
+          throw new Error(`Product not found: ${item.productId}`);
+        }
+
+        const price = Number(product.price);
+
+        if (!price || Number.isNaN(price)) {
+          throw new Error(`Invalid product price: ${product.name}`);
+        }
+
+        return {
+          price_data: {
+            currency: "brl",
+            product_data: {
+              name: product.name,
+            },
+            unit_amount: Math.round(price * 100),
+          },
+          quantity: item.quantity,
+        };
+      });
+    } else {
+      line_items = items.map((item) => ({
+        price_data: {
+          currency: "brl",
+          product_data: {
+            name: item.name,
+          },
+          unit_amount: Math.round(item.price * 100),
+        },
+        quantity: item.quantity,
+      }));
+    }
+
     const stripe = getStripe();
 
-    const line_items = items.map((item) => ({
-      price_data: {
-        currency: "brl",
-        product_data: {
-          name: item.name,
-        },
-        unit_amount: Math.round(item.price * 100),
-      },
-      quantity: item.quantity,
-    }));
+    if (!process.env.CLIENT_URL) {
+      throw new Error("CLIENT_URL not defined");
+    }
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
