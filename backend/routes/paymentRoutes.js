@@ -5,7 +5,6 @@ import Joi from "joi";
 import mongoose from "mongoose";
 import authMiddleware from "../middleware/authMiddleware.js";
 import Order from "../models/Order.js";
-import Product from "../models/Product.js";
 
 const router = express.Router();
 
