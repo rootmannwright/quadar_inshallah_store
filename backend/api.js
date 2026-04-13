@@ -1,73 +1,58 @@
-// api.js
-import express                   from "express";
-import cors                      from "cors";
-import helmet                    from "helmet";
+// ========================== API.JS (REFATORADO) ==========================
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
 import rateLimit, { ipKeyGenerator } from "express-rate-limit";
-import hpp                       from "hpp";
-import session                   from "express-session";
-import MongoStore                from "connect-mongo";
-import path                      from "path";
-import { fileURLToPath }         from "url";
-import dotenv                    from "dotenv";
+import hpp from "hpp";
+import path from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+import csrf from "csurf";
+import cookieParser from "cookie-parser";
 
-dotenv.config();
-
-// ==========================
 // ROUTES
-// ==========================
-import authRoutes    from "./routes/authRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import webhookRoutes from "./routes/webhookRoutes.js";
-import cartRoutes    from "./routes/cartRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js";
 
-// ==========================
 // MIDDLEWARES
-// ==========================
-import errorHandler      from "./middleware/errorHandler.js";
+import errorHandler from "./middleware/errorHandler.js";
 import { requestLogger } from "./middleware/requestLogger.js";
 
-// ==========================
-// APP INIT
-// ==========================
+dotenv.config();
+
 const app = express();
 
 app.disable("x-powered-by");
 app.set("trust proxy", 1);
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname  = path.dirname(__filename);
+const __dirname = path.dirname(__filename);
 
-// ==========================
-// SECURITY — HELMET
-// ==========================
+// ========================== SECURITY ==========================
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
-        defaultSrc:              ["'self'"],
-        scriptSrc:               ["'self'"],
-        styleSrc:                ["'self'", "'unsafe-inline'"],
-        imgSrc:                  ["'self'", "data:", "https:"],
-        connectSrc:              [
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: [
           "'self'",
           process.env.CLIENT_URL || "http://localhost:5173",
           "https://api.stripe.com",
         ],
-        objectSrc:               ["'none'"],
-        frameAncestors:          ["'none'"],
-        upgradeInsecureRequests: [],
+        objectSrc: ["'none'"],
+        frameAncestors: ["'none'"],
       },
     },
-    hsts: process.env.NODE_ENV === "production"
-      ? { maxAge: 31536000, includeSubDomains: true, preload: true }
-      : false,
   })
 );
 
-// ==========================
-// CORS
-// ==========================
+// ========================== CORS ==========================
 const allowedOrigins = [
   process.env.CLIENT_URL || "http://localhost:5173",
   "http://localhost:3000",
@@ -77,123 +62,118 @@ app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
-      callback(new Error(`CORS bloqueado para origem: ${origin}`));
+      return callback(new Error(`CORS bloqueado: ${origin}`));
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
 
-// ==========================
-// BODY PARSER
-// ==========================
-// Webhook da Stripe precisa do body RAW — deve vir ANTES do express.json()
+// ========================== BODY ==========================
 app.use("/api/webhooks", express.raw({ type: "application/json" }));
-
-// Limita payload a 10kb para evitar ataques de body flooding
 app.use(express.json({ limit: "10kb" }));
 
-// ==========================
-// HTTP PARAMETER POLLUTION
-// ==========================
-app.use(hpp());
+// ========================== COOKIES ==========================
+app.use(cookieParser()); // 🔥 ESSENCIAL
 
-// ==========================
-// LOGGING
-// ==========================
+// ========================== EXTRA PROTECTION ==========================
+app.use(hpp());
 app.use(requestLogger);
 
-// ==========================
-// SESSION
-// Cart usa req.session — funciona para guests e usuários logados.
-// connect-mongo persiste as sessões no MongoDB, sobrevivendo a restarts.
-// ==========================
+// ========================== RATE LIMIT ==========================
 app.use(
-  session({
-    name:              "qid",
-    secret:            process.env.SESSION_SECRET || "troque-este-secret-em-producao",
-    resave:            false,
-    saveUninitialized: false, // não cria sessão para quem não tem cart ainda
-    store: MongoStore.create({
-      mongoUrl:       process.env.MONGO_URI,
-      collectionName: "sessions",
-      ttl:            60 * 60 * 24 * 7, // 7 dias em segundos
-      autoRemove:     "native",
-    }),
-    cookie: {
-      httpOnly: true,
-      secure:   process.env.NODE_ENV === "production", // true só em HTTPS
-      sameSite: "lax",
-      maxAge:   1000 * 60 * 60 * 24 * 7, // 7 dias em ms
-    },
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 200,
+    keyGenerator: (req) => ipKeyGenerator(req),
   })
 );
 
-// ==========================
-// RATE LIMITERS
-// ==========================
-
-// Geral — proteção contra scraping e DDoS básico
-const globalLimiter = rateLimit({
-  windowMs:        15 * 60 * 1000,
-  max:             200,
-  standardHeaders: true,
-  legacyHeaders:   false,
-  keyGenerator:    (req) => ipKeyGenerator(req),
-  message: { success: false, message: "Muitas requisições. Tente novamente em 15 minutos." },
-});
-
-// Login — brute force protection
-const loginLimiter = rateLimit({
-  windowMs:               15 * 60 * 1000,
-  max:                    10,
-  standardHeaders:        true,
-  legacyHeaders:          false,
-  skipSuccessfulRequests: true,
-  keyGenerator:           (req) => ipKeyGenerator(req),
-  handler: (req, res) => {
-    res.status(429).json({
-      success: false,
-      message: "Muitas tentativas de login. Tente novamente em 15 minutos.",
-    });
+// ========================== CSRF ==========================
+const csrfProtection = csrf({
+  cookie: {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
   },
 });
 
-app.use(globalLimiter);
+// ========================== CSRF TOKEN ROUTE ==========================
+app.get("/api/csrf-token", csrfProtection, (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
 
-// ==========================
-// ROUTES
-// ==========================
-app.use("/api/auth/login", loginLimiter);
-
-app.use("/api/auth",     authRoutes);
+// ========================== ROUTES ==========================
+app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/cart", csrfProtection, cartRoutes);
 app.use("/api/payments", paymentRoutes);
-app.use("/api/cart",     cartRoutes);
 app.use("/api/webhooks", webhookRoutes);
 
-// ==========================
-// STATIC FILES
-// ==========================
+// ========================== STATIC ==========================
 app.use("/images", express.static(path.join(__dirname, "public/images")));
 
-// ==========================
-// HEALTHCHECK
-// ==========================
+// ========================== ROOT ==========================
 app.get("/", (req, res) => {
-  res.json({ success: true, message: "Quadar Inshallah API running 🚀" });
+  res.json({ success: true, message: "API running 🚀" });
 });
 
-// ==========================
-// 404
-// ==========================
+// ========================== 404 ==========================
 app.use((req, res) => {
-  res.status(404).json({ success: false, message: "Rota não encontrada" });
+  res.status(404).json({ success: false, message: "Not found" });
 });
 
-// ==========================
-// ERROR HANDLER GLOBAL — deve ser o ÚLTIMO middleware
-// ==========================
+// ========================== ERROR HANDLER ==========================
 app.use(errorHandler);
 
 export default app;
+
+// ========================== WEBHOOK CONTROLLER ==========================
+
+import Stripe from "stripe";
+import Order from "./models/Order.js";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+export async function stripeWebhook(req, res) {
+  const sig = req.headers["stripe-signature"];
+
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err) {
+    console.error("Webhook signature error:", err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  try {
+    if (event.type === "payment_intent.succeeded") {
+      const paymentIntent = event.data.object;
+      const orderId = paymentIntent.metadata.orderId;
+
+      const order = await Order.findById(orderId);
+      if (!order) return res.status(404).end();
+
+      if (order.status === "paid") return res.status(200).end();
+
+      order.status = "paid";
+      order.paymentIntentId = paymentIntent.id;
+      await order.save();
+
+      console.log("✅ Pedido pago:", orderId);
+    }
+
+    if (event.type === "payment_intent.payment_failed") {
+      console.log("❌ Pagamento falhou");
+    }
+
+    res.status(200).json({ received: true });
+  } catch (err) {
+    console.error("Webhook error:", err);
+    res.status(500).json({ error: "Webhook failed" });
+  }
+}

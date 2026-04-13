@@ -3,9 +3,6 @@ import bcrypt   from "bcryptjs";
 import mongoose from "mongoose";
 import User     from "../models/User.js";
 
-/* =========================
-   HELPERS
-========================= */
 const sendError = (res, status, message, details = null) =>
   res.status(status).json({
     success: false,
@@ -26,9 +23,6 @@ const sanitizeString = (str) =>
 const sanitizeEmail = (email) =>
   typeof email === "string" ? email.toLowerCase().trim() : "";
 
-/* =========================
-   GET ALL USERS
-========================= */
 export async function getAllUsers(req, res) {
   try {
     const users = await User.find({}, "-password").lean();
@@ -40,9 +34,6 @@ export async function getAllUsers(req, res) {
   }
 }
 
-/* =========================
-   GET USER BY ID
-========================= */
 export async function getUserById(req, res) {
   try {
     const { id } = req.params;
@@ -62,9 +53,6 @@ export async function getUserById(req, res) {
   }
 }
 
-/* =========================
-   UPDATE USER
-========================= */
 export async function updateUserController(req, res) {
   try {
     const { id } = req.params;
@@ -111,9 +99,6 @@ export async function updateUserController(req, res) {
   }
 }
 
-/* =========================
-   DELETE USER
-========================= */
 export async function deleteUserController(req, res) {
   try {
     const { id } = req.params;

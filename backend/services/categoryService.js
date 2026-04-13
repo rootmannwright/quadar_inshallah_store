@@ -1,14 +1,9 @@
-// ==========================
-// CATEGORY SERVICE (MONGOOSE)
-// ==========================
+// services/categoryService.js
 import Category from "../models/Category.js";
 import Product from "../models/Product.js";
 import slugify from "slugify";
 import mongoose from "mongoose";
 
-// ==========================
-// HELPERS INTERNOS
-// ==========================
 const generateSlug = async (name, excludeId = null) => {
   let baseSlug = slugify(name, { lower: true, strict: true });
   let suffix = 0;
@@ -34,7 +29,6 @@ const generateSlug = async (name, excludeId = null) => {
   return slug;
 };
 
-// Constrói árvore recursiva
 const buildTree = (categories, parentId = null) => {
   return categories
     .filter((c) =>
@@ -48,9 +42,6 @@ const buildTree = (categories, parentId = null) => {
     }));
 };
 
-// ==========================
-// GET ALL (ÁRVORE)
-// ==========================
 export const getAll = async ({ flat = false } = {}) => {
   const categories = await Category.find({ is_active: true })
     .sort({ sort_order: 1, name: 1 })
@@ -74,9 +65,6 @@ export const getAll = async ({ flat = false } = {}) => {
   return buildTree(categoriesWithCount);
 };
 
-// ==========================
-// GET ALL (ADMIN)
-// ==========================
 export const getAllAdmin = async () => {
   const categories = await Category.find()
     .sort({ sort_order: 1, name: 1 })
@@ -101,9 +89,6 @@ export const getAllAdmin = async () => {
   );
 };
 
-// ==========================
-// GET BY ID
-// ==========================
 export const getById = async (id) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw { status: 400, message: "ID inválido." };
@@ -127,9 +112,6 @@ export const getById = async (id) => {
   };
 };
 
-// ==========================
-// GET BY SLUG
-// ==========================
 export const getBySlug = async (slug) => {
   const category = await Category.findOne({
     slug,
@@ -152,9 +134,6 @@ export const getBySlug = async (slug) => {
   };
 };
 
-// ==========================
-// GET PRODUCTS BY CATEGORY
-// ==========================
 export const getProductsByCategory = async (
   slug,
   { page = 1, limit = 20, sort = "createdAt", order = "desc" } = {}
@@ -194,9 +173,6 @@ export const getProductsByCategory = async (
   };
 };
 
-// ==========================
-// CREATE
-// ==========================
 export const create = async ({
   name,
   description,
@@ -230,9 +206,6 @@ export const create = async ({
   return getById(category._id);
 };
 
-// ==========================
-// UPDATE
-// ==========================
 export const update = async (
   id,
   { name, description, parentId, imageUrl, sortOrder, isActive }
@@ -246,7 +219,6 @@ export const update = async (
     };
   }
 
-  // Verifica filhos diretos (ciclo simples)
   if (parentId) {
     const children = await Category.find({ parent_id: id });
     const childrenIds = children.map((c) => String(c._id));
@@ -279,9 +251,6 @@ export const update = async (
   return getById(id);
 };
 
-// ==========================
-// DELETE
-// ==========================
 export const remove = async (id) => {
   await getById(id);
 
@@ -306,9 +275,6 @@ export const remove = async (id) => {
   return { message: "Categoria removida com sucesso." };
 };
 
-// ==========================
-// REORDER
-// ==========================
 export const reorder = async (items) => {
   if (!Array.isArray(items) || items.length === 0) {
     throw { status: 400, message: "Lista de itens inválida." };

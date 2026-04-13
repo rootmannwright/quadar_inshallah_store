@@ -48,7 +48,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Previne retornar a senha por padrão
 userSchema.methods.toJSON = function () {
   const user = this.toObject();
   delete user.password;

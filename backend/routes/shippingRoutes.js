@@ -1,3 +1,4 @@
+// routes/shippingRoutes.js
 import express from "express";
 import { calcShipping } from "../controllers/shippingController.js";
 import { auth } from "../middleware/authMiddleware.js";

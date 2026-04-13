@@ -1,9 +1,12 @@
+// routes/webhookRoutes.js
 import express from "express";
 import Stripe from "stripe";
 import mongoose from "mongoose";
+import Joi from "joi";
 import rateLimiter from "express-rate-limit";
 import Order from "../models/Order.js";
 import authMiddleware from "../middleware/authMiddleware.js";
+import { handleWebhook } from "../controllers/paymentController.js";
 
 const router = express.Router();
 const getStripe = () => {
@@ -14,14 +17,18 @@ const getStripe = () => {
   return new Stripe(process.env.STRIPE_SECRET_KEY);
 };
 
-// Rate limiter para pagamentos (protege endpoint de abuso)
 const paymentLimiter = rateLimiter({
   windowMs: 15 * 60 * 1000,
-  max: 50, // menos requisições por segurança
+  max: 50, // Less requests allowed for payment-related endpoints.
   message: "Too many payment requests from this IP, please try again later."
 });
 
-// ================= CREATE PAYMENT INTENT =================
+router.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  handleWebhook
+);
+
 router.post("/create-intent", authMiddleware, paymentLimiter, async (req, res) => {
   try {
     // eslint-disable-next-line no-undef
@@ -53,8 +60,13 @@ router.post("/create-intent", authMiddleware, paymentLimiter, async (req, res) =
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(order.total * 100),
       currency: "brl",
-      metadata: { orderId: order._id.toString() },
-    });
+      payment_method_types: ["brl", "card", "boleto", "pix"],
+      metadata: { orderId: order._id.toString()},
+    },
+    {
+      idempotencyKey: order._id.toString() + "-" + Date.now()
+    }
+  );
 
     return res.json({ clientSecret: paymentIntent.client_secret });
 

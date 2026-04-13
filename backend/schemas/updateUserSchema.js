@@ -1,4 +1,4 @@
-// backend/schemas/updateUserSchema.js
+// schemas/updateUserSchema.js
 import { z } from "zod";
 
 export const updateUserSchema = z.object({

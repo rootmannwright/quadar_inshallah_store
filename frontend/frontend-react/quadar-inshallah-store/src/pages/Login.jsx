@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import logoSrc from "/public/logos/logo-letreiro.png";
 import "../styles/login.css";
 import Breadcrumbs from "../components/Breadcrumbs";
-import { useAuth } from "../context/AuthProvider"; // ← integração API
+import { useAuth } from "../context/AuthProvider";
 
-// ─── Animation helpers ───────────────────────────────────────────────────────
+// ─── Animation helpers ────────────────────────────────────────────────────────
 
 const stagger = (delay = 0) => ({
   hidden: { opacity: 0, y: 24 },
@@ -23,7 +23,7 @@ const fadeIn = (delay = 0) => ({
   show: { opacity: 1, transition: { duration: 0.6, delay } },
 });
 
-// ─── ThemeToggle ─────────────────────────────────────────────────────────────
+// ─── ThemeToggle ──────────────────────────────────────────────────────────────
 
 function ThemeToggle({ dark, onToggle }) {
   return (
@@ -52,20 +52,19 @@ function ThemeToggle({ dark, onToggle }) {
 
 // ─── FloatingInput ────────────────────────────────────────────────────────────
 
-function FloatingInput({ id, label, type = "text", value, onChange }) {
+function FloatingInput({ id, label, type = "text", value, onChange, onKeyDown }) {
   const [focused, setFocused] = useState(false);
   const active = focused || value.length > 0;
 
   return (
     <div className={`field${active ? " active" : ""}${focused ? " focused" : ""}`}>
-      <label htmlFor={id} className="field-label">
-        {label}
-      </label>
+      <label htmlFor={id} className="field-label">{label}</label>
       <input
         id={id}
         type={type}
         value={value}
         onChange={onChange}
+        onKeyDown={onKeyDown}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         className="field-input"
@@ -81,7 +80,7 @@ function FloatingInput({ id, label, type = "text", value, onChange }) {
   );
 }
 
-// ─── HeroPanel ───────────────────────────────────────────────────────────────
+// ─── HeroPanel ────────────────────────────────────────────────────────────────
 
 function HeroPanel() {
   return (
@@ -106,7 +105,6 @@ function HeroPanel() {
           <span className="title-line italic">QUADAR'S</span>
           <span className="title-line">SEASON</span>
         </motion.h1>
-
         <motion.p className="hero-sub" variants={stagger(0.45)}>
           Refined essentials for the contemporary wardrobe.
           Crafted with intention, worn with purpose.
@@ -129,58 +127,75 @@ function HeroPanel() {
   );
 }
 
-// ─── LoginForm ───────────────────────────────────────────────────────────────
+// ─── LoginForm ────────────────────────────────────────────────────────────────
 
 function LoginForm({ dark, onToggle }) {
   const { login, error: authError } = useAuth();
-  const navigate = useNavigate();
+  const navigate  = useNavigate();
+  const location  = useLocation();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // Volta para onde o usuário estava antes de ser redirecionado ao login
+  // Ex: veio de /cart → após login volta para /cart
+  const from = location.state?.from?.pathname || null;
+
+  const [email,      setEmail]      = useState("");
+  const [password,   setPassword]   = useState("");
+  const [submitted,  setSubmitted]  = useState(false);
+  const [loading,    setLoading]    = useState(false);
   const [localError, setLocalError] = useState(null);
 
   const errorMsg = localError || authError;
 
+  // ── Submit ──────────────────────────────────────────────────────────────────
   const handleSubmit = async () => {
-  if (!email || !password) return;
-
-  setLocalError(null);
-  setLoading(true);
-
-  try {
-    const result = await login(email, password);
-
-    setLoading(false);
-
-    if (result?.success) {
-      setSubmitted(true);
-
-      // 🔥 pega usuário salvo (ou vindo do login)
-      const user = result.user || JSON.parse(localStorage.getItem("user"));
-
-      setTimeout(() => {
-        if (user?.role === "admin") {
-          navigate("/admin");
-        } else {
-          navigate("/customer");
-        }
-      }, 1200);
-
-    } else {
-      setLocalError(result?.message || "Erro ao fazer login");
+    if (!email.trim() || !password.trim()) {
+      setLocalError("Preencha e-mail e senha");
+      return;
     }
 
-  } catch (err) {
-    setLoading(false);
-    setLocalError("Erro de conexão com servidor");
-  }
-};
+    setLocalError(null);
+    setLoading(true);
+
+    try {
+      const result = await login(email.trim(), password);
+      setLoading(false);
+
+      if (!result.success) {
+        setLocalError(result.message || "Credenciais inválidas");
+        return;
+      }
+
+      // Merge carrinho guest após login
+      const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
+      if (guestCart.length > 0) {
+        localStorage.setItem("pendingCartMerge", JSON.stringify(guestCart));
+        localStorage.removeItem("guestCart");
+      }
+
+      setSubmitted(true);
+
+      // ── replace: true → remove /login do histórico, evita o loop ────────────
+      setTimeout(() => {
+        if (result.user?.role === "admin") {
+          navigate("/dashboard", { replace: true });
+        } else if (from && from !== "/login") {
+          navigate(from, { replace: true });
+        } else {
+          navigate("/products", { replace: true });
+        }
+      }, 800);
+
+    } catch {
+      setLoading(false);
+      setLocalError("Erro de conexão com servidor");
+    }
+  };
+
+  const handleKeyDown = (e) => { if (e.key === "Enter") handleSubmit(); };
 
   return (
     <div className="form-panel">
-      {/* ── Top bar: logo + theme toggle ── */}
+      {/* ── Top bar ── */}
       <motion.div
         className="form-topbar"
         initial={{ opacity: 0, y: -16 }}
@@ -194,11 +209,7 @@ function LoginForm({ dark, onToggle }) {
       </motion.div>
 
       {/* ── Breadcrumbs ── */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-      >
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.2 }}>
         <Breadcrumbs />
       </motion.div>
 
@@ -222,7 +233,6 @@ function LoginForm({ dark, onToggle }) {
               <p className="form-sub">Access your personal account</p>
             </motion.div>
 
-            {/* ── Erro da API ── */}
             <AnimatePresence>
               {errorMsg && (
                 <motion.p
@@ -238,20 +248,8 @@ function LoginForm({ dark, onToggle }) {
             </AnimatePresence>
 
             <motion.div className="form-fields" variants={stagger(0.35)}>
-              <FloatingInput
-                id="email"
-                label="EMAIL ADDRESS"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <FloatingInput
-                id="password"
-                label="PASSWORD"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <FloatingInput id="email"    label="EMAIL ADDRESS" type="email"    value={email}    onChange={(e) => setEmail(e.target.value)}    onKeyDown={handleKeyDown} />
+              <FloatingInput id="password" label="PASSWORD"      type="password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={handleKeyDown} />
             </motion.div>
 
             <motion.div className="form-extras" variants={stagger(0.45)}>
@@ -262,29 +260,17 @@ function LoginForm({ dark, onToggle }) {
               <motion.button
                 className={`submit-btn${loading ? " loading" : ""}`}
                 onClick={handleSubmit}
+                disabled={loading}
                 whileHover={{ scale: loading ? 1 : 1.02 }}
                 whileTap={{ scale: loading ? 1 : 0.97 }}
               >
                 <AnimatePresence mode="wait">
                   {loading ? (
-                    <motion.span
-                      key="loading"
-                      className="btn-loader"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      <span className="dot" />
-                      <span className="dot" />
-                      <span className="dot" />
+                    <motion.span key="loading" className="btn-loader" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                      <span className="dot" /><span className="dot" /><span className="dot" />
                     </motion.span>
                   ) : (
-                    <motion.span
-                      key="label"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                    >
+                    <motion.span key="label" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                       CONTINUE
                     </motion.span>
                   )}
@@ -301,18 +287,16 @@ function LoginForm({ dark, onToggle }) {
             <motion.button
               className="guest-btn"
               variants={stagger(0.72)}
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/products", { replace: true })}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.98 }}
             >
               CONTINUE AS GUEST
             </motion.button>
 
             <motion.p className="signup-prompt" variants={stagger(0.8)}>
               New to Quadar?{" "}
-              <a
-                href="#"
-                className="signup-link"
-                onClick={(e) => { e.preventDefault(); navigate("/register"); }}
-              >
+              <a href="#" className="signup-link" onClick={(e) => { e.preventDefault(); navigate("/register"); }}>
                 CREATE AN ACCOUNT
               </a>
             </motion.p>
@@ -349,9 +333,7 @@ export default function Login() {
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
-    return () => {
-      document.documentElement.removeAttribute("data-theme");
-    };
+    return () => document.documentElement.removeAttribute("data-theme");
   }, [dark]);
 
   return (

@@ -1,42 +1,84 @@
-// context/AuthProvider.jsx
-import { createContext, useContext, useState } from "react";
-import api from "../api.js"; // seu axios configurado com baseURL
+// src/context/AuthProvider.jsx
+import { createContext, useContext, useState, useEffect } from "react";
+import api from "../api";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  // ─── Estado do usuário ───────────────────────────────
   const [user, setUser] = useState(() => {
-    try {
-      const stored = localStorage.getItem("user");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
+    try { return JSON.parse(localStorage.getItem("user")) || null; }
+    catch { return null; }
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
-  // ─── Login ───────────────────────────────────────────
+  const [token, setToken] = useState(() => {
+    const t = localStorage.getItem("token");
+    return t && t !== "undefined" && t !== "null" ? t : "";
+  });
+
+  // Impede que o PrivateRoute redirecione antes do localStorage ser lido
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [loading,        setLoading]       = useState(false);
+  const [error,          setError]         = useState(null);
+
+  useEffect(() => {
+    setIsInitialized(true);
+  }, []);
+
+  // Ouve o evento disparado pelo api.js quando um 401 acontece fora do login
+  // → limpa o estado sem fazer redirect forçado (o PrivateRoute cuida disso)
+  useEffect(() => {
+    const handleExpired = () => {
+      setUser(null);
+      setToken("");
+    };
+
+    window.addEventListener("auth:expired", handleExpired);
+    return () => window.removeEventListener("auth:expired", handleExpired);
+  }, []);
+
+  // ─── Helpers ─────────────────────────────────────────────────────────────
+  const persistSession = (userData, jwt) => {
+    setUser(userData);
+    setToken(jwt);
+    localStorage.setItem("user",  JSON.stringify(userData));
+    localStorage.setItem("token", jwt);
+  };
+
+  const clearSession = () => {
+    setUser(null);
+    setToken("");
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+  };
+
+  // ─── Login ────────────────────────────────────────────────────────────────
   const login = async (email, password) => {
     setLoading(true);
     setError(null);
-
     try {
-      const { data } = await api.post("/api/auth/login", { email, password });
+      const res = await api.post(
+        "/api/auth/login",
+        { email, password },
+        { withCredentials: true }
+      );
+      const { success, user: userData, token: jwt, message } = res.data;
 
-      // salva token e usuário no localStorage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      if (!success) {
+        setError(message || "Credenciais inválidas");
+        return { success: false, message };
+      }
 
-      setUser(data.user);
-      return { success: true, user: data.user };
+      if (jwt) persistSession(userData, jwt);
+      else {
+        // Backend só usa cookie → persiste só o user
+        setUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
+      }
+
+      setError(null);
+      return { success: true, user: userData, token: jwt };
     } catch (err) {
-      // mensagem da API ou fallback
-      const msg =
-        err.response?.data?.message ||
-        err.response?.data?.error ||
-        "Login failed. Please try again.";
+      const msg = err.response?.data?.message || "Erro de conexão";
       setError(msg);
       return { success: false, message: msg };
     } finally {
@@ -44,29 +86,26 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // ─── Register ────────────────────────────────────────
-  const register = async (name, email, password) => {
+  // ─── Register ─────────────────────────────────────────────────────────────
+  const register = async (name, email, password, extras = {}) => {
     setLoading(true);
     setError(null);
-
     try {
-      const { data } = await api.post("/api/auth/register", {
-        name,
-        email,
-        password,
-      });
+      const res = await api.post(
+        "/api/auth/register",
+        { name, email, password, ...extras },
+        { withCredentials: true }
+      );
+      const { success, user: userData, token: jwt, message } = res.data;
 
-      // salva token e usuário no localStorage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      if (!success) { setError(message); return { success: false, message }; }
 
-      setUser(data.user);
-      return { success: true, user: data.user };
+      if (jwt) persistSession(userData, jwt);
+      else { setUser(userData); localStorage.setItem("user", JSON.stringify(userData)); }
+
+      return { success: true, user: userData };
     } catch (err) {
-      const msg =
-        err.response?.data?.message ||
-        err.response?.data?.error ||
-        "Registration failed. Please try again.";
+      const msg = err.response?.data?.message || "Erro ao cadastrar";
       setError(msg);
       return { success: false, message: msg };
     } finally {
@@ -74,26 +113,23 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // ─── Logout ─────────────────────────────────────────
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
+  // ─── Logout ───────────────────────────────────────────────────────────────
+  const logout = async () => {
+    clearSession(); // limpa imediatamente, não espera o servidor
+    try {
+      await api.post("/api/auth/logout", {}, { withCredentials: true });
+    } catch {
+      // ignora falha de rede — sessão local já foi limpa
+    }
   };
 
-  // ─── Retorno do contexto ────────────────────────────
   return (
     <AuthContext.Provider
-      value={{ user, login, register, logout, loading, error }}
+      value={{ user, token, login, register, logout, loading, isInitialized, error }}
     >
       {children}
     </AuthContext.Provider>
   );
 }
 
-// Hook de acesso ao contexto
-export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");
-  return ctx;
-};
+export const useAuth = () => useContext(AuthContext);

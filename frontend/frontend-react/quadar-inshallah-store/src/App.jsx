@@ -23,9 +23,13 @@ import Products from "./pages/Products";
 import Dashboard from "./pages/Dashboard";
 import Checkout from "./pages/Checkout";
 import Account from "./pages/Account";
+import Success from "./pages/Success";
+import Cancel from "./pages/Cancel";
 
 // Layout
 import PublicLayout from "./layouts/PublicLayout";
+
+import "./global.css";
 
 function App() {
   return (
@@ -87,6 +91,10 @@ function App() {
                     </h1>
                   }
                 />
+
+                {/* PÁGINAS DE RETORNO DO STRIPE */}
+                <Route path="/success" element={<Success />} />
+                <Route path="/cancel" element={<Cancel />} />
 
               </Routes>
             </BrowserRouter>

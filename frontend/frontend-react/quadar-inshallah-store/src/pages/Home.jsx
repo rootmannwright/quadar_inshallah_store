@@ -86,7 +86,7 @@ export default function Home() {
           <div className="info">
             <span>Quadar</span>
             <h3>T-Shirt Black</h3>
-            <p>$149</p>
+            <p>$120</p>
           </div>
         </div>
 
@@ -95,7 +95,15 @@ export default function Home() {
           <div className="info">
             <span>Quadar</span>
             <h3>Pants White</h3>
-            <p>$149</p>
+            <p>$229</p>
+          </div>
+        </div>
+        <div className="product-card reveal">
+          <img src="/images/bermuda_jeans_preta_quadar_inshallah_elipse_icon.jpg" />
+          <div className="info">
+            <span>Quadar</span>
+            <h3>Pants White</h3>
+            <p>$250</p>
           </div>
         </div>
       </section>

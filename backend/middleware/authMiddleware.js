@@ -1,33 +1,48 @@
-// ==========================
-// AUTH MIDDLEWARE
-// ==========================
+import jwt from "jsonwebtoken";
+
 export function authMiddleware(req, res, next) {
-  try {
-    // exemplo simples (ajusta pro teu JWT depois)
-    const user = req.user;
+  try {    // Extract token from Authorization header.
+    const authHeader = req.headers.authorization;
 
-    if (!user) {
-      return res.status(401).json({ message: "Não autorizado" });
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        success: false,
+        message: "Não autorizado: token ausente",
+      });
     }
 
-    next();
-  } catch {
-    res.status(401).json({ message: "Token inválido" });
-  }
-}
+    const token = authHeader.split(" ")[1];
 
-// ==========================
-// ADMIN ONLY
-// ==========================
-export function adminOnly(req, res, next) {
-  try {
-    if (!req.user || req.user.role !== "admin") {
-      return res.status(403).json({ message: "Acesso negado (admin apenas)" });
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Não autorizado: token ausente",
+      });
     }
 
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    req.user = {
+      id: decoded.userId || decoded.id,
+      role: decoded.role || "user",
+      email: decoded.email,
+    };
+
     next();
-  } catch {
-    res.status(403).json({ message: "Erro de permissão" });
+  } catch (err) {
+    console.error("[AUTH ERROR]", err.message);
+
+    if (err.name === "TokenExpiredError") {
+      return res.status(401).json({
+        success: false,
+        message: "Sessão expirada, faça login novamente",
+      });
+    }
+
+    return res.status(401).json({
+      success: false,
+      message: "Token inválido",
+    });
   }
 }
 

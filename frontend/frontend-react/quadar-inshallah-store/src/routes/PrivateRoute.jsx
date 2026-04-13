@@ -1,16 +1,21 @@
-// components/PrivateRoute.jsx
-import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthProvider"; // ajuste aqui para o contexto certo
+// src/routes/PrivateRoute.jsx
+import { Navigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthProvider";
 
 export default function PrivateRoute({ children }) {
-  const { user, loading } = useAuth();
+  const { user, isInitialized } = useAuth();
+  const location = useLocation();
 
-  // Enquanto checa o login, mostra um loading
-  if (loading) return <p>Carregando...</p>;
+  // ✅ Aguarda o AuthProvider terminar de ler o localStorage
+  // Sem isso, o PrivateRoute vê user=null no primeiro frame e redireciona
+  if (!isInitialized) {
+    return null; // ou um spinner mínimo — não redireciona ainda
+  }
 
-  // Se não estiver logado, redireciona para /login
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) {
+    // Passa a rota atual como state para voltar depois do login
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
 
-  // Usuário logado — renderiza o componente protegido
   return children;
 }

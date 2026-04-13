@@ -13,6 +13,6 @@ export async function calculateShippingCost(zip, products) {
 
     return {
         price,
-        estimatedDeliveryDays: 5 // dummy value
+        estimatedDeliveryDays: 5
     };
 }

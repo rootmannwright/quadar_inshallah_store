@@ -1,3 +1,4 @@
+// routes/checkoutRoutes.js
 import express from 'express';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import { checkoutService } from '../services/checkoutService.js';

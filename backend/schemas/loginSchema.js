@@ -1,4 +1,4 @@
-// backend/schemas/loginSchema.js
+// schemas/loginSchema.js
 import { z } from "zod";
 
 export const loginSchema = z.object({

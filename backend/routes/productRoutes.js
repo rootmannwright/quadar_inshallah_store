@@ -1,12 +1,12 @@
+// routes/productRoutes.js
 import express from "express";
 import Joi from "joi";
 import mongoose from "mongoose";
 import Product from "../models/Product.js";
-import { authMiddleware, adminOnly } from "../middleware/authMiddleware.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// ================= LIST ALL =================
 router.get("/", async (req, res) => {
   try {
     const produtos = await Product.find();
@@ -17,7 +17,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ================= SEARCH FOR ID =================
 router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const idSchema = Joi.string().required();
@@ -38,8 +37,7 @@ router.get("/:id", authMiddleware, async (req, res) => {
   }
 });
 
-// ================= CREATE =================
-router.post("/", adminOnly, async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const schema = Joi.object({
       name: Joi.string().required(),
@@ -61,8 +59,7 @@ router.post("/", adminOnly, async (req, res) => {
   }
 });
 
-// ================= UPDATE =================
-router.put("/:id", adminOnly, async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -93,8 +90,7 @@ router.put("/:id", adminOnly, async (req, res) => {
   }
 });
 
-// ================= DELETE =================
-router.delete("/:id", adminOnly, async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {

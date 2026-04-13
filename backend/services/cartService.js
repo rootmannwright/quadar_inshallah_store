@@ -1,3 +1,4 @@
+// services/cartService.js
 import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
 
@@ -31,22 +32,16 @@ async function createCart(identifier) {
   return cart;
 }
 
-// ==========================
-// GET CART
-// ==========================
-export async function getCart(identifier) {
-  let cart = await findCart(identifier);
-
+export async function getCart(identifier, token) {
+  let cart = await findCart(identifier, token);
+  // Temporary token.
   if (!cart) {
-    cart = await createCart(identifier);
+    cart = await createCart(identifier, token);
   }
 
   return cart;
 }
 
-// ==========================
-// ADD TO CART
-// ==========================
 export async function addToCart(identifier, body) {
   const { productId, qty = 1 } = body;
 
@@ -66,7 +61,7 @@ export async function addToCart(identifier, body) {
   }
 
   const existingItem = cart.items.find(
-    (item) => item.product.toString() === productId
+    (item) => item.product && item.product._id.toString() === productId
   );
 
   if (existingItem) {
@@ -83,9 +78,6 @@ export async function addToCart(identifier, body) {
   return await cart.populate("items.product");
 }
 
-// ==========================
-// REMOVE ITEM
-// ==========================
 export async function removeFromCart(identifier, productId) {
   const cart = await findCart(identifier);
 
@@ -102,9 +94,6 @@ export async function removeFromCart(identifier, productId) {
   return await cart.populate("items.product");
 }
 
-// ==========================
-// CLEAR CART
-// ==========================
 export async function clearCart(identifier) {
   const cart = await findCart(identifier);
 

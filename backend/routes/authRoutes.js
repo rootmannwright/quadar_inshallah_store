@@ -1,10 +1,11 @@
+// routes/authRoutes.js
 import express from "express";
 import { validateRequest } from "../middleware/validateRequest.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import { permissionsMiddleware } from "../middleware/permissionsMiddleware.js";
 import { createUserSchema } from "../schemas/userSchema.js";
 import { updateUserSchema } from "../schemas/updateUserSchema.js";
-import { register, login } from "../controllers/authController.js";
+import { register, login, logout, getMe } from "../controllers/authController.js";
 import {
   getAllUsers,
   updateUserController,
@@ -12,24 +13,18 @@ import {
 } from "../controllers/userController.js";
 
 const authRouter = express.Router();
-
-// ─── PÚBLICAS ──────────────────────────────────────────────
-// Registro de novos usuários (frontend)  
 authRouter.post("/register", validateRequest(createUserSchema), register);
+authRouter.post("/login",    login);
+authRouter.post("/logout",   logout); // Clean cookies on logout
 
-// Login de usuários  
-authRouter.post("/login", login);
+authRouter.get("/me", authMiddleware, getMe);
 
-// ─── PROTEGIDAS ───────────────────────────────────────────
-// Listar todos os usuários (apenas admin)  
 authRouter.get(
   "/users",
   authMiddleware,
   permissionsMiddleware(["admin"]),
   getAllUsers
 );
-
-// Criar usuário via admin (backend/admin panel)  
 authRouter.post(
   "/users",
   authMiddleware,
@@ -37,8 +32,6 @@ authRouter.post(
   validateRequest(createUserSchema),
   register
 );
-
-// Atualizar usuário (admin ou o próprio user)  
 authRouter.put(
   "/users/:id",
   authMiddleware,
@@ -46,8 +39,6 @@ authRouter.put(
   validateRequest(updateUserSchema),
   updateUserController
 );
-
-// Deletar usuário (apenas admin)  
 authRouter.delete(
   "/users/:id",
   authMiddleware,

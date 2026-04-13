@@ -1,10 +1,9 @@
-// ================= IMPORTS =================
+// controller/orderController.js
 import Joi from "joi";
 import mongoose from "mongoose";
 import Order from "../models/Order.js"; 
 import Product from "../models/Product.js";
 
-// ================= CREATE ORDER =================
 export const createOrder = async (req, res, next) => {
   try {
     const { cart } = req.body;
@@ -45,16 +44,16 @@ export const createOrder = async (req, res, next) => {
       }
 
       items.push({
-        product: product._id,      // aligned with schema
-        quantity: value.quantity,   // aligned
-        price: product.price       // snapshot price
+        product: product._id,
+        quantity: value.quantity,
+        price: product.price
       });
 
       total += product.price * value.quantity;
     }
 
     const order = await Order.create({
-      user: req.user.id, // aligned with schema
+      user: req.user.id,
       items,
       total,
       status: "pending_payment"
@@ -67,7 +66,6 @@ export const createOrder = async (req, res, next) => {
   }
 };
 
-// ================= GET ORDER BY ID =================
 export const getOrderById = async (req, res, next) => {
   try {
     const order = await Order.findById(req.params.id);
@@ -76,7 +74,6 @@ export const getOrderById = async (req, res, next) => {
       return res.status(404).json({ error: "Pedido não encontrado" });
     }
 
-    // Ensure user owns this order
     if (order.user.toString() !== req.user.id) {
       return res.status(403).json({ error: "Acesso negado" });
     }
@@ -87,7 +84,6 @@ export const getOrderById = async (req, res, next) => {
   }
 };
 
-// ================= GET MY ORDERS =================
 export const getMyOrders = async (req, res, next) => {
   try {
     const orders = await Order.find({ user: req.user.id });

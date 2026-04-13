@@ -1,3 +1,4 @@
+// routes/orderRoutes.js
 import express from "express";
 import mongoose from "mongoose";
 import Joi from "joi";
@@ -11,7 +12,6 @@ import {
 
 const router = express.Router();
 
-// Rate limiter para POSTs e GETs
 const orderPostLimiter = rateLimiter({
   windowMs: 15 * 60 * 1000, // 15 min
   max: 100,
@@ -24,10 +24,8 @@ const orderGetLimiter = rateLimiter({
   message: "Too many requests from this IP, please try again later."
 });
 
-// ================= CREATE ORDER =================
 router.post("/", orderPostLimiter, authMiddleware, createOrder);
 
-// ================= GET ORDER BY ID =================
 router.get("/:id", orderGetLimiter, authMiddleware, async (req, res, next) => {
   try {
     const schema = Joi.object({ id: Joi.string().required() });
@@ -45,7 +43,6 @@ router.get("/:id", orderGetLimiter, authMiddleware, async (req, res, next) => {
   }
 });
 
-// ================= GET MY ORDERS =================
 router.get("/", orderGetLimiter, authMiddleware, getMyOrders);
 
 export default router;

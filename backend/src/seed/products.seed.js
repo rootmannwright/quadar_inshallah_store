@@ -1,3 +1,4 @@
+// seed/products.seed.js
 import Product from "../models/Product.js";
 import connectMongo from "../config/mongo";
 

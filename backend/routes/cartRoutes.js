@@ -1,41 +1,48 @@
 // backend/routes/cartRoutes.js
 import express from "express";
+import jwt from "jsonwebtoken";
+import {
+  getCartController,
+  addToCartController,
+  removeFromCartController,
+  clearCartController,
+} from "../controllers/cartController.js";
+import authMiddleware from "../middleware/authMiddleware.js";
+
 const router = express.Router();
+function optionalAuth(req, res, next) {
+  const authHeader = req.headers.authorization;
 
-// ==========================
-// GET CART
-// ==========================
-router.get("/", (req, res) => {
-  if (!req.session.cart) req.session.cart = [];
-  res.json({ items: req.session.cart });
-});
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    req.user = null;
+    return next();
+  }
 
-// ==========================
-// ADD ITEM
-// ==========================
-router.post("/add", (req, res) => {
-  const { productId, qty } = req.body;
-  if (!productId || !qty) return res.status(400).json({ error: "Produto ou quantidade inválidos" });
+  const token = authHeader.split(" ")[1];
 
-  if (!req.session.cart) req.session.cart = [];
+  if (!token) {
+    req.user = null;
+    return next();
+  }
 
-  const existing = req.session.cart.find(item => item.productId === productId);
-  if (existing) existing.qty += qty;
-  else req.session.cart.push({ productId, qty });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = {
+      id:    decoded.id    || decoded.userId,
+      role:  decoded.role  || "user",
+      email: decoded.email || null,
+    };
+  } catch {
+    req.user = null;
+  }
 
-  res.json({ success: true, items: req.session.cart });
-});
+  next();
+}
 
-// ==========================
-// REMOVE ITEM
-// ==========================
-router.delete("/remove/:productId", (req, res) => {
-  const { productId } = req.params;
-  if (!req.session.cart) req.session.cart = [];
+router.get(   "/",                     optionalAuth, getCartController);
+router.post(  "/add",                  optionalAuth, addToCartController);
+router.delete("/remove/:productId",    optionalAuth, removeFromCartController);
 
-  req.session.cart = req.session.cart.filter(item => item.productId !== productId);
-
-  res.json({ success: true, items: req.session.cart });
-});
+router.delete("/clear",                authMiddleware, clearCartController);
 
 export default router;

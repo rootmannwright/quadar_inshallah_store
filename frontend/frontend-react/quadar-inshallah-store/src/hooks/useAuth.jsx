@@ -1,103 +1,60 @@
-// hooks/useAuth.js
-import { useState, useEffect, useContext, createContext } from "react";
-import { useNavigate } from "react-router-dom";
-import api from "../api"; // seu api.js do frontend
+// src/context/AuthProvider.js
+import { createContext, useContext, useState, useEffect } from "react";
+import api from "../api"; // axios instance
 
-// ==========================
-// CONTEXTO
-// ==========================
 const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
-  const auth = useProvideAuth();
-  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
-};
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem("user");
+    return saved ? JSON.parse(saved) : null;
+  });
+  const [token, setToken] = useState(() => localStorage.getItem("token") || "");
+  const [error, setError] = useState(null);
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
-
-// ==========================
-// HOOK PRINCIPAL
-// ==========================
-function useProvideAuth() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-
-  // ==========================
-  // CHECAR SE HÁ TOKEN
-  // ==========================
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      api
-        .get("/auth/me", { headers: { Authorization: `Bearer ${token}` } })
-        .then((res) => setUser(res.data.user))
-        .catch(() => {
-          localStorage.removeItem("token");
-          setUser(null);
-        })
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
-  }, []);
-
-  // ==========================
-  // LOGIN
-  // ==========================
+  // Função de login
   const login = async (email, password) => {
     try {
-      const res = await api.post("/auth/login", { email, password });
-      const { token, user } = res.data;
+      const res = await api.post(
+        "/api/auth/login",
+        { email, password },
+        { withCredentials: true } // aceita cookie CSRF
+      );
 
-      localStorage.setItem("token", token);
-      setUser(user);
+      if (res.data.success) {
+        const { user, token } = res.data;
 
-      return { success: true };
+        // Salva no state e no localStorage
+        setUser(user);
+        setToken(token);
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("token", token);
+
+        setError(null);
+        return { success: true, user };
+      } else {
+        setError(res.data.message || "Erro no login");
+        return { success: false, message: res.data.message };
+      }
     } catch (err) {
-      console.error(err);
-      return { success: false, message: err.response?.data?.message || "Erro no login" };
+      console.error("[LOGIN ERROR]", err);
+      setError("Erro de conexão com o servidor");
+      return { success: false, message: "Erro de conexão" };
     }
   };
 
-  // ==========================
-  // REGISTER
-  // ==========================
-  const register = async (name, email, password) => {
-    try {
-      const res = await api.post("/auth/register", { name, email, password });
-      const { token, user } = res.data;
-
-      localStorage.setItem("token", token);
-      setUser(user);
-
-      return { success: true };
-    } catch (err) {
-      console.error(err);
-      return { success: false, message: err.response?.data?.message || "Erro no registro" };
-    }
-  };
-
-  // ==========================
-  // LOGOUT
-  // ==========================
   const logout = () => {
-    localStorage.removeItem("token");
     setUser(null);
-    navigate("/login");
+    setToken("");
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
   };
 
-  // ==========================
-  // RETORNO
-  // ==========================
-  return {
-    user,
-    loading,
-    login,
-    register,
-    logout,
-    isAuthenticated: !!user,
-  };
+  return (
+    <AuthContext.Provider value={{ user, token, login, logout, error }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
+
+export const useAuth = () => useContext(AuthContext);

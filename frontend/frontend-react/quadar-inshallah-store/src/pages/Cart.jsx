@@ -1,18 +1,65 @@
-import { useEffect, useState } from "react";
+/**
+ * Cart.jsx — Quadar
+ *
+ * Lógica:
+ *  - Guest  → lê/escreve em localStorage ("guestCart")
+ *  - Logado → lê/escreve no servidor via /api/cart
+ *  - Checkout → se não estiver logado, redireciona para /login
+ */
+
+import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthProvider";
 import "../styles/cart.css";
 
 const TAX_RATE = 0.1;
 const SHIPPING_FLAT = 25.0;
+const BASE_URL = "http://localhost:5000";
+const GUEST_KEY = "guestCart";
 
-// Pega token CSRF
-const getCsrfToken = async () => {
-  const res = await fetch("http://localhost:5000/api/csrf-token", {
-    credentials: "include",
-  });
-  const data = await res.json();
-  return data.csrfToken;
-};
+// ─── CSRF ─────────────────────────────────────────────────────────────────────
+
+async function fetchCsrf() {
+  try {
+    const res = await fetch(`${BASE_URL}/api/csrf-token`, { credentials: "include" });
+    const data = await res.json();
+    return data.csrfToken ?? "";
+  } catch {
+    return "";
+  }
+}
+
+// ─── Guest cart helpers (localStorage) ───────────────────────────────────────
+
+function getGuestCart() {
+  try { return JSON.parse(localStorage.getItem(GUEST_KEY) || "[]"); }
+  catch { return []; }
+}
+
+function saveGuestCart(items) {
+  localStorage.setItem(GUEST_KEY, JSON.stringify(items));
+}
+
+// ─── Formatar items do servidor ───────────────────────────────────────────────
+// O backend retorna { items: [{ product: {...}, qty }] }
+// Normaliza para a forma plana usada pelo frontend
+
+function normalizeServerItems(rawItems = []) {
+  return rawItems
+    .filter((i) => i.product)
+    .map((i) => ({
+      _id: i.product._id,
+      name: i.product.name,
+      price: Number(i.product.price) || 0,
+      image: i.product.image ?? null,
+      description: i.product.description ?? "",
+      category: i.product.category ?? i.product.brand ?? "",
+      qty: i.qty,
+    }));
+}
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
 function QtyControl({ qty, onIncrease, onDecrease }) {
   return (
@@ -27,64 +74,51 @@ function QtyControl({ qty, onIncrease, onDecrease }) {
 function CartItem({ item, onRemove, onUpdateQty }) {
   const price = Number(item.price) || 0;
   const qty = item.qty || 1;
-
   const imgSrc = item.image
-    ? item.image.startsWith("http")
-      ? item.image
-      : `/images/${item.image.split("/").pop()}`
+    ? item.image.startsWith("http") ? item.image : `/images/${item.image.split("/").pop()}`
     : null;
 
   return (
-    <AnimatePresence>
-      <motion.div
-        className="cart-item"
-        layout
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, x: -40, transition: { duration: 0.25 } }}
-        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      >
-        <div className="cart-item-img-wrap">
-          {imgSrc ? (
-            <img src={imgSrc} alt={item.name || "Produto"} className="cart-item-img" />
-          ) : (
-            <div className="cart-item-img-placeholder" />
-          )}
+    <motion.div
+      className="cart-item"
+      layout
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, x: -40, transition: { duration: 0.25 } }}
+      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <div className="cart-item-img-wrap">
+        {imgSrc
+          ? <img src={imgSrc} alt={item.name || "Produto"} className="cart-item-img" />
+          : <div className="cart-item-img-placeholder" />
+        }
+      </div>
+
+      <div className="cart-item-info">
+        {item.category && <p className="cart-item-category">{item.category}</p>}
+        <p className="cart-item-name">{item.name || "Produto sem nome"}</p>
+        {item.description && <p className="cart-item-desc">{item.description}</p>}
+
+        <div className="cart-item-bottom">
+          <QtyControl
+            qty={qty}
+            onIncrease={() => onUpdateQty(item._id, qty + 1)}
+            onDecrease={() => qty <= 1 ? onRemove(item._id) : onUpdateQty(item._id, qty - 1)}
+          />
+          <span className="cart-item-price">
+            R${(price * qty).toFixed(2).replace(".", ",")}
+          </span>
         </div>
+      </div>
 
-        <div className="cart-item-info">
-          <p className="cart-item-category">{item.category || item.brand || "Categoria"}</p>
-          <p className="cart-item-name">{item.name || "Produto sem nome"}</p>
-          <p className="cart-item-desc">{item.description || ""}</p>
-
-          <div className="cart-item-bottom">
-            <QtyControl
-              qty={qty}
-              onIncrease={() => onUpdateQty(item._id, qty + 1)}
-              onDecrease={() => {
-                if (qty <= 1) onRemove(item._id);
-                else onUpdateQty(item._id, qty - 1);
-              }}
-            />
-            <span className="cart-item-price">
-              R${(price * qty).toFixed(2).replace(".", ",")}
-            </span>
-          </div>
-        </div>
-
-        <button
-          className="cart-item-remove"
-          onClick={() => onRemove(item._id)}
-          aria-label="Remover item"
-        >
-          ✕
-        </button>
-      </motion.div>
-    </AnimatePresence>
+      <button className="cart-item-remove" onClick={() => onRemove(item._id)} aria-label="Remover">
+        ✕
+      </button>
+    </motion.div>
   );
 }
 
-function OrderSummary({ subtotal, onCheckout }) {
+function OrderSummary({ subtotal, onCheckout, isGuest }) {
   const tax = subtotal * TAX_RATE;
   const shipping = subtotal > 0 ? SHIPPING_FLAT : 0;
   const total = subtotal + tax + shipping;
@@ -93,109 +127,258 @@ function OrderSummary({ subtotal, onCheckout }) {
   return (
     <div className="cart-summary">
       <h2 className="cart-summary-title">Resumo do pedido</h2>
+
       <div className="cart-summary-rows">
         <div className="cart-summary-row"><span>Subtotal</span><span>{fmt(subtotal)}</span></div>
         <div className="cart-summary-row"><span>Impostos (10%)</span><span>{fmt(tax)}</span></div>
-        <div className="cart-summary-row"><span>Frete</span><span>{subtotal > 0 ? fmt(shipping) : "—"}</span></div>
+        <div className="cart-summary-row">
+          <span>Frete</span>
+          <span>{subtotal > 0 ? fmt(shipping) : "—"}</span>
+        </div>
       </div>
+
       <div className="cart-summary-total"><span>Total</span><span>{fmt(total)}</span></div>
-      <button className="cart-checkout-btn" onClick={onCheckout} disabled={subtotal === 0}>Finalizar compra</button>
-      <a href="/products" className="cart-continue-link">← Continuar comprando</a>
+
+      <button
+        className="cart-checkout-btn"
+        onClick={onCheckout}
+        disabled={subtotal === 0}
+      >
+        {isGuest ? "Entrar para finalizar" : "Finalizar compra"}
+      </button>
+
+      {isGuest && (
+        <p className="cart-guest-notice">
+          Você precisa fazer login para concluir a compra.
+        </p>
+      )}
+
+      <Link to="/products" className="cart-continue-link">← Continuar comprando</Link>
     </div>
   );
 }
 
 function EmptyCart() {
   return (
-    <motion.div className="cart-empty" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+    <motion.div
+      className="cart-empty"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
       <p className="cart-empty-icon">🛍</p>
       <p className="cart-empty-text">Seu carrinho está vazio.</p>
-      <a href="/products" className="cart-empty-link">Ver produtos</a>
+      <Link to="/products" className="cart-empty-link">Ver produtos</Link>
     </motion.div>
   );
 }
 
+// ─── Cart (root) ──────────────────────────────────────────────────────────────
+
 export default function Cart() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const isGuest = !user;
+
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchCart = async () => {
+  // ── Fetch cart ──────────────────────────────────────────────────────────────
+  const fetchCart = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
     try {
-      setLoading(true);
-      setError(null);
+      if (isGuest) {
+        // Guest → lê do localStorage diretamente
+        setItems(getGuestCart());
+      } else {
+        // Logado → busca no servidor
+        const token = localStorage.getItem("token");
 
-      const cartRes = await fetch("http://localhost:5000/api/cart", { credentials: "include" });
-      if (!cartRes.ok) throw new Error("Erro ao carregar o carrinho");
-      const cartData = await cartRes.json();
-      const cartArray = Array.isArray(cartData) ? cartData : cartData.items ?? [];
+        const res = await fetch(`${BASE_URL}/api/cart`, {
+          credentials: "include",
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-      const productsRes = await fetch("http://localhost:5000/api/products");
-      if (!productsRes.ok) throw new Error("Erro ao carregar os produtos");
-      const productsData = await productsRes.json();
+        if (!res.ok) throw new Error(`Erro ${res.status}`);
 
-      const cartItems = cartArray.map(cartItem => {
-        const product = productsData.find(p => p._id === cartItem.productId);
-        if (!product) return null;
-        return { ...product, qty: cartItem.qty, price: Number(product.price) || 0 };
-      }).filter(Boolean);
-
-      setItems(cartItems);
+        const data = await res.json();
+        const raw = data?.cart?.items ?? data?.items ?? [];
+        setItems(normalizeServerItems(raw));
+      }
     } catch (err) {
-      setError(err.message);
+      console.error("[FETCH CART]", err);
+      setError("Não foi possível carregar o carrinho.");
       setItems([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [isGuest]);
 
-  useEffect(() => { fetchCart(); }, []);
+  useEffect(() => { fetchCart(); }, [fetchCart]);
 
+  // ── Update qty ──────────────────────────────────────────────────────────────
   const handleUpdateQty = async (productId, newQty) => {
-    try {
-      const csrfToken = await getCsrfToken();
+    if (isGuest) {
+      const updated = getGuestCart().map((i) =>
+        i._id === productId ? { ...i, qty: newQty } : i
+      );
+      saveGuestCart(updated);
+      setItems(updated);
+      return;
+    }
 
-      await fetch(`http://localhost:5000/api/cart/remove/${productId}`, {
+    try {
+      const token = localStorage.getItem("token");
+      const csrfToken = await fetchCsrf();
+
+      // Remove e re-adiciona com nova qty
+      await fetch(`${BASE_URL}/api/cart/remove/${productId}`, {
         method: "DELETE",
         credentials: "include",
-        headers: { "X-CSRF-Token": csrfToken },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "X-CSRF-Token": csrfToken,
+        },
       });
 
-      await fetch("http://localhost:5000/api/cart/add", {
+      await fetch(`${BASE_URL}/api/cart/add`, {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          "X-CSRF-Token": csrfToken,
+        },
         body: JSON.stringify({ productId, qty: newQty }),
       });
 
       fetchCart();
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error("[UPDATE QTY]", err);
+    }
   };
 
+  // ── Remove item ─────────────────────────────────────────────────────────────
   const handleRemove = async (productId) => {
+    if (isGuest) {
+      const updated = getGuestCart().filter((i) => i._id !== productId);
+      saveGuestCart(updated);
+      setItems(updated);
+      return;
+    }
+
     try {
-      const csrfToken = await getCsrfToken();
-      await fetch(`http://localhost:5000/api/cart/remove/${productId}`, {
+      const token = localStorage.getItem("token");
+      const csrfToken = await fetchCsrf();
+
+      await fetch(`${BASE_URL}/api/cart/remove/${productId}`, {
         method: "DELETE",
         credentials: "include",
-        headers: { "X-CSRF-Token": csrfToken },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "X-CSRF-Token": csrfToken,
+        },
       });
+
       fetchCart();
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error("[REMOVE]", err);
+    }
   };
 
-  const handleCheckout = () => { window.location.href = "/checkout"; };
+  // ── Checkout ────────────────────────────────────────────────────────────────
+  // Guest → redireciona para login (guestCart já está no localStorage)
+  // Logado → chama Stripe checkout session
+  const handleCheckout = async () => {
+    if (isGuest) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const csrfToken = await fetchCsrf();
+
+      const res = await fetch(`${BASE_URL}/api/payments/checkout-session`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          "X-CSRF-Token": csrfToken,
+        },
+        body: JSON.stringify({
+          items: items.map((i) => ({
+            productId: i._id,
+            quantity: i.qty,
+          })),
+        }),
+      });
+      
+      let data;
+      try {
+        data = await res.json();
+      } catch (err) {
+        console.error("❌ Resposta não é JSON");
+        throw new Error("Erro no servidor");
+      }
+
+      console.log("📦 RESPOSTA BACKEND:", data);
+
+      // erro do backend
+      if (!res.ok) {
+        throw new Error(data?.error || "Erro ao criar checkout");
+      }
+
+      // valida URL do Stripe
+      if (!data?.url) {
+        throw new Error("URL de pagamento não recebida");
+      }
+
+      // redireciona
+      window.location.href = data.url;
+
+    } catch (err) {
+      console.error("🔥 CHECKOUT ERROR:", err.message);
+      alert(err.message || "Erro ao iniciar pagamento");
+    }
+  };
+
+  // ── Computed ────────────────────────────────────────────────────────────────
   const subtotal = items.reduce((acc, i) => acc + (Number(i.price) || 0) * (i.qty || 1), 0);
 
+  // ── Render ──────────────────────────────────────────────────────────────────
   return (
     <div className="cart-page">
-      <motion.h1 className="cart-title" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
+      <motion.h1
+        className="cart-title"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45 }}
+      >
         Carrinho
-        {items.length > 0 && <span className="cart-count">{items.length} {items.length === 1 ? "item" : "itens"}</span>}
+        {items.length > 0 && (
+          <span className="cart-count">
+            {items.length} {items.length === 1 ? "item" : "itens"}
+          </span>
+        )}
       </motion.h1>
 
-      {loading && <p>Carregando carrinho...</p>}
-      {error && <p className="cart-error">Erro: {error}</p>}
+      {loading && (
+        <div className="cart-loading">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="cart-skeleton" />
+          ))}
+        </div>
+      )}
+
+      {!loading && error && (
+        <p className="cart-error">{error}</p>
+      )}
+
       {!loading && !error && items.length === 0 && <EmptyCart />}
 
       {!loading && !error && items.length > 0 && (
@@ -205,11 +388,23 @@ export default function Cart() {
               <span>Produto</span>
               <span>Total</span>
             </div>
-            {items.map((item) => (
-              <CartItem key={item._id} item={item} onRemove={handleRemove} onUpdateQty={handleUpdateQty} />
-            ))}
+            <AnimatePresence>
+              {items.map((item) => (
+                <CartItem
+                  key={item._id}
+                  item={item}
+                  onRemove={handleRemove}
+                  onUpdateQty={handleUpdateQty}
+                />
+              ))}
+            </AnimatePresence>
           </div>
-          <OrderSummary subtotal={subtotal} onCheckout={handleCheckout} />
+
+          <OrderSummary
+            subtotal={subtotal}
+            onCheckout={handleCheckout}
+            isGuest={isGuest}
+          />
         </div>
       )}
     </div>
