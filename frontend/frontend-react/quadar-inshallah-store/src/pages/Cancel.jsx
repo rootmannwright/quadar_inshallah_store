@@ -24,7 +24,9 @@ export default function PaymentFailed() {
   return (
     <div style={s.root}>
       <header style={s.header}>
-        <a href="/" style={s.logo}>بوتيك</a>
+        <a href="/" style={s.logo}>
+        <img src="../public/logos/logo-letreiro.png" alt="Logo" style={{ height: 32 }} />
+        </a>
         <nav style={s.nav}>
           {["Home", "Produtos", "Stories", "Login", "Carrinho"].map((item) => (
             <a key={item} href={item === "Home" ? "/" : `/${item.toLowerCase()}`} style={s.navLink}>
@@ -104,7 +106,7 @@ export default function PaymentFailed() {
             <p style={s.supportLabel}>SUPORTE</p>
             <p style={s.supportText}>
               Precisa de ajuda?{" "}
-              <a href="mailto:suporte@boutique.com" style={s.supportLink}>suporte@boutique.com</a>
+              <a href="mailto:rootmannwright@gmail.com" style={s.supportLink}>rootmannwright@gmail.com</a>
             </p>
           </div>
         </section>
@@ -119,7 +121,7 @@ export default function PaymentFailed() {
               <p style={s.retryLabel}>TENTE OUTRO MÉTODO</p>
               <div style={s.methodBtns}>
                 {[
-                  { label: "NOVO CARTÃO", icon: "💳" },
+                  { label: "NOVO CARTÃO", icon: "💳"},
                   { label: "PIX", icon: "◎" },
                   { label: "BOLETO", icon: "📄" },
                 ].map((m, i) => (
@@ -140,7 +142,9 @@ export default function PaymentFailed() {
 
             <div style={s.summaryRow}><span style={s.summaryLabel}>Subtotal</span><span style={s.summaryValue}>—</span></div>
             <div style={s.summaryRow}><span style={s.summaryLabel}>Impostos (10%)</span><span style={s.summaryValue}>—</span></div>
-            <div style={s.summaryRow}><span style={s.summaryLabel}>Frete</span><span style={s.summaryValue}>R$25,00</span></div>
+            <div style={s.summaryRow}><span style={s.summaryLabel}>Frete</span><span style={s.summaryValue}>
+              {/* colocar frete da API */}
+              </span></div>
             <div style={s.cardDivider} />
             <div style={s.summaryRow}>
               <span style={s.totalLabel}>Total</span>
@@ -149,7 +153,7 @@ export default function PaymentFailed() {
 
             <button
               style={s.btnPrimary}
-              onClick={() => window.location.href = "/carrinho"}
+              onClick={() => window.location.href = "/cart"}
               onMouseEnter={e => (e.currentTarget.style.opacity = "0.82")}
               onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
             >
@@ -173,7 +177,6 @@ export default function PaymentFailed() {
 const s = {
   root: { minHeight: "100vh", background: "#fff", fontFamily: "'Jost', sans-serif", color: "#1a1a1a" },
   header: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 48px", borderBottom: "1px solid #eee" },
-  logo: { fontSize: 28, fontWeight: 500, color: "#1a1a1a" },
   nav: { display: "flex", gap: 40 },
   navLink: { fontSize: 14, color: "#1a1a1a", letterSpacing: "0.02em" },
   breadcrumb: { display: "flex", alignItems: "center", gap: 8, padding: "16px 48px", fontSize: 11, letterSpacing: "0.08em", color: "#aaa" },

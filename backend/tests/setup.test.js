@@ -1,71 +1,48 @@
-// tests/auth.test.js
-import request from "supertest";
+// ../tests/setup.test.js
+// Still in development
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import app from "../api.js";
+import { jest, beforeAll, afterAll, afterEach, global } from "@jest/globals";
 
 let mongoServer;
 
-// ======= SETUP E TEARDOWN DO BANCO =======
-// eslint-disable-next-line no-undef
 beforeAll(async () => {
-  // Cria um MongoDB em memória
   mongoServer = await MongoMemoryServer.create();
+
   const uri = mongoServer.getUri();
-  await mongoose.connect(uri);
-});
 
-// eslint-disable-next-line no-undef
-afterAll(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
-});
+  await mongoose.connect(uri, {
+    dbName: "test-db",
+  });
 
-// eslint-disable-next-line no-undef
-afterEach(async () => {
-  // Limpa todas as collections após cada teste
-  const collections = mongoose.connection.collections;
-  for (const key in collections) {
-    await collections[key].deleteMany({});
+  if (process.env.DEBUG_TESTS === "true") {
+    console.log("🧪 MongoDB in-memory started:", uri);
   }
 });
 
-// ======= TESTE DE REGISTER =======
-// eslint-disable-next-line no-undef
-describe("Auth - Register", () => {
-  // eslint-disable-next-line no-undef
-  it("should create a new user", async () => {
-    const res = await request(app).post("/api/auth/register").send({
-      name: "Lucas",
-      email: "lucas@test.com",
-      password: "123456"
-    });
+afterEach(async () => {
+  const collections = mongoose.connection.collections;
 
-    // eslint-disable-next-line no-undef
-    expect(res.statusCode).toBe(201);
-    // eslint-disable-next-line no-undef
-expect(res.body.user).toHaveProperty("email");
-    // eslint-disable-next-line no-undef
-expect(res.body.user.email).toBe("lucas@test.com");
-  });
-// eslint-disable-next-line no-undef
-  it("should not allow duplicate email", async () => {
-    // Cria usuário inicial
-    await request(app).post("/api/auth/register").send({
-      name: "Lucas",
-      email: "lucas@test.com",
-      password: "123456"
-    });
+  for (const key of Object.keys(collections)) {
+    await collections[key].deleteMany({});
+  }
 
-    // Tenta criar novamente com mesmo email
-    const res = await request(app).post("/api/auth/register").send({
-      name: "Lucas 2",
-      email: "lucas@test.com",
-      password: "123456"
-    });
-  // eslint-disable-next-line no-undef
-    expect(res.statusCode).toBe(409);
-    // eslint-disable-next-line no-undef
-expect(res.body).toHaveProperty("error");
-  });
+  jest.clearAllMocks?.();
 });
+
+afterAll(async () => {
+  await mongoose.connection.dropDatabase();
+  await mongoose.disconnect();
+
+  if (mongoServer) {
+    await mongoServer.stop();
+  }
+
+  if (process.env.DEBUG_TESTS === "true") {
+    console.log("🧪 MongoDB in-memory stopped");
+  }
+});
+
+global.testUtils = {
+  getMongoUri: () => mongoose.connection.client.s.url,
+};

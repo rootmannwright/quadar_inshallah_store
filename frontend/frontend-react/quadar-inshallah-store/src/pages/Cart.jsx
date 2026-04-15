@@ -317,7 +317,7 @@ export default function Cart() {
           })),
         }),
       });
-      
+
       let data;
       try {
         data = await res.json();
@@ -334,8 +334,9 @@ export default function Cart() {
       }
 
       // valida URL do Stripe
-      if (!data?.url) {
-        throw new Error("URL de pagamento não recebida");
+      if (!res.ok) {
+        console.error("🚨 ERRO BACKEND COMPLETO:", data);
+        throw new Error(data?.error || `Erro ${res.status}`);
       }
 
       // redireciona

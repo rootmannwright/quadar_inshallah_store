@@ -39,10 +39,10 @@ function optionalAuth(req, res, next) {
   next();
 }
 
-router.get(   "/",                     optionalAuth, getCartController);
-router.post(  "/add",                  optionalAuth, addToCartController);
-router.delete("/remove/:productId",    optionalAuth, removeFromCartController);
+router.get(   "/", optionalAuth, getCartController);
+router.post(  "/add", optionalAuth, addToCartController);
+router.delete("/remove/:productId", optionalAuth, removeFromCartController);
 
-router.delete("/clear",                authMiddleware, clearCartController);
+router.delete("/clear", authMiddleware, clearCartController);
 
 export default router;

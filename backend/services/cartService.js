@@ -2,24 +2,18 @@
 import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
 
-// ==========================
-// IDENTIFICAR CARRINHO
-// ==========================
+// Find cart by user ID or session ID
 async function findCart(identifier) {
-  // tenta como usuário
   let cart = await Cart.findOne({ user: identifier }).populate("items.product");
 
   if (!cart) {
-    // tenta como sessão
     cart = await Cart.findOne({ sessionId: identifier }).populate("items.product");
   }
 
   return cart;
 }
 
-// ==========================
-// CRIAR CARRINHO
-// ==========================
+// Create new cart for user or session
 async function createCart(identifier) {
   const isObjectId = identifier.length === 24;
 
