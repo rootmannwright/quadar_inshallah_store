@@ -14,79 +14,85 @@ para reportar erros e entrar em contato para colaborações futuras.
 ## 🧰Funcionalidades
 
 <h3>1. Catálogo de Produtos</h3>
-- Visualização de produtos com nome, descrição, categoria, preço e imagem.
+- Visualização de produtos com nome, descrição, categoria, preço e imagem
 
 <h3>2. Gerenciamento de Estoque</h3>
-- Controle de quantidade disponível de cada produto (stock).
+- Controle de quantidade disponível de cada produto (stock)
 <br>
-- Possibilidade de marcar produtos como ativos/inativos, permitindo promoções ou exclusões temporárias.
+- Possibilidade de marcar produtos como ativos/inativos, permitindo promoções ou exclusões temporárias
 
 <h3>3. Carrinho e Checkout</h3>
-- Adição de produtos ao carrinho com atualização de quantidade e valor total.
+- Adição de produtos ao carrinho com atualização de quantidade e valor total
 <br>
-- Checkout seguro integracom com Stripe para pagamentos online.
-Nr
-- Possibilidade de criar pedidos e registrar históricos de compras no banco.
+- Checkout seguro com Stripe para pagamentos online
 <br>
-- Joi cria sessão no Stripe
+- Possibilidade de criar pedidos e registrar históricos de compras no banco
+<br>
+- Checkout seguro com Stripe para pagamentos pix
 
 <h3>4. Autenticação e Contas</h3>
-- Registro e login de usuários com senha criptografada.
+- Registro e login de usuários com senha criptografada
 <br>
-- Página de login feita com integração com Firebase e components de Motion.
+- Página de login feita com integração com Firebase e components de Motion
 <br>
-- Proteção contra ataques de força bruta com limite de tentativas de login.
+- Proteção contra ataques de força bruta com limite de tentativas de login
 <br>
-- Gestão de tokens de autenticação para segurança e controle de sessões.
+- Gestão de tokens de autenticação para segurança e controle de sessões
 
 <h3>5. Segurança</h3>
-- Uso de Helmet para cabeçalhos HTTP seguros.
+- Uso de Helmet para cabeçalhos HTTP seguros
 <br>
-- Sanitização de entradas do usuário com express-mongo-sanitize.
+- Sanitização de entradas do usuário com express-mongo-sanitize
 <br>
-- Proteção contra HTTP Parameter Pollution (HHP).
+- Proteção contra HTTP Parameter Pollution (HHP)
 <br>
-- Rate-limiting para evitar spams e ataques de negação de serviço.
+- Rate-limiting para evitar spams e ataques de negação de serviço
 <br>
-- Validações com o Joi.
+- Validações com o Joi
 <br>
-- Criação de Rate Limiter nas rotas.
+- Criação de Rate Limiter nas rotas
 
 <h3>6. API RESTful</h3>
-- Endopoints para produtos, pagamentos, autenticação e webhooks.
+- Endopoints para produtos, pagamentos, autenticação e webhooks
 <br>
-- Estrutura modular que facilita escala e manutenção de código.
+- Estrutura modular que facilita escala e manutenção de código
 <br>
-- Respostas em JSON, permitindo integração com frontend, apps mobile ou outras plataformas.
+- Respostas em JSON, permitindo integração com frontend, apps mobile ou outras plataformas
 
 <h3>7. Gerenciamento de Imagens</h3>
-- Armazenamento de imagens de produtos na pasta public/images.
+- Armazenamento de imagens de produtos na pasta public/images
 <br>
 - Cada produto referencia sua imagem via caminho relativo ou URL completa.
 <br>
-- Serve imagens de forma rápida e segura pelo servidor Express.
+- Serve imagens de forma rápida e segura pelo servidor Express
 
 <h3>8. Monitoramento e Logs</h3>
-- Registro de requisições com requestLogger, facilitando auditoria e depuração.
+- Registro de requisições com requestLogger, facilitando auditoria e depuração
 <br>
-- Tratamento global de erros com middleware customizado.
+- Tratamento global de erros com middleware customizado
 
 <h3>9. Testes</h3>
-- Testes com Lint, Jest e CodeQL.
+- Testes com Lint, Jest e CodeQL
 <br>
 - Badge coverage adicionado como badge no README.md
+<br>
+- Testes de rotas com Postman
 
 <h3>10. Acessibilidade</h3>
-- Acessibilidade feita totalmente com React.
+- Acessibilidade feita totalmente com React
 <br>
-- Implementação do React Aria.
+- Implementação do React Aria
+<br>
+- Skeletons
 
 <h3>11. Estilização do site</h3>
-- Dividida em styles.
+- Dividida em styles
 <br>
-- Responsive Website (EM ANDAMENTO)
+- Responsive Website
 <br>
 - Breadcrumbs feito com React Aria
+<br>
+- Uso de Sonner para alerts, dialog, forms, etc
 
 <h3>12. Deployment</h3>
 - CI/CD feito, com pipelines e workflows
