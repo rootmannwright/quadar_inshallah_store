@@ -6,7 +6,6 @@ import hpp from "hpp";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
-import csrf from "csurf";
 import cookieParser from "cookie-parser";
 
 // ROUTES
@@ -24,13 +23,24 @@ dotenv.config();
 
 const app = express();
 
+/* =========================
+   🔐 CORE SECURITY FLAGS
+========================= */
+
 app.disable("x-powered-by");
 app.set("trust proxy", 1);
+
+/* =========================
+   📁 PATH RESOLVE
+========================= */
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ========================== SECURITY ==========================
+/* =========================
+   🛡️ HELMET (HEADERS SECURITY)
+========================= */
+
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -51,7 +61,10 @@ app.use(
   })
 );
 
-// ========================== CORS ==========================
+/* =========================
+   🌐 CORS (FRONTEND ACCESS)
+========================= */
+
 const allowedOrigins = [
   process.env.CLIENT_URL || "http://localhost:5173",
   "http://localhost:3000",
@@ -60,119 +73,111 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
       return callback(new Error(`CORS bloqueado: ${origin}`));
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   })
 );
 
-// ========================== BODY ==========================
+/* =========================
+   📦 BODY PARSERS
+========================= */
+
+// Stripe webhook precisa raw
 app.use("/api/webhooks", express.raw({ type: "application/json" }));
+
+// JSON geral
 app.use(express.json({ limit: "10kb" }));
 
-// ========================== COOKIES ==========================
-app.use(cookieParser()); // 🔥 ESSENCIAL
+// Cookies (session/cart fallback)
+app.use(cookieParser());
 
-// ========================== EXTRA PROTECTION ==========================
+/* =========================
+   🧼 SECURITY LAYERS
+========================= */
+
+// Remove query pollution (?a=1&a=2)
 app.use(hpp());
+
+// Logger
 app.use(requestLogger);
 
-// ========================== RATE LIMIT ==========================
+/* =========================
+   🚦 RATE LIMITING
+========================= */
+
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 200,
+    max: 150,
+    standardHeaders: true,
+    legacyHeaders: false,
     keyGenerator: (req) => ipKeyGenerator(req),
+    message: {
+      success: false,
+      message: "Muitas requisições. Tente novamente mais tarde.",
+    },
   })
 );
 
-// ========================== CSRF ==========================
-const csrfProtection = csrf({
-  cookie: {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-  },
-});
+/* =========================
+   🧭 ROUTES
+========================= */
 
-// ========================== CSRF TOKEN ROUTE ==========================
-app.get("/api/csrf-token", csrfProtection, (req, res) => {
-  res.json({ csrfToken: req.csrfToken() });
-});
-
-// ========================== ROUTES ==========================
+// Public routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
-app.use("/api/cart", csrfProtection, cartRoutes);
+
+// Protected business logic (JWT middleware deve estar dentro das rotas)
+app.use("/api/cart", cartRoutes);
 app.use("/api/payments", paymentRoutes);
+
+// Stripe webhook (NO JSON middleware!)
 app.use("/api/webhooks", webhookRoutes);
 
-// ========================== STATIC ==========================
-app.use("/images", express.static(path.join(__dirname, "public/images")));
+/* =========================
+   🖼️ STATIC FILES
+========================= */
 
-// ========================== ROOT ==========================
+app.use(
+  "/images",
+  express.static(path.join(__dirname, "public/images"))
+);
+
+/* =========================
+   ❤️ HEALTH CHECK
+========================= */
+
 app.get("/", (req, res) => {
-  res.json({ success: true, message: "API running 🚀" });
+  res.json({
+    success: true,
+    message: "API running 🚀",
+    status: "healthy",
+  });
 });
 
-// ========================== 404 ==========================
+/* =========================
+   ❌ 404 HANDLER
+========================= */
+
 app.use((req, res) => {
-  res.status(404).json({ success: false, message: "Not found" });
+  res.status(404).json({
+    success: false,
+    message: "Route not found",
+  });
 });
 
-// ========================== ERROR HANDLER ==========================
+/* =========================
+   ⚠️ GLOBAL ERROR HANDLER
+========================= */
+
 app.use(errorHandler);
 
 export default app;
-
-// ========================== WEBHOOK CONTROLLER ==========================
-
-import Stripe from "stripe";
-import Order from "./models/Order.js";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-export async function stripeWebhook(req, res) {
-  const sig = req.headers["stripe-signature"];
-
-  let event;
-
-  try {
-    event = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
-  } catch (err) {
-    console.error("Webhook signature error:", err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  try {
-    if (event.type === "payment_intent.succeeded") {
-      const paymentIntent = event.data.object;
-      const orderId = paymentIntent.metadata.orderId;
-
-      const order = await Order.findById(orderId);
-      if (!order) return res.status(404).end();
-
-      if (order.status === "paid") return res.status(200).end();
-
-      order.status = "paid";
-      order.paymentIntentId = paymentIntent.id;
-      await order.save();
-
-      console.log("✅ Pedido pago:", orderId);
-    }
-
-    if (event.type === "payment_intent.payment_failed") {
-      console.log("❌ Pagamento falhou");
-    }
-
-    res.status(200).json({ received: true });
-  } catch (err) {
-    console.error("Webhook error:", err);
-    res.status(500).json({ error: "Webhook failed" });
-  }
-}
