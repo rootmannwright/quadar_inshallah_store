@@ -29,7 +29,7 @@
     "color-name": "^2.1.0",
     "concat-map": "^0.0.2",
     "connect-mongo": "^6.0.0",
-    "cookie": "^0.7.0",
+    "cookie": "^1.0.0",
     "cookie-parser": "^1.4.7",
     "cookies": "^0.9.1",
     "cords": "^1.0.4",
