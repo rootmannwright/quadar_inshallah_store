@@ -111,6 +111,17 @@ export default function Payments() {
                         {loading ? "Processando..." : "Pagar com Stripe"}
                     </button>
 
+                    {/*
+  <button
+    className="payment-button secondary"
+    onClick={handlePix}
+    disabled={loading || cartItems.length === 0}
+  >
+    {loading ? "Gerando PIX..." : "Pagar com PIX"}
+  </button>
+  */}
+
+
                     {error && <p className="payment-error">{error}</p>}
                 </div>
 
