@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 import Cookies from "js-cookie";
 import "../styles/register.css";
 
@@ -279,19 +280,31 @@ export default function Register() {
     if (Object.keys(errs).length) return setErrors(errs);
     setLoading(true);
     setApiError("");
+    toast.error("Corrija os erros do formulário");
+    setLoading(true);
+    
+    const toastId = toast.loading("Criando conta...");
+
+
     try {
       await apiRegister({
         name: form.name.trim(),
         email: form.email.trim().toLowerCase(),
         password: form.password,
       });
+
+       toast.success("Conta criada com sucesso!", { id: toastId });
+
       Cookies.set("register_success", "1", { expires: 1 / 24 });
       window.location.href = "/login";
     } catch (err) {
-      setApiError(err.message);
+      setApiError(err.message || "Erro ao criar conta", {
+        id: toastId,
+      });
     } finally {
       setLoading(false);
     }
+    return;
   };
 
   return (

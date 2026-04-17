@@ -6,6 +6,7 @@ import { AccessibilityProvider } from "./components/accessibility/AcessibilityPr
 import { OverlayProvider } from "react-aria";
 import { AuthProvider } from "./context/AuthProvider";
 import { CartProvider } from "./context/CartContext";
+import { Toaster } from "@/components/ui/sonner";
 
 // Components
 import AccessibilityPanel from "./components/accessibility/AccessibilityPanel";
@@ -39,15 +40,18 @@ function App() {
         <AuthProvider>
           <CartProvider>
             <BrowserRouter>
+
+              <Toaster richColors position="top-right" />
+
               <AccessibilityPanel />
 
               <Routes>
 
-                {/* LOGIN / REGISTER — sem layout */}
+                {/* LOGIN / REGISTER */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
-                {/* ROTAS COM LAYOUT (HEADER + FOOTER) */}
+                {/* LAYOUT PÚBLICO */}
                 <Route element={<PublicLayout />}>
 
                   {/* PÚBLICAS */}
@@ -56,7 +60,7 @@ function App() {
                   <Route path="/stories" element={<Stories />} />
                   <Route path="/cart" element={<Cart />} />
 
-                  {/* PRIVADAS — conta, checkout, dashboard */}
+                  {/* PRIVADAS */}
                   <Route
                     path="/customer"
                     element={
@@ -65,7 +69,7 @@ function App() {
                       </PrivateRoute>
                     }
                   />
-                  {/* Payment */}
+
                   <Route
                     path="/payment"
                     element={
@@ -83,6 +87,7 @@ function App() {
                       </PrivateRoute>
                     }
                   />
+
                   <Route
                     path="/dashboard"
                     element={
@@ -93,6 +98,10 @@ function App() {
                   />
                 </Route>
 
+                {/* RETORNO STRIPE */}
+                <Route path="/success" element={<Success />} />
+                <Route path="/cancel" element={<Cancel />} />
+
                 {/* 404 */}
                 <Route
                   path="*"
@@ -102,10 +111,6 @@ function App() {
                     </h1>
                   }
                 />
-
-                {/* PÁGINAS DE RETORNO DO STRIPE */}
-                <Route path="/success" element={<Success />} />
-                <Route path="/cancel" element={<Cancel />} />
 
               </Routes>
             </BrowserRouter>

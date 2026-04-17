@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import "../styles/payment.css";
+import { toast } from "sonner";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 const STRIPE_CHECKOUT_URL = `${BASE_URL}/api/payments/checkout-session`;
@@ -32,10 +33,9 @@ export default function Payments() {
             const token = localStorage.getItem("token");
 
             if (!token) {
+                toast.error("Você precisa estar logado");
                 throw new Error("Usuário não autenticado.");
             }
-
-            console.log("🛒 CART ITEMS:", cartItems);
 
             const formattedItems = cartItems.map((item) => {
                 const productId =
@@ -45,20 +45,19 @@ export default function Payments() {
                     item.product?._id;
 
                 if (!productId) {
-                    console.error("❌ Item inválido:", item);
+                    toast.error("Produto inválido no carrinho");
                     throw new Error("Produto inválido no carrinho.");
                 }
 
                 const quantity = Number(item.quantity || item.qty || 1);
 
                 if (!quantity || quantity < 1) {
+                    toast.error("Quantidade inválida");
                     throw new Error("Quantidade inválida.");
                 }
 
                 return { productId, quantity };
             });
-
-            console.log("📦 ENVIANDO:", formattedItems);
 
             const response = await fetch(STRIPE_CHECKOUT_URL, {
                 method: "POST",
@@ -71,9 +70,6 @@ export default function Payments() {
 
             const data = await response.json().catch(() => null);
 
-            console.log("📡 STATUS:", response.status);
-            console.log("📡 RESPONSE:", data);
-
             if (!response.ok) {
                 throw new Error(data?.error || "Erro ao iniciar pagamento");
             }
@@ -82,11 +78,18 @@ export default function Payments() {
                 throw new Error("Stripe não retornou URL");
             }
 
-            window.location.href = data.url;
+            // 🔥 TOAST DE SUCESSO ANTES DO REDIRECIONAMENTO
+            toast.success("Redirecionando para pagamento...");
+
+            // pequeno delay pra UX ficar suave
+            setTimeout(() => {
+                window.location.href = data.url;
+            }, 600);
 
         } catch (err) {
             console.error("❌ Stripe checkout error:", err);
             setError(err.message);
+            toast.error(err.message || "Erro no pagamento");
         } finally {
             setLoading(false);
         }
@@ -122,6 +125,8 @@ export default function Payments() {
                                 <span>
                                     {formatPrice(item.price)} x {item.quantity}
                                 </span>
+                                <span>
+                                    {formatPrice((item.price || 0) * (item.quantity || 0))}</span>
                             </div>
                         ))}
                     </div>
