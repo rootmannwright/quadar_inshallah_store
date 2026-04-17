@@ -414,6 +414,7 @@
 
 .s-cta-title {
   font-family: var(--s-font-serif);
+  color: (var(--s-white));
   font-size: clamp(32px, 4vw, 52px);
   font-weight: 300;
   letter-spacing: 0.04em;

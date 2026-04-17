@@ -1,4 +1,3 @@
-// App.jsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Providers
@@ -10,6 +9,8 @@ import { Toaster } from "@/components/ui/sonner";
 
 // Components
 import AccessibilityPanel from "./components/accessibility/AccessibilityPanel";
+import PaymentFailed from "./components/PaymentFailed";
+import PaymentSuccess from "./components/PaymentSuccess";
 
 // Routes
 import PrivateRoute from "./routes/PrivateRoute";
@@ -24,8 +25,6 @@ import Products from "./pages/Products";
 import Dashboard from "./pages/Dashboard";
 import Checkout from "./pages/Checkout";
 import Account from "./pages/Account";
-import Success from "./pages/Success";
-import Cancel from "./pages/Cancel";
 import Payment from "./pages/Payment";
 
 // Layout
@@ -47,20 +46,24 @@ function App() {
 
               <Routes>
 
-                {/* LOGIN / REGISTER */}
+                {/* AUTH */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
                 {/* LAYOUT PÚBLICO */}
                 <Route element={<PublicLayout />}>
 
-                  {/* PÚBLICAS */}
+                  {/* STRIPE RESULT */}
+                  <Route path="/success" element={<PaymentSuccess />} />
+                  <Route path="/cancel" element={<PaymentFailed />} />
+
+                  {/* PÁGINAS PÚBLICAS */}
                   <Route path="/" element={<Home />} />
                   <Route path="/products" element={<Products />} />
                   <Route path="/stories" element={<Stories />} />
                   <Route path="/cart" element={<Cart />} />
 
-                  {/* PRIVADAS */}
+                  {/* ROTAS PRIVADAS */}
                   <Route
                     path="/customer"
                     element={
@@ -98,10 +101,6 @@ function App() {
                   />
                 </Route>
 
-                {/* RETORNO STRIPE */}
-                <Route path="/success" element={<Success />} />
-                <Route path="/cancel" element={<Cancel />} />
-
                 {/* 404 */}
                 <Route
                   path="*"
@@ -113,6 +112,7 @@ function App() {
                 />
 
               </Routes>
+
             </BrowserRouter>
           </CartProvider>
         </AuthProvider>

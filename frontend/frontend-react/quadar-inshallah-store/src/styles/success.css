@@ -1,0 +1,175 @@
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&display=swap');
+
+.ps-root {
+  min-height: 100vh;
+  background: #fff;
+  font-family: 'Jost', sans-serif;
+  color: #111;
+}
+
+/* layout */
+.ps-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 48px;
+
+  opacity: 0;
+  transform: translateY(16px);
+  transition: all 0.5s ease;
+}
+
+.ps-main.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* LEFT */
+.ps-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.ps-icon {
+  margin-bottom: 24px;
+}
+
+.ps-check {
+  width: 52px;
+  height: 52px;
+  background: #111;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.ps-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.ps-subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 32px;
+  max-width: 420px;
+}
+
+/* order box */
+.ps-order-box {
+  background: #f5f5f5;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.ps-order-box span {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: #999;
+}
+
+.ps-order-box strong {
+  font-size: 14px;
+}
+
+/* info */
+.ps-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.ps-info-grid span {
+  font-size: 10px;
+  color: #aaa;
+  letter-spacing: 0.1em;
+}
+
+.ps-info-grid strong {
+  display: block;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.success {
+  color: #2d7a2d;
+}
+
+/* actions */
+.ps-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ps-actions button {
+  padding: 16px;
+  border: none;
+  background: #111;
+  color: #fff;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.ps-actions button:hover {
+  opacity: 0.8;
+}
+
+.ps-actions .ghost {
+  background: transparent;
+  border: 1px solid #111;
+  color: #111;
+}
+
+/* RIGHT */
+.ps-card {
+  border: 1px solid #e8e8e8;
+  padding: 24px;
+}
+
+.ps-card h2 {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  margin-bottom: 16px;
+}
+
+.divider {
+  height: 1px;
+  background: #eee;
+  margin: 16px 0;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.row.total {
+  font-weight: 600;
+  color: #111;
+}
+
+/* RESPONSIVO */
+@media (max-width: 768px) {
+  .ps-main {
+    grid-template-columns: 1fr;
+    padding: 32px 20px;
+  }
+
+  .ps-info-grid {
+    grid-template-columns: 1fr;
+  }
+}

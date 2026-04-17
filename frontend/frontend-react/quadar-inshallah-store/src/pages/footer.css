@@ -1,21 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Monsieur+La+Doulaise&display=swap');
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   footer.css — Quadar
-   Responsividade alinhada com global.css
-   Breakpoints:
-     xs:  < 480px
-     sm:  480–767px
-     md:  768–1023px
-     lg:  1024–1279px
-     xl:  1280–1535px
-    2xl:  ≥ 1536px
-───────────────────────────────────────────────────────────────────────────── */
-
-/* ─── Base ───────────────────────────────────────────────────────────────────── */
-
-
-
 .footer {
   background-color: #ffffff;
   color: #000000;
@@ -206,6 +190,10 @@
 
   .politcs a {
     min-height: 44px;
+  }
+
+  .footer-logo {
+    margin: 32px auto;
   }
 }
 

@@ -1,14 +1,3 @@
-/**
- * Products.jsx — Quadar Store
- *
- * Cart logic:
- *  - Guest users → cart lives in localStorage under "guestCart"
- *  - Logged-in users → cart synced to server via /api/cart/add
- *  - Login is only required at CHECKOUT, never to add to cart
- *  - On login, Login.jsx writes a "pendingCartMerge" key; this page reads
- *    and flushes it to the server cart on mount.
- */
-
 import { useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -27,8 +16,6 @@ const cardVariants = {
   hidden: { opacity: 0, y: 28 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
 };
-
-// ─── Local (guest) cart helpers ───────────────────────────────────────────────
 
 const GUEST_CART_KEY = "guestCart";
 
@@ -380,7 +367,7 @@ export default function Products() {
         setCartCount(updatedCart.reduce((s, i) => s + i.qty, 0));
       }
 
-      showToast(`${product.name} added to bag`);
+      showToast(`${product.name} foi adicionado`, "success");
     } catch (err) {
       showToast(err.response?.data?.message || "Could not add to bag", "error");
     } finally {

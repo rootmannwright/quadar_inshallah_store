@@ -1,0 +1,190 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500&display=swap');
+
+.ps-root, .qd-root {
+  background: #fff;
+  color: #111;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+/* CONTAINER CENTRAL */
+.ps-main, .qd-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 32px;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 80px;
+}
+
+/* LEFT */
+.ps-left, .qd-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* TAG SUPERIOR */
+.qd-status-tag {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-bottom: 32px;
+}
+
+/* TITLE */
+.ps-title, .qd-headline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 64px;
+  font-weight: 300;
+  line-height: 1;
+  margin-bottom: 24px;
+}
+
+/* ITALIC "não" */
+.qd-headline em {
+  font-style: italic;
+}
+
+/* SUBTITLE */
+.ps-subtitle, .qd-subtitle {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #555;
+  max-width: 420px;
+}
+
+/* ACTIONS */
+.ps-actions, .qd-actions {
+  margin-top: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* BOTÃO PRINCIPAL */
+.ps-actions button,
+.qd-btn-primary {
+  background: #111;
+  color: #fff;
+  border: none;
+  padding: 16px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ps-actions button:hover,
+.qd-btn-primary:hover {
+  opacity: 0.8;
+}
+
+/* BOTÃO SECUNDÁRIO */
+.ps-actions .ghost,
+.qd-btn-ghost {
+  background: transparent;
+  border: 1px solid #111;
+  color: #111;
+}
+
+.ps-actions .ghost:hover,
+.qd-btn-ghost:hover {
+  background: #111;
+  color: #fff;
+}
+
+/* RIGHT CARD */
+.ps-right, .qd-right {
+  display: flex;
+  align-items: flex-start;
+}
+
+/* CARD */
+.ps-card {
+  width: 100%;
+  border: 1px solid #eee;
+  padding: 32px;
+}
+
+.ps-card h2 {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  margin-bottom: 20px;
+}
+
+/* DIVIDER */
+.divider {
+  height: 1px;
+  background: #eee;
+  margin: 16px 0;
+}
+
+/* ROW */
+.row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 10px;
+  color: #666;
+}
+
+.row.total {
+  font-weight: 500;
+  color: #111;
+}
+
+/* SUCCESS COLOR */
+.success {
+  color: #1a7f37;
+}
+
+/* ERROR CODE (402) */
+.qd-error-code {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 140px;
+  opacity: 0.05;
+  margin-bottom: 32px;
+}
+
+/* CHECKLIST */
+.qd-checklist {
+  margin-top: 24px;
+}
+
+.qd-checklist li {
+  display: flex;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.qd-item-label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.qd-item-desc {
+  font-size: 13px;
+  color: #666;
+}
+
+/* RESPONSIVO */
+@media (max-width: 900px) {
+  .ps-main, .qd-main {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    padding: 48px 20px;
+  }
+
+  .ps-title, .qd-headline {
+    font-size: 44px;
+  }
+
+  .qd-error-code {
+    font-size: 80px;
+  }
+}
