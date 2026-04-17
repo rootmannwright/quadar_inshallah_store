@@ -20,12 +20,6 @@ function Footer() {
 
                 <div className="flex items-center gap-4">
 
-                    <img
-                        src={fotoPerfil}
-                        alt="Lucas Marques"
-                        className="perfil-photo"
-                    />
-
                     <div>
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                             Lucas M. Nascimento

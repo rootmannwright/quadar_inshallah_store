@@ -25,6 +25,7 @@ import Checkout from "./pages/Checkout";
 import Account from "./pages/Account";
 import Success from "./pages/Success";
 import Cancel from "./pages/Cancel";
+import Payment from "./pages/Payment";
 
 // Layout
 import PublicLayout from "./layouts/PublicLayout";
@@ -64,6 +65,16 @@ function App() {
                       </PrivateRoute>
                     }
                   />
+                  {/* Payment */}
+                  <Route
+                    path="/payment"
+                    element={
+                      <PrivateRoute>
+                        <Payment />
+                      </PrivateRoute>
+                    }
+                  />
+
                   <Route
                     path="/checkout"
                     element={

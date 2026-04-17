@@ -8,8 +8,8 @@ const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const api = axios.create({
   baseURL:         BASE_URL,
-  withCredentials: true,          // envia cookies em toda requisição
-  timeout:         15_000,        // 15s
+  withCredentials: true,
+  timeout:         15_000, // 15s
   headers: {
     "Content-Type": "application/json",
     Accept:         "application/json",

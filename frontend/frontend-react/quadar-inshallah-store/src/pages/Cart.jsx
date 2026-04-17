@@ -1,12 +1,3 @@
-/**
- * Cart.jsx — Quadar
- *
- * Lógica:
- *  - Guest  → lê/escreve em localStorage ("guestCart")
- *  - Logado → lê/escreve no servidor via /api/cart
- *  - Checkout → se não estiver logado, redireciona para /login
- */
-
 import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
@@ -41,10 +32,7 @@ function saveGuestCart(items) {
   localStorage.setItem(GUEST_KEY, JSON.stringify(items));
 }
 
-// ─── Formatar items do servidor ───────────────────────────────────────────────
-// O backend retorna { items: [{ product: {...}, qty }] }
-// Normaliza para a forma plana usada pelo frontend
-
+// Formats server cart items into frontend-friendly structure
 function normalizeServerItems(rawItems = []) {
   return rawItems
     .filter((i) => i.product)
@@ -191,10 +179,8 @@ export default function Cart() {
 
     try {
       if (isGuest) {
-        // Guest → lê do localStorage diretamente
         setItems(getGuestCart());
       } else {
-        // Logado → busca no servidor
         const token = localStorage.getItem("token");
 
         const res = await fetch(`${BASE_URL}/api/cart`, {
@@ -234,7 +220,6 @@ export default function Cart() {
       const token = localStorage.getItem("token");
       const csrfToken = await fetchCsrf();
 
-      // Remove e re-adiciona com nova qty
       await fetch(`${BASE_URL}/api/cart/remove/${productId}`, {
         method: "DELETE",
         credentials: "include",
@@ -289,65 +274,29 @@ export default function Cart() {
     }
   };
 
-  // ── Checkout ────────────────────────────────────────────────────────────────
-  // Guest → redireciona para login (guestCart já está no localStorage)
-  // Logado → chama Stripe checkout session
-  const handleCheckout = async () => {
+  // Checkout redirect for /payment
+  const handleCheckout = () => {
     if (isGuest) {
       navigate("/login");
       return;
     }
 
-    try {
-      const token = localStorage.getItem("token");
-      const csrfToken = await fetchCsrf();
+    const formattedItems = items.map((i) => ({
+      id: i._id,
+      name: i.name,
+      price: Number(i.price) || 0,
+      image: i.image,
+      description: i.description,
+      quantity: i.qty,
+    }));
 
-      const res = await fetch(`${BASE_URL}/api/payments/checkout-session`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-          "X-CSRF-Token": csrfToken,
-        },
-        body: JSON.stringify({
-          items: items.map((i) => ({
-            productId: i._id,
-            quantity: i.qty,
-          })),
-        }),
-      });
+    // salva fallback correto
+    localStorage.setItem("checkoutItems", JSON.stringify(formattedItems));
 
-      let data;
-      try {
-        data = await res.json();
-      } catch (err) {
-        console.error("❌ Resposta não é JSON");
-        throw new Error("Erro no servidor");
-      }
-
-      console.log("📦 RESPOSTA BACKEND:", data);
-
-      // erro do backend
-      if (!res.ok) {
-        throw new Error(data?.error || "Erro ao criar checkout");
-      }
-
-      // valida URL do Stripe
-      if (!res.ok) {
-        console.error("🚨 ERRO BACKEND COMPLETO:", data);
-        throw new Error(data?.error || `Erro ${res.status}`);
-      }
-
-      // redireciona
-      window.location.href = data.url;
-
-    } catch (err) {
-      console.error("🔥 CHECKOUT ERROR:", err.message);
-      alert(err.message || "Erro ao iniciar pagamento");
-    }
+    navigate("/payment", {
+      state: { items: formattedItems },
+    });
   };
-
   // ── Computed ────────────────────────────────────────────────────────────────
   const subtotal = items.reduce((acc, i) => acc + (Number(i.price) || 0) * (i.qty || 1), 0);
 

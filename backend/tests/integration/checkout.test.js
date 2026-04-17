@@ -1,9 +1,7 @@
 import { jest, describe, it, expect, beforeEach } from "@jest/globals";
 import mongoose from "mongoose";
 
-// ─────────────────────────────────────────────
-// 🔥 MOCKS (Stripe)
-// ─────────────────────────────────────────────
+
 const mockSessionCreate = jest.fn();
 const mockConstructEvent = jest.fn();
 
@@ -22,9 +20,7 @@ jest.unstable_mockModule("stripe", () => {
   };
 });
 
-// ─────────────────────────────────────────────
-// 🔥 MOCKS (Models)
-// ─────────────────────────────────────────────
+
 const mockProductFind = jest.fn();
 const mockOrderCreate = jest.fn();
 const mockOrderFindById = jest.fn();
@@ -42,15 +38,11 @@ jest.unstable_mockModule("../../models/Order.js", () => ({
   },
 }));
 
-// ─────────────────────────────────────────────
-// IMPORTS (DEPOIS DOS MOCKS)
-// ─────────────────────────────────────────────
+// imports after mocks
 const { createCheckoutSession, handleWebhook } =
   await import("../../controllers/paymentController.js");
 
-// ─────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────
+// Helpers for mocks and test data
 const mockReq = (overrides = {}) => ({
   body: {},
   headers: {},
@@ -81,9 +73,7 @@ const fakeOrder = (overrides = {}) => ({
   ...overrides,
 });
 
-// ─────────────────────────────────────────────
-// TESTS - CHECKOUT
-// ─────────────────────────────────────────────
+// Tests for createCheckoutSession
 describe("createCheckoutSession", () => {
   beforeEach(() => {
     process.env.STRIPE_SECRET_KEY = "sk_test";
@@ -168,9 +158,7 @@ describe("createCheckoutSession", () => {
   });
 });
 
-// ─────────────────────────────────────────────
-// TESTS - WEBHOOK
-// ─────────────────────────────────────────────
+// Tests for handleWebhook are at the end of this file since they require more complex setup and mocks
 describe("handleWebhook", () => {
   beforeEach(() => {
     process.env.STRIPE_SECRET_KEY = "sk_test";

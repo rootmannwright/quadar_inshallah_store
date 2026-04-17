@@ -1,5 +1,5 @@
 import { describe, it, expect } from "@jest/globals";
-import { isValidImageURL } from "../../../utils/isValidImageUrl.js";
+import { isValidImageURL } from "../isValidImageUrl.js";
 
 describe("isValidImageURL", () => {
   it("aceita URL https válida", () => {

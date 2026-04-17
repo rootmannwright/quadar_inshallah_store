@@ -1,4 +1,4 @@
-import Order from "../../../models/Order.js";
+import Order from "../models/Order.js";
 import mongoose from "mongoose";
 import { describe, it, expect, jest, beforeEach } from "@jest/globals";
 

@@ -2,7 +2,7 @@
 // Still in development
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { jest, beforeAll, afterAll, afterEach, global } from "@jest/globals";
+import { jest, beforeAll, afterEach, afterAll } from '@jest/globals';
 
 let mongoServer;
 

@@ -136,7 +136,7 @@ export const createCheckoutSession = async (req, res) => {
     console.log("💳 LINE ITEMS:", line_items);
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
+      payment_method_types: ["card", "boleto"],
       mode: "payment",
       line_items,
       success_url: `${CLIENT_URL}/success`,

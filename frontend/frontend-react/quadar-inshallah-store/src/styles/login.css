@@ -202,19 +202,17 @@ body {
   align-items: center;
   justify-content: space-between;
   padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
 }
 
 .logo {
   display: block;
-  height: 2rem;          /* altura fixa — largura escala proporcionalmente */
+  height: 2rem;
   width: auto;
-  max-width: 140px;      /* impede logos muito horizontais de vazar */
+  max-width: 140px;
   object-fit: contain;
   object-position: left center;
-
-  /* inverte a cor no dark mode para logos pretos ficarem visíveis */
   filter: var(--logo-filter);
-
   transition: filter 0.4s ease, opacity 0.2s ease;
 }
 
