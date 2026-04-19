@@ -19,6 +19,9 @@ import cartRoutes from "./routes/cartRoutes.js";
 import errorHandler from "./middleware/errorHandler.js";
 import { requestLogger } from "./middleware/requestLogger.js";
 
+// ✅ CSRF
+import { generateToken, doubleCsrfProtection } from "./middleware/csrf.js";
+
 dotenv.config();
 
 const app = express();
@@ -90,23 +93,20 @@ app.use(
    📦 BODY PARSERS
 ========================= */
 
-// Stripe webhook precisa raw
+// Stripe webhook precisa raw — ANTES de qualquer outro parser
 app.use("/api/webhooks", express.raw({ type: "application/json" }));
 
 // JSON geral
 app.use(express.json({ limit: "10kb" }));
 
-// Cookies (session/cart fallback)
+// ✅ cookieParser DEVE vir antes do CSRF
 app.use(cookieParser());
 
 /* =========================
    🧼 SECURITY LAYERS
 ========================= */
 
-// Remove query pollution (?a=1&a=2)
 app.use(hpp());
-
-// Logger
 app.use(requestLogger);
 
 /* =========================
@@ -128,39 +128,44 @@ app.use(
 );
 
 /* =========================
+   🔑 CSRF TOKEN ENDPOINT
+   Deve ser público — o frontend busca antes de qualquer mutação
+========================= */
+
+app.get("/api/csrf-token", (req, res) => {
+  res.json({ csrfToken: generateToken(req, res) });
+});
+
+/* =========================
    🧭 ROUTES
 ========================= */
 
-// Public routes
-app.use("/api/auth", authRoutes);
+// Rotas públicas — sem CSRF (GET apenas, não alteram estado)
 app.use("/api/products", productRoutes);
 
-// Protected business logic (JWT middleware deve estar dentro das rotas)
-app.use("/api/cart", cartRoutes);
-app.use("/api/payments", paymentRoutes);
+// Auth — CSRF obrigatório (POST /login, /register, /logout)
+app.use("/api/auth", doubleCsrfProtection, authRoutes);
 
-// Stripe webhook (NO JSON middleware!)
+// Rotas protegidas com CSRF
+app.use("/api/cart", doubleCsrfProtection, cartRoutes);
+app.use("/api/payments", doubleCsrfProtection, paymentRoutes);
+
+// ⚠️ Webhooks do Stripe — SEM CSRF
+// Stripe não envia o token; a segurança é pela assinatura stripe-signature
 app.use("/api/webhooks", webhookRoutes);
 
 /* =========================
    🖼️ STATIC FILES
 ========================= */
 
-app.use(
-  "/images",
-  express.static(path.join(__dirname, "public/images"))
-);
+app.use("/images", express.static(path.join(__dirname, "public/images")));
 
 /* =========================
    ❤️ HEALTH CHECK
 ========================= */
 
 app.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "API running 🚀",
-    status: "healthy",
-  });
+  res.json({ success: true, message: "API running 🚀", status: "healthy" });
 });
 
 /* =========================
@@ -168,10 +173,7 @@ app.get("/", (req, res) => {
 ========================= */
 
 app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: "Route not found",
-  });
+  res.status(404).json({ success: false, message: "Route not found" });
 });
 
 /* =========================
