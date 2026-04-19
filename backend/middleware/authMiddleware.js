@@ -1,23 +1,23 @@
 import jwt from "jsonwebtoken";
 
 export function authMiddleware(req, res, next) {
-  try {    
-    // Extract token from Authorization header.
+  try {
     const authHeader = req.headers.authorization;
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    if (!authHeader) {
       return res.status(401).json({
         success: false,
-        message: "Não autorizado: token ausente",
+        message: "Não autorizado: header ausente",
       });
     }
 
-    const token = authHeader.split(" ")[1];
+    // aceita "Bearer token" mesmo com espaços extras ou variação de caixa
+    const [scheme, token] = authHeader.trim().split(" ");
 
-    if (!token) {
+    if (!scheme || scheme.toLowerCase() !== "bearer" || !token) {
       return res.status(401).json({
         success: false,
-        message: "Não autorizado: token ausente",
+        message: "Não autorizado: formato inválido do token",
       });
     }
 
@@ -29,7 +29,7 @@ export function authMiddleware(req, res, next) {
       email: decoded.email,
     };
 
-    next();
+    return next();
   } catch (err) {
     console.error("[AUTH ERROR]", err.message);
 

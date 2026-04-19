@@ -1,218 +1,278 @@
 import Stripe from "stripe";
+import { MercadoPagoConfig, Preference } from "mercadopago";
 import Joi from "joi";
 import mongoose from "mongoose";
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 
-// 🔐 Stripe factory
+/* =========================
+   CONFIG STRIPE (lazy)
+========================= */
 const getStripe = () => {
   if (!process.env.STRIPE_SECRET_KEY) {
-    throw new Error("❌ STRIPE_SECRET_KEY não definida no .env");
+    throw new Error("STRIPE_SECRET_KEY não definida");
   }
   return new Stripe(process.env.STRIPE_SECRET_KEY);
 };
 
-// Validate URL images before sendint to Stripe
-const isValidImageUrl = (url) => {
-  try {
-    // eslint-disable-next-line no-undef
-    const parsed = new URL(url);
-    return parsed.protocol === "https:" || parsed.protocol === "http:";
-  } catch {
-    return false;
+/* =========================
+   CONFIG MERCADO PAGO (lazy)
+========================= */
+const getMpClient = () => {
+  if (!process.env.MP_ACCESS_TOKEN) {
+    throw new Error("MP_ACCESS_TOKEN não definida");
   }
+  return new MercadoPagoConfig({
+    accessToken: process.env.MP_ACCESS_TOKEN,
+  });
 };
 
-// Checkout Session
+/* =========================
+   VALIDATION
+========================= */
+const schema = Joi.object({
+  items: Joi.array()
+    .items(
+      Joi.object({
+        productId: Joi.string().required(),
+        quantity: Joi.number().integer().min(1).required(),
+      })
+    )
+    .min(1)
+    .required(),
+});
+
+/* =========================
+   STRIPE CHECKOUT
+========================= */
 export const createCheckoutSession = async (req, res) => {
   try {
-    console.log("🛒 BODY RECEBIDO:", req.body);
-
-    // ✅ Validação
-    const schema = Joi.object({
-      items: Joi.array()
-        .items(
-          Joi.object({
-            productId: Joi.string().required(),
-            quantity: Joi.number().integer().min(1).required(),
-          })
-        )
-        .min(1)
-        .required(),
-    });
-
     const { error, value } = schema.validate(req.body);
 
     if (error) {
-      console.log("❌ ERRO VALIDAÇÃO:", error.details[0].message);
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    const { items } = value;
-
-    // Validate user after validation of body
     if (!req.user?.id) {
       return res.status(401).json({ error: "Usuário não autenticado" });
     }
 
-    const ids = [...new Set(items.map((i) => i.productId))];
+    const { items } = value;
 
-    const products = await Product.find({ _id: { $in: ids } });
+    const products = await Product.find({
+      _id: { $in: items.map((i) => i.productId) },
+    });
 
-    console.log("📦 PRODUTOS ENCONTRADOS:", products.length);
+    const map = new Map(products.map((p) => [p._id.toString(), p]));
 
-    if (!products.length) {
-      return res.status(404).json({ error: "Products not found" });
-    }
-
-    const productMap = new Map(products.map((p) => [p._id.toString(), p]));
-
-    const orderItems = items.map((item) => {
-      const product = productMap.get(item.productId);
-
-      if (!product) {
-        throw new Error(`Produto não encontrado: ${item.productId}`);
-      }
-
-      const price = Number(product.price);
-
-      if (!price || isNaN(price)) {
-        throw new Error(`Preço inválido: ${product.name}`);
-      }
+    const orderItems = items.map((i) => {
+      const p = map.get(i.productId);
+      if (!p) throw new Error("Produto não encontrado");
 
       return {
-        product: product._id,
-        name: product.name,
-        image: product.image || null,
-        price,
-        quantity: item.quantity,
+        product: p._id,
+        name: p.name,
+        price: Number(p.price),
+        quantity: i.quantity,
       };
     });
 
-    // Image logs
-    console.log("🖼️ IMAGENS:", orderItems.map((i) => i.image));
-    console.log("🧾 ORDER ITEMS:", orderItems);
-
     const total = orderItems.reduce(
-      (acc, item) => acc + item.price * item.quantity,
+      (acc, i) => acc + i.price * i.quantity,
       0
     );
 
-    console.log("💰 TOTAL:", total);
-
-    const CLIENT_URL = process.env.CLIENT_URL;
-
-    console.log("🌐 CLIENT_URL:", CLIENT_URL);
-
-    if (!CLIENT_URL || !CLIENT_URL.startsWith("http")) {
-      throw new Error("CLIENT_URL inválida no .env");
-    }
-
-    // Create order with status "pending_payment"
     const order = await Order.create({
       user: req.user.id,
       items: orderItems,
       total,
-      status: "pending_payment", //
+      status: "pending_payment",
+      paymentProvider: "stripe",
     });
 
-    console.log("📄 ORDER CRIADA:", order._id);
-
     const stripe = getStripe();
-
-    const line_items = orderItems.map((item) => ({
-      price_data: {
-        currency: "brl",
-        product_data: {
-          name: item.name,
-          images:
-            item.image && isValidImageUrl(item.image) ? [item.image] : [],
-        },
-        unit_amount: Math.round(item.price * 100),
-      },
-      quantity: item.quantity,
-    }));
-
-    console.log("💳 LINE ITEMS:", line_items);
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card", "boleto"],
       mode: "payment",
-      line_items,
-      success_url: `${CLIENT_URL}/success`,
-      cancel_url: `${CLIENT_URL}/cancel`,
+      line_items: orderItems.map((i) => ({
+        price_data: {
+          currency: "brl",
+          product_data: {
+            name: i.name,
+          },
+          unit_amount: Math.round(i.price * 100),
+        },
+        quantity: i.quantity,
+      })),
+      success_url: `${process.env.CLIENT_URL}/success`,
+      cancel_url: `${process.env.CLIENT_URL}/cancel`,
       metadata: {
-        name: `Pedido ${order._id}`,
         orderId: order._id.toString(),
         userId: req.user.id,
       },
     });
 
-    console.log("🔥 STRIPE SESSION:", session);
-
-    if (!session.url) {
-      throw new Error("Stripe não retornou URL");
-    }
-
     order.stripeSessionId = session.id;
     await order.save();
 
-    console.log("✅ CHECKOUT OK, REDIRECT:", session.url);
-
     return res.json({ url: session.url });
   } catch (err) {
-    console.error("🔥 CHECKOUT ERROR COMPLETO:", err);
+    console.error("[STRIPE ERROR]", err);
     return res.status(500).json({ error: err.message });
   }
 };
 
-// Webhook handler
-export const handleWebhook = async (req, res) => {
-  const stripe = getStripe();
-  const sig = req.headers["stripe-signature"];
-
-  let event;
-
+/* =========================
+   MERCADO PAGO CHECKOUT
+========================= */
+export const createMercadoPagoPreference = async (req, res) => {
+  console.log("CLIENT_URL:", process.env.CLIENT_URL);
   try {
-    event = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
+    const { error, value } = schema.validate(req.body);
+
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    if (!req.user?.id) {
+      return res.status(401).json({ error: "Usuário não autenticado" });
+    }
+
+    const { items } = value;
+
+    const products = await Product.find({
+      _id: { $in: items.map((i) => i.productId) },
+    });
+
+    const map = new Map(products.map((p) => [p._id.toString(), p]));
+
+    const orderItems = items.map((i) => {
+      const p = map.get(i.productId);
+      if (!p) throw new Error("Produto não encontrado");
+
+      return {
+        product: p._id,
+        name: p.name,
+        price: Number(p.price),
+        quantity: i.quantity,
+      };
+    });
+
+    const total = orderItems.reduce(
+      (acc, i) => acc + i.price * i.quantity,
+      0
     );
+
+    const order = await Order.create({
+      user: req.user.id,
+      items: orderItems,
+      total,
+      status: "pending_payment",
+      paymentProvider: "mercadopago",
+    });
+
+    const preference = new Preference(getMpClient()); // 👈 lazy, lê o .env na hora certa
+
+    const response = await preference.create({
+      body: {
+        items: orderItems.map((i) => ({
+          title: i.name,
+          quantity: i.quantity,
+          currency_id: "BRL",
+          unit_price: i.price,
+        })),
+
+        back_urls: {
+          success: `${process.env.CLIENT_URL}/success`,
+          failure: `${process.env.CLIENT_URL}/cancel`,
+          pending: `${process.env.CLIENT_URL}/pending`,
+        },
+        payment_methods: {
+          excluded_payment_types: [
+            { id: "credit_card" },
+            { id: "debit_card" },
+            { id: "ticket" }, // boleto
+          ],
+        },
+
+        external_reference: order._id.toString(),
+
+        metadata: {
+          orderId: order._id.toString(),
+          userId: req.user.id,
+        },
+
+        notification_url: `${process.env.SERVER_URL}/api/webhook/mercadopago`,
+      },
+    });
+
+    if (!response?.init_point) {
+      throw new Error("Mercado Pago não retornou URL");
+    }
+
+    order.mercadoPagoPreferenceId = response.id;
+    await order.save();
+
+    return res.json({
+      url: response.init_point,
+    });
   } catch (err) {
-    console.error("❌ Webhook signature error:", err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
+    console.error("[MP ERROR]", err);
+    return res.status(500).json({ error: err.message });
   }
+};
 
+/* =========================
+   WEBHOOK (STRIPE + BASE FUTURA MP)
+========================= */
+export const handleWebhook = async (req, res) => {
   try {
-    switch (event.type) {
-      case "checkout.session.completed": {
-        const session = event.data.object;
-        const orderId = session.metadata.orderId;
+    console.log("📩 WEBHOOK RECEBIDO");
 
-        if (!mongoose.Types.ObjectId.isValid(orderId)) break;
+    const stripe = getStripe();
+    const sig = req.headers["stripe-signature"];
 
-        const order = await Order.findById(orderId);
-        if (!order) break;
+    if (!sig) {
+      return res.status(400).json({ error: "Missing stripe signature" });
+    }
 
-        if (order.status === "payment_intent_paid") break;
+    let event;
 
-        order.status = "payment_intent_paid";
+    try {
+      event = stripe.webhooks.constructEvent(
+        req.body,
+        sig,
+        process.env.STRIPE_WEBHOOK_SECRET
+      );
+    } catch (err) {
+      console.error("❌ Webhook error:", err.message);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object;
+
+      const orderId = session.metadata.orderId;
+
+      if (!mongoose.Types.ObjectId.isValid(orderId)) {
+        return res.status(400).json({ error: "Invalid orderId" });
+      }
+
+      const order = await Order.findById(orderId);
+
+      if (order && order.status !== "paid") {
+        order.status = "paid";
         order.paidAt = new Date();
-
         await order.save();
 
         console.log("✅ Pedido pago:", orderId);
-        break;
       }
-
-      default:
-        console.log("⚠️ Evento não tratado:", event.type);
     }
 
-    res.json({ received: true });
+    return res.json({ received: true });
   } catch (err) {
-    console.error("🔥 Webhook error:", err.message);
-    res.status(500).json({ error: "Webhook handler failed" });
+    console.error("[WEBHOOK ERROR]", err);
+    return res.status(500).json({ error: "Webhook failed" });
   }
 };

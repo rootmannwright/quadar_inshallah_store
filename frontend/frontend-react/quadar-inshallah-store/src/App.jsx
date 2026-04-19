@@ -11,6 +11,7 @@ import { Toaster } from "@/components/ui/sonner";
 import AccessibilityPanel from "./components/accessibility/AccessibilityPanel";
 import PaymentFailed from "./components/PaymentFailed";
 import PaymentSuccess from "./components/PaymentSuccess";
+import CookieModal from "./components/CookieModal";
 
 // Routes
 import PrivateRoute from "./routes/PrivateRoute";
@@ -41,8 +42,8 @@ function App() {
             <BrowserRouter>
 
               <Toaster richColors position="top-right" />
-
               <AccessibilityPanel />
+              <CookieModal />
 
               <Routes>
 

@@ -2,6 +2,7 @@ import express from "express";
 import authMiddleware from "../middleware/authMiddleware.js";
 import {
   createCheckoutSession,
+  createMercadoPagoPreference
 } from "../controllers/paymentController.js";
 
 const router = express.Router();
@@ -12,5 +13,11 @@ router.post(
   authMiddleware,
   createCheckoutSession
 );
+
+router.post(
+  "/mercadopago",
+  authMiddleware,
+  createMercadoPagoPreference
+)
 
 export default router;

@@ -42,7 +42,7 @@ export default function Home() {
           muted
           playsInline
         >
-          <source src="https://www.pexels.com/pt-br/download/video/33007496/" type="video/mp4" />
+          <source src="https://www.pexels.com/pt-br/download/video/10046969/" type="video/mp4" />
         </video>
 
         <div className="hero-overlay"></div>
