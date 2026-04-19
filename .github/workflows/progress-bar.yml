@@ -1,0 +1,61 @@
+name: Update progress bar
+
+permissions:
+  contents: write
+  issues: read
+
+on:
+  issues:
+    types: [opened, closed, reopened, labeled, unlabeled]
+  workflow_dispatch:
+
+jobs:
+  update-progress:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Calculate progress
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner
+            const repo = context.repo.repo
+
+            const issues = await github.paginate(
+              github.rest.issues.listForRepo,
+              {
+                owner,
+                repo,
+                labels: 'progress',
+                state: 'all'
+              }
+            )
+
+            const total = issues.length
+            const done = issues.filter(i => i.state === 'closed').length
+            const percent = total === 0 ? 0 : Math.round((done / total) * 100)
+
+            const barLength = 10
+            const filled = Math.round((percent / 100) * barLength)
+            const bar = '█'.repeat(filled) + '░'.repeat(barLength - filled)
+
+            const fs = require('fs')
+            const readme = fs.readFileSync('README.md', 'utf8')
+
+            const updated = readme.replace(
+              /<!-- PROGRESS_BAR_START -->([\s\S]*?)<!-- PROGRESS_BAR_END -->/,
+              `<!-- PROGRESS_BAR_START -->\n[${bar}] ${percent}%\n<!-- PROGRESS_BAR_END -->`
+            )
+
+            fs.writeFileSync('README.md', updated)
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add README.md
+          git commit -m "chore: update progress bar" || echo "No changes"
+          git push

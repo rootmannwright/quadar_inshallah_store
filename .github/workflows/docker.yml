@@ -1,0 +1,32 @@
+# .github/workflows/docker.yml
+name: Docker Build & Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+
+      #     username: ${{ secrets.homiemannwright }}
+      #     password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker image
+        run: docker build -t quadar-inshallah-store:latest ./backend
+
+      - name: Test Docker container
+        run: |
+          docker run --rm quadar-inshallah-store:latest node -v
