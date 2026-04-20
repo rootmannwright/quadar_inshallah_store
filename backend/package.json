@@ -121,8 +121,8 @@
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
-    "dev": "node --env-file=.env --watch server.js",
-    "start": "node --env-file=.env server.js",
+    "dev": "node server.js",
+    "start": "node api.js",
     "lint": "eslint . --ext .js"
   },
   "eslintConfig": {

@@ -2,10 +2,11 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import "../styles/payment.css";
 import { toast } from "sonner";
+import api from "../api";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
-const STRIPE_URL = `${BASE_URL}/api/payments/checkout-session`;
-const MP_URL = `${BASE_URL}/api/payments/mercadopago`;
+// ✅ Paths relativos — baseURL já está no api.js
+const STRIPE_URL = "/api/payments/checkout-session";
+const MP_URL     = "/api/payments/mercadopago";
 
 const formatPrice = (value) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value || 0);
@@ -134,7 +135,7 @@ export default function Payments() {
     state?.items || JSON.parse(localStorage.getItem("checkoutItems") || "[]");
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError]     = useState(null);
 
   const subtotal = cartItems.reduce(
     (sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0
@@ -149,31 +150,25 @@ export default function Payments() {
       return { productId, quantity };
     });
 
-  const checkout = async (url, label) => {
+  // ✅ Usa api.js — JWT + CSRF injetados automaticamente pelo interceptor
+  const checkout = async (endpoint, label) => {
     setLoading(true);
     setError(null);
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Você precisa estar logado");
 
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ items: formatItems() }),
-      });
+      const { data } = await api.post(endpoint, { items: formatItems() });
 
-      const data = await res.json();
-      if (!res.ok || !data?.url) throw new Error(data?.error || `Erro no ${label}`);
+      if (!data?.url) throw new Error(data?.error || `Erro no ${label}`);
 
       toast.success(`Redirecionando para ${label}...`);
       setTimeout(() => { window.location.href = data.url; }, 600);
     } catch (err) {
+      const msg = err.response?.data?.error || err.message;
       console.error(err);
-      setError(err.message);
-      toast.error(err.message);
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
