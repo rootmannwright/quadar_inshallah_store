@@ -7,6 +7,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import { generateToken, doubleCsrfProtection } from "./middleware/csrf.js";
 
 // ROUTES
 import authRoutes from "./routes/authRoutes.js";
@@ -18,9 +19,6 @@ import cartRoutes from "./routes/cartRoutes.js";
 // MIDDLEWARES
 import errorHandler from "./middleware/errorHandler.js";
 import { requestLogger } from "./middleware/requestLogger.js";
-
-// ✅ CSRF
-import { generateToken, doubleCsrfProtection } from "./middleware/csrf.js";
 
 dotenv.config();
 
@@ -145,6 +143,7 @@ app.use("/api/products", productRoutes);
 
 // Auth — CSRF obrigatório (POST /login, /register, /logout)
 app.use("/api/auth", doubleCsrfProtection, authRoutes);
+app.use("/api/products", doubleCsrfProtection, productRoutes);
 
 // Rotas protegidas com CSRF
 app.use("/api/cart", doubleCsrfProtection, cartRoutes);

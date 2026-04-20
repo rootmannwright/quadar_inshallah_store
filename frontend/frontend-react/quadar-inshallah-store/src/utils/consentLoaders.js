@@ -1,13 +1,11 @@
 // utils/consentLoaders.js
 
-/**
- * 🔒 Evita carregar o mesmo script mais de uma vez
- */
+// Manage loading of third-party scripts based on user consent, with idempotency and error handling.
+
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const loadedScripts = new Set();
 
-/**
- * 🧠 Helper genérico para injetar script
- */
+// Helper
 const injectScript = ({ id, src, async = true }) => {
   if (loadedScripts.has(id) || document.getElementById(id)) {
     return;
@@ -22,22 +20,20 @@ const injectScript = ({ id, src, async = true }) => {
   loadedScripts.add(id);
 };
 
-/**
- * 📊 Google Analytics (GA4)
- */
+// Google Analytics
 export const loadAnalytics = (GA_ID) => {
   if (!GA_ID) {
     console.warn("GA_ID não fornecido");
     return;
   }
 
-  // Script principal
+  // Main script
   injectScript({
     id: "ga-script",
     src: `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`,
   });
 
-  // Configuração global
+// Global configuration
   window.dataLayer = window.dataLayer || [];
   function gtag(){ window.dataLayer.push(arguments); }
 
@@ -49,9 +45,7 @@ export const loadAnalytics = (GA_ID) => {
   console.log("📊 Analytics carregado");
 };
 
-/**
- * 📢 Meta Pixel (Facebook Ads)
- */
+// Meta pixel
 export const loadMetaPixel = (PIXEL_ID) => {
   if (!PIXEL_ID) {
     console.warn("PIXEL_ID não fornecido");
