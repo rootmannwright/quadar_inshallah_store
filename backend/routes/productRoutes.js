@@ -4,6 +4,7 @@ import Joi from "joi";
 import mongoose from "mongoose";
 import Product from "../models/Product.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
+import { doubleCsrfProtection } from "../middleware/csrf.js";
 
 const router = express.Router();
 
@@ -42,7 +43,7 @@ router.get("/:id", async (req, res) => {
 // ─── Rotas protegidas (mutações) ──────────────────────────────────────────────
 // authMiddleware em todas + CSRF virá do app.js
 
-router.post("/", authMiddleware, async (req, res) => {
+router.post("/", authMiddleware, doubleCsrfProtection, async (req, res) => {
   try {
     const schema = Joi.object({
       name:        Joi.string().required(),
@@ -64,7 +65,7 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
-router.put("/:id", authMiddleware, async (req, res) => {
+router.put("/:id", authMiddleware, doubleCsrfProtection, async (req, res) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -95,7 +96,7 @@ router.put("/:id", authMiddleware, async (req, res) => {
   }
 });
 
-router.delete("/:id", authMiddleware, async (req, res) => {
+router.delete("/:id", authMiddleware, doubleCsrfProtection, async (req, res) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {

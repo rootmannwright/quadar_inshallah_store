@@ -154,31 +154,23 @@ app.use("/api/payments", doubleCsrfProtection, paymentRoutes);
 // Stripe não envia o token; a segurança é pela assinatura stripe-signature
 app.use("/api/webhooks", webhookRoutes);
 
-/* =========================
-   🖼️ STATIC FILES
-========================= */
+// static files
 
 app.use("/images", express.static(path.join(__dirname, "public/images")));
 
-/* =========================
-   ❤️ HEALTH CHECK
-========================= */
+// server health check
 
 app.get("/", (req, res) => {
   res.json({ success: true, message: "API running 🚀", status: "healthy" });
 });
 
-/* =========================
-   ❌ 404 HANDLER
-========================= */
+// 404 error handler global
 
 app.use((req, res) => {
   res.status(404).json({ success: false, message: "Route not found" });
 });
 
-/* =========================
-   ⚠️ GLOBAL ERROR HANDLER
-========================= */
+// Global handler
 
 app.use(errorHandler);
 
