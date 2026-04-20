@@ -7,6 +7,8 @@ import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
+// ─── Rotas públicas (GET) ─────────────────────────────────────────────────────
+
 router.get("/", async (req, res) => {
   try {
     const produtos = await Product.find();
@@ -17,7 +19,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:id", authMiddleware, async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const idSchema = Joi.string().required();
     const { error, value } = idSchema.validate(req.params.id);
@@ -37,13 +39,16 @@ router.get("/:id", authMiddleware, async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+// ─── Rotas protegidas (mutações) ──────────────────────────────────────────────
+// authMiddleware em todas + CSRF virá do app.js
+
+router.post("/", authMiddleware, async (req, res) => {
   try {
     const schema = Joi.object({
-      name: Joi.string().required(),
+      name:        Joi.string().required(),
       description: Joi.string().required(),
-      price: Joi.number().required(),
-      imageUrl: Joi.string().uri().required(),
+      price:       Joi.number().required(),
+      imageUrl:    Joi.string().uri().required(),
     });
 
     const { error, value } = schema.validate(req.body);
@@ -59,7 +64,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -67,10 +72,10 @@ router.put("/:id", async (req, res) => {
     }
 
     const schema = Joi.object({
-      name: Joi.string(),
+      name:        Joi.string(),
       description: Joi.string(),
-      price: Joi.number(),
-      imageUrl: Joi.string().uri(),
+      price:       Joi.number(),
+      imageUrl:    Joi.string().uri(),
     });
 
     const { error, value } = schema.validate(req.body);
@@ -90,7 +95,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {

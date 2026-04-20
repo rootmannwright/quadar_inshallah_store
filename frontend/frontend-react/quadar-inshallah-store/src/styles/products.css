@@ -577,13 +577,11 @@
   opacity: 0.9;
 }
 
-/* texto interno (se quiser separar depois) */
 .q-toast strong {
   font-weight: 500;
   margin-right: 6px;
 }
 
-/* hover (leve interação premium) */
 .q-toast:hover {
   transform: translateY(-2px);
   transition: transform 150ms ease;
