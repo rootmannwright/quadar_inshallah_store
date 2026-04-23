@@ -103,7 +103,7 @@ para reportar erros e entrar em contato para colaborações futuras.
 ### 📊 Progresso do projeto
 
 <!-- PROGRESS_BAR_START -->
-[████░░░░░░] 42%
+[████░░░░░░] 41%
 <!-- PROGRESS_BAR_END -->
 
 ## Badged
