@@ -1,67 +1,70 @@
 // src/api.js
-// ─── Axios instance — Quadar Frontend ────────────────────────────────────────
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-// ─── Instância base ───────────────────────────────────────────────────────────
-
+/* =========================
+   INSTÂNCIA
+========================= */
 const api = axios.create({
-  baseURL:         BASE_URL,
-  withCredentials: true,
-  timeout:         15_000,
+  baseURL: BASE_URL,
+  withCredentials: true, // 🔥 obrigatório p/ cookies + CSRF
+  timeout: 15000,
   headers: {
     "Content-Type": "application/json",
-    Accept:         "application/json",
+    Accept: "application/json",
   },
 });
 
-// ─── CSRF: busca e armazena o token ──────────────────────────────────────────
+/* =========================
+   CSRF STATE
+========================= */
+let csrfToken = null;
+let csrfPromise = null;
 
-let csrfToken        = null;
-let csrfFetchPromise = null;
-
-async function getCsrfToken() {
+/* =========================
+   GET CSRF TOKEN (FIXED)
+========================= */
+const fetchCsrfToken = async () => {
   if (csrfToken) return csrfToken;
-  if (csrfFetchPromise) return csrfFetchPromise;
 
-  csrfFetchPromise = axios
-    .get(`${BASE_URL}/api/csrf-token`, { withCredentials: true })
-    .then((res) => {
-      csrfToken        = res.data.csrfToken;
-      csrfFetchPromise = null;
-      return csrfToken;
-    })
-    .catch((err) => {
-      csrfFetchPromise = null;
-      // Não engole o erro — relança para o interceptor bloquear a requisição
-      throw new Error(`[CSRF] Não foi possível buscar o token: ${err.message}`);
-    });
+  if (!csrfPromise) {
+    csrfPromise = api
+      .get("/api/csrf-token") // 🔥 usa a própria instância
+      .then((res) => {
+        csrfToken = res.data.csrfToken;
+        csrfPromise = null;
+        return csrfToken;
+      })
+      .catch((err) => {
+        csrfPromise = null;
+        throw new Error("Falha ao obter CSRF token");
+      });
+  }
 
-  return csrfFetchPromise;
-}
+  return csrfPromise;
+};
 
-export { getCsrfToken };
-
-// ─── Request interceptor ─────────────────────────────────────────────────────
-
+/* =========================
+   REQUEST INTERCEPTOR
+========================= */
 const SAFE_METHODS = ["get", "head", "options"];
 
 api.interceptors.request.use(
   async (config) => {
-    // JWT
+    /* JWT */
     const token = localStorage.getItem("token");
     if (token && token !== "undefined" && token !== "null") {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // CSRF apenas em mutações (POST, PUT, PATCH, DELETE)
+    /* CSRF */
     const method = (config.method || "get").toLowerCase();
+
     if (!SAFE_METHODS.includes(method)) {
-      // ✅ Se o token não chegar, a requisição é BLOQUEADA
-      // Isso fecha o caminho que o CodeQL detecta como CWE-352
-      const csrf = await getCsrfToken();
-      config.headers["X-CSRF-Token"] = csrf;
+      const csrf = await fetchCsrfToken();
+      config.headers["x-csrf-token"] = csrf;
     }
 
     return config;
@@ -69,32 +72,47 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ─── Response interceptor ────────────────────────────────────────────────────
-
+/* =========================
+   RESPONSE INTERCEPTOR
+========================= */
 api.interceptors.response.use(
-  (response) => response,
+  (res) => res,
 
-  (error) => {
+  async (error) => {
     const status = error.response?.status;
-    const url    = error.config?.url || "";
+    const originalRequest = error.config;
 
-    // Token JWT expirado → limpa sessão silenciosamente
-    // O PrivateRoute detecta user=null e redireciona quando necessário
-    if (status === 401 && !url.includes("/api/auth/login")) {
-      const storedToken = localStorage.getItem("token");
+    /* =========================
+       JWT EXPIRED
+    ========================= */
+    if (status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      csrfToken = null;
 
-      if (storedToken && storedToken !== "undefined") {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        csrfToken = null;
-        window.dispatchEvent(new CustomEvent("auth:expired"));
-      }
+      window.dispatchEvent(new CustomEvent("auth:expired"));
     }
 
-    // Token CSRF expirado → invalida cache para renovar na próxima requisição
-    if (status === 403 && error.response?.data?.code === "EBADCSRFTOKEN") {
-      csrfToken = null;
-      console.warn("[CSRF] Token inválido, será renovado na próxima requisição.");
+    /* =========================
+       CSRF EXPIRED (AUTO RETRY)
+    ========================= */
+    if (
+      status === 403 &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+
+      try {
+        csrfToken = null;
+
+        const newToken = await fetchCsrfToken();
+
+        originalRequest.headers["x-csrf-token"] = newToken;
+
+        return api(originalRequest); // 🔥 retry automático
+      } catch (err) {
+        console.error("[CSRF] Falha ao renovar token");
+      }
     }
 
     return Promise.reject(error);

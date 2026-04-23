@@ -255,7 +255,7 @@ export default function Products() {
   // ── CSRF token ──────────────────────────────────────────────────────────────
   const [csrfToken, setCsrfToken] = useState("");
   useEffect(() => {
-    fetch("http://localhost:5000/api/csrf-token", { credentials: "include" })
+    fetch("https://equation-hazelnut-camcorder.ngrok-free.dev/api/csrf-token", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => setCsrfToken(d.csrfToken))
       .catch(() => {});

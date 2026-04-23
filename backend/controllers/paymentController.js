@@ -202,8 +202,6 @@ export const createMercadoPagoPreference = async (req, res) => {
           orderId: order._id.toString(),
           userId: req.user.id,
         },
-
-        notification_url: `${process.env.SERVER_URL}/api/webhook/mercadopago`,
       },
     });
 

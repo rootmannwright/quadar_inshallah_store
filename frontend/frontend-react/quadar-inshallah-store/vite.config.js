@@ -9,4 +9,11 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    host: true,
+    allowedHosts: [
+      "localhost",
+       "equation-hazelnut-camcorder.ngrok-free.dev",
+    ],
+  },
 });

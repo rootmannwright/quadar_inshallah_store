@@ -7,16 +7,15 @@ import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+
 import { generateToken, doubleCsrfProtection } from "./middleware/csrf.js";
 
-// ROUTES
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import webhookRoutes from "./routes/webhookRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 
-// MIDDLEWARES
 import errorHandler from "./middleware/errorHandler.js";
 import { requestLogger } from "./middleware/requestLogger.js";
 
@@ -25,21 +24,21 @@ dotenv.config();
 const app = express();
 
 /* =========================
-   🔐 CORE SECURITY FLAGS
+   🔐 CORE SECURITY
 ========================= */
 
 app.disable("x-powered-by");
 app.set("trust proxy", 1);
 
 /* =========================
-   📁 PATH RESOLVE
+   📁 PATH
 ========================= */
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /* =========================
-   🛡️ HELMET (HEADERS SECURITY)
+   🛡️ HELMET
 ========================= */
 
 app.use(
@@ -52,9 +51,12 @@ app.use(
         imgSrc: ["'self'", "data:", "https:"],
         connectSrc: [
           "'self'",
-          process.env.CLIENT_URL || "http://localhost:5173",
+          "http://localhost:5173",
+          "http://localhost:3000",
+          process.env.CLIENT_URL,
           "https://api.stripe.com",
-        ],
+          "https://api.mercadopago.com",
+        ].filter(Boolean),
         objectSrc: ["'none'"],
         frameAncestors: ["'none'"],
       },
@@ -63,22 +65,22 @@ app.use(
 );
 
 /* =========================
-   🌐 CORS (FRONTEND ACCESS)
+   🌐 CORS
 ========================= */
-
-const allowedOrigins = [
-  process.env.CLIENT_URL || "http://localhost:5173",
-  "http://localhost:3000",
-];
 
 app.use(
   cors({
     origin: (origin, callback) => {
+      // Sem origin = request server-to-server ou Postman
       if (!origin) return callback(null, true);
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
+      const allowed = [
+        "http://localhost:5173",
+        "http://localhost:3000",
+        process.env.CLIENT_URL,
+      ].filter(Boolean);
+
+      if (allowed.includes(origin)) return callback(null, true);
 
       return callback(new Error(`CORS bloqueado: ${origin}`));
     },
@@ -91,13 +93,10 @@ app.use(
    📦 BODY PARSERS
 ========================= */
 
-// Stripe webhook precisa raw — ANTES de qualquer outro parser
+// Stripe webhook precisa do body raw
 app.use("/api/webhooks", express.raw({ type: "application/json" }));
 
-// JSON geral
 app.use(express.json({ limit: "10kb" }));
-
-// ✅ cookieParser DEVE vir antes do CSRF
 app.use(cookieParser());
 
 /* =========================
@@ -108,7 +107,7 @@ app.use(hpp());
 app.use(requestLogger);
 
 /* =========================
-   🚦 RATE LIMITING
+   🚦 RATE LIMIT GLOBAL
 ========================= */
 
 app.use(
@@ -126,8 +125,7 @@ app.use(
 );
 
 /* =========================
-   🔑 CSRF TOKEN ENDPOINT
-   Deve ser público — o frontend busca antes de qualquer mutação
+   🔑 CSRF TOKEN
 ========================= */
 
 app.get("/api/csrf-token", (req, res) => {
@@ -138,38 +136,53 @@ app.get("/api/csrf-token", (req, res) => {
    🧭 ROUTES
 ========================= */
 
-// Rotas públicas — sem CSRF (GET apenas, não alteram estado)
+// Produtos — público, sem CSRF
 app.use("/api/products", productRoutes);
 
-// Auth — CSRF obrigatório (POST /login, /register, /logout)
-app.use("/api/auth", doubleCsrfProtection, authRoutes);
-app.use("/api/products", doubleCsrfProtection, productRoutes);
+// Auth — CSRF obrigatório
+app.use("/api/auth", authRoutes);
 
-// Rotas protegidas com CSRF
+// Carrinho — CSRF obrigatório
 app.use("/api/cart", doubleCsrfProtection, cartRoutes);
-app.use("/api/payments", doubleCsrfProtection, paymentRoutes);
 
-// ⚠️ Webhooks do Stripe — SEM CSRF
-// Stripe não envia o token; a segurança é pela assinatura stripe-signature
+// Pagamentos — SEM CSRF (providers externos fazem redirect)
+app.use("/api/payments", paymentRoutes);
+
+// Webhooks — SEM CSRF (chamadas server-to-server do Stripe/MP)
 app.use("/api/webhooks", webhookRoutes);
 
-// static files
+/* =========================
+   📁 STATIC FILES
+========================= */
 
 app.use("/images", express.static(path.join(__dirname, "public/images")));
 
-// server health check
+/* =========================
+   🩺 HEALTH CHECK
+========================= */
 
 app.get("/", (req, res) => {
-  res.json({ success: true, message: "API running 🚀", status: "healthy" });
+  res.json({
+    success: true,
+    message: "API running 🚀",
+    status: "healthy",
+  });
 });
 
-// 404 error handler global
+/* =========================
+   ❌ 404 HANDLER
+========================= */
 
 app.use((req, res) => {
-  res.status(404).json({ success: false, message: "Route not found" });
+  res.status(404).json({
+    success: false,
+    message: "Route not found",
+  });
 });
 
-// Global handler
+/* =========================
+   ⚠️ GLOBAL ERROR HANDLER
+========================= */
 
 app.use(errorHandler);
 
