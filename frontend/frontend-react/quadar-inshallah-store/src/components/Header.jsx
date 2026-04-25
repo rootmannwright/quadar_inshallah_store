@@ -14,7 +14,7 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // ── Scroll behavior ──────────────────────────────────────────────────────
+// Scroll behavior
   useMotionValueEvent(scrollY, "change", (current) => {
     const previous = scrollY.getPrevious() ?? 0;
     setHidden(current > previous && current > 150);
@@ -23,7 +23,7 @@ export default function Header() {
 
   const closeMenu = () => setMenuOpen(false);
 
-  // ── Variantes do drawer ──────────────────────────────────────────────────
+// Drawer variants
   const drawerVariants = {
     hidden: { x: "100%", opacity: 0 },
     visible: {
@@ -38,7 +38,7 @@ export default function Header() {
     },
   };
 
-  // ── Variantes dos itens do menu mobile (stagger) ─────────────────────────
+  // Stagger
   const listVariants = {
     hidden: {},
     visible: { transition: { staggerChildren: 0.07, delayChildren: 0.1 } },
@@ -49,7 +49,7 @@ export default function Header() {
     visible: { x: 0, opacity: 1, transition: { type: "spring", stiffness: 260, damping: 22 } },
   };
 
-  // ── Variantes do backdrop ────────────────────────────────────────────────
+// Backdrop variants
   const backdropVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1 },
@@ -132,7 +132,7 @@ export default function Header() {
             }
             transition={{ duration: 0.3, ease: "easeInOut" }}
           />
-          {/* Linha 2: some no meio */}
+          {/* Line 2 */}
           <motion.span
             className="hamburger-line"
             animate={menuOpen
@@ -141,7 +141,7 @@ export default function Header() {
             }
             transition={{ duration: 0.2, ease: "easeInOut" }}
           />
-          {/* Linha 3: vira a diagonal inferior do ✕ */}
+          {/* Line 3 */}
           <motion.span
             className="hamburger-line"
             animate={menuOpen

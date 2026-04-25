@@ -10,6 +10,12 @@ export default defineConfig({
     },
   },
   server: {
+    proxy: {
+      "/api": {
+        target: process.env.SERVER_URL || "http://localhost:5000",
+        changeOrigin: true,
+      },
+    },
     host: true,
     allowedHosts: [
       "localhost",

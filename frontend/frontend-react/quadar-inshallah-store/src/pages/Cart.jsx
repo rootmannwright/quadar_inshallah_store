@@ -9,8 +9,7 @@ const SHIPPING_FLAT = 25.0;
 const BASE_URL = "http://localhost:5000";
 const GUEST_KEY = "guestCart";
 
-// ─── CSRF ─────────────────────────────────────────────────────────────────────
-
+// CSRF token fetcher
 async function fetchCsrf() {
   try {
     const res = await fetch(`${BASE_URL}/api/csrf-token`, { credentials: "include" });
@@ -21,8 +20,7 @@ async function fetchCsrf() {
   }
 }
 
-// ─── Guest cart helpers (localStorage) ───────────────────────────────────────
-
+// Guest cart management (localStorage)
 function getGuestCart() {
   try { return JSON.parse(localStorage.getItem(GUEST_KEY) || "[]"); }
   catch { return []; }
@@ -47,8 +45,7 @@ function normalizeServerItems(rawItems = []) {
     }));
 }
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
+// Subcomponents
 function QtyControl({ qty, onIncrease, onDecrease }) {
   return (
     <div className="cart-qty">
@@ -161,8 +158,7 @@ function EmptyCart() {
   );
 }
 
-// ─── Cart (root) ──────────────────────────────────────────────────────────────
-
+// Cart page component
 export default function Cart() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -172,7 +168,7 @@ export default function Cart() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // ── Fetch cart ──────────────────────────────────────────────────────────────
+// Fetch cart items from server or localStorage on mount
   const fetchCart = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -205,7 +201,7 @@ export default function Cart() {
 
   useEffect(() => { fetchCart(); }, [fetchCart]);
 
-  // ── Update qty ──────────────────────────────────────────────────────────────
+// Update quantity
   const handleUpdateQty = async (productId, newQty) => {
     if (isGuest) {
       const updated = getGuestCart().map((i) =>
@@ -246,7 +242,7 @@ export default function Cart() {
     }
   };
 
-  // ── Remove item ─────────────────────────────────────────────────────────────
+// Remove item
   const handleRemove = async (productId) => {
     if (isGuest) {
       const updated = getGuestCart().filter((i) => i._id !== productId);
@@ -290,17 +286,17 @@ export default function Cart() {
       quantity: i.qty,
     }));
 
-    // salva fallback correto
     localStorage.setItem("checkoutItems", JSON.stringify(formattedItems));
 
     navigate("/payment", {
       state: { items: formattedItems },
     });
   };
-  // ── Computed ────────────────────────────────────────────────────────────────
+
+// Computed
   const subtotal = items.reduce((acc, i) => acc + (Number(i.price) || 0) * (i.qty || 1), 0);
 
-  // ── Render ──────────────────────────────────────────────────────────────────
+// Render
   return (
     <div className="cart-page">
       <motion.h1

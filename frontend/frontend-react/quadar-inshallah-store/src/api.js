@@ -4,12 +4,10 @@ import axios from "axios";
 const BASE_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-/* =========================
-   INSTÂNCIA
-========================= */
+// Instance
 const api = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true, // 🔥 obrigatório p/ cookies + CSRF
+  withCredentials: true,
   timeout: 15000,
   headers: {
     "Content-Type": "application/json",
@@ -17,21 +15,17 @@ const api = axios.create({
   },
 });
 
-/* =========================
-   CSRF STATE
-========================= */
+// CSRF
 let csrfToken = null;
 let csrfPromise = null;
 
-/* =========================
-   GET CSRF TOKEN (FIXED)
-========================= */
+// Get CSRF token (with caching and single-flight)
 const fetchCsrfToken = async () => {
   if (csrfToken) return csrfToken;
 
   if (!csrfPromise) {
     csrfPromise = api
-      .get("/api/csrf-token") // 🔥 usa a própria instância
+      .get("/api/csrf-token")
       .then((res) => {
         csrfToken = res.data.csrfToken;
         csrfPromise = null;
@@ -46,9 +40,7 @@ const fetchCsrfToken = async () => {
   return csrfPromise;
 };
 
-/* =========================
-   REQUEST INTERCEPTOR
-========================= */
+// Request interceptor
 const SAFE_METHODS = ["get", "head", "options"];
 
 api.interceptors.request.use(
@@ -72,9 +64,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-/* =========================
-   RESPONSE INTERCEPTOR
-========================= */
+// Response interceptor
 api.interceptors.response.use(
   (res) => res,
 
@@ -82,9 +72,7 @@ api.interceptors.response.use(
     const status = error.response?.status;
     const originalRequest = error.config;
 
-    /* =========================
-       JWT EXPIRED
-    ========================= */
+// JWT expired
     if (status === 401) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
@@ -93,9 +81,7 @@ api.interceptors.response.use(
       window.dispatchEvent(new CustomEvent("auth:expired"));
     }
 
-    /* =========================
-       CSRF EXPIRED (AUTO RETRY)
-    ========================= */
+// CSRF token expired
     if (
       status === 403 &&
       !originalRequest._retry
@@ -109,7 +95,7 @@ api.interceptors.response.use(
 
         originalRequest.headers["x-csrf-token"] = newToken;
 
-        return api(originalRequest); // 🔥 retry automático
+        return api(originalRequest);
       } catch (err) {
         console.error("[CSRF] Falha ao renovar token");
       }

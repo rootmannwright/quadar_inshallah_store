@@ -15,9 +15,7 @@ import {
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
 
-// ======================
-// REGISTER
-// ======================
+// Register new user
 export const registerService = async ({
   name,
   email,
@@ -37,13 +35,11 @@ export const registerService = async ({
     isVerified: false,
   });
 
-  // cria token
   const token = await createToken({
     userId: user._id,
     type: "VERIFY_EMAIL",
   });
 
-  // envia email
   await sendEmail({
     to: user.email,
     subject: "Verifique seu email",
@@ -55,19 +51,15 @@ export const registerService = async ({
   };
 };
 
-// ======================
-// VERIFY EMAIL
-// ======================
+// Verify email
 export const verifyEmailService = async (token) => {
   const storedToken = await validateToken({
     token,
     type: "VERIFY_EMAIL",
   });
 
-  // marca token como usado
   await markTokenAsUsed(storedToken._id);
 
-  // verifica usuário
   await User.findByIdAndUpdate(storedToken.userId, {
     isVerified: true,
   });
@@ -75,9 +67,7 @@ export const verifyEmailService = async (token) => {
   return { message: "Email verificado com sucesso." };
 };
 
-// ======================
-// LOGIN
-// ======================
+// Login user
 export const loginService = async ({ email, password }) => {
   const user = await User.findOne({ email });
   if (!user) throw { status: 400, message: "Credenciais inválidas." };
@@ -101,16 +91,12 @@ export const loginService = async ({ email, password }) => {
   return { user, token };
 };
 
-// ======================
-// GET USERS
-// ======================
+// Get users
 export const getAllUsersService = async () => {
   return User.find().select("-password");
 };
 
-// ======================
-// UPDATE USER
-// ======================
+// Update user
 export const updateUserService = async (id, data) => {
   if (data.password) {
     data.password = await bcrypt.hash(data.password, 10);
@@ -121,9 +107,7 @@ export const updateUserService = async (id, data) => {
   }).select("-password");
 };
 
-// ======================
-// DELETE USER
-// ======================
+// Delete user
 export const deleteUserService = async (id) => {
   await User.findByIdAndDelete(id);
   return { message: "Usuário deletado." };

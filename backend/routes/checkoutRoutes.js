@@ -7,8 +7,8 @@ import { checkoutService } from '../services/checkoutService.js';
 const cartRouter = express.Router();
 
 const checkoutLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 10,                   // máx 10 tentativas por IP
+  windowMs: 15 * 60 * 1000,
+  max: 10,
   standardHeaders: true,
   legacyHeaders: false,
   message: {

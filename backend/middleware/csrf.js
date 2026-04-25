@@ -4,12 +4,11 @@ import crypto from "crypto";
 const COOKIE = "x-csrf-token";
 const isProd = process.env.NODE_ENV === "production";
 
-// Gera um token aleatório e seta o cookie
 function generateToken(req, res) {
   const token = crypto.randomBytes(32).toString("hex");
 
   res.cookie(COOKIE, token, {
-    httpOnly: false,   // precisa ser lido pelo JS do frontend para enviar no header
+    httpOnly: false,
     sameSite: "strict",
     secure: isProd,
     path: "/",
@@ -18,7 +17,6 @@ function generateToken(req, res) {
   return token;
 }
 
-// Middleware que valida o token em rotas mutáveis
 function doubleCsrfProtection(req, res, next) {
   const SAFE = ["GET", "HEAD", "OPTIONS"];
   if (SAFE.includes(req.method)) return next();

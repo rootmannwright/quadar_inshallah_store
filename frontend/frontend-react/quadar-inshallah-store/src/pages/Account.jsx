@@ -3,9 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
 
-/* =====================
-   ICONS
-===================== */
+// Icons
 const Icon = ({ d, size = 20 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
     stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -26,9 +24,7 @@ const ICONS = {
   moon:    "M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z",
 };
 
-/* =====================
-   MOCK DATA
-===================== */
+// Mock data
 const MOCK_ORDERS = [
   { id: "#QI-4821", date: "12 Jun 2025", status: "Delivered",  total: "R$ 349,90", items: 3, img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=80&h=80&fit=crop" },
   { id: "#QI-4756", date: "28 Mai 2025", status: "Shipped",    total: "R$ 189,00", items: 1, img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=80&h=80&fit=crop" },
@@ -41,9 +37,7 @@ const STATUS_STYLE = {
   Processing: { bg: "#fef9c3", color: "#854d0e", label: "Processando" },
 };
 
-/* =====================
-   TABS
-===================== */
+// Tabs
 const TABS = [
   { id: "profile",  label: "Perfil",    icon: ICONS.user    },
   { id: "orders",   label: "Pedidos",   icon: ICONS.orders  },
@@ -51,9 +45,7 @@ const TABS = [
   { id: "security", label: "Segurança", icon: ICONS.lock    },
 ];
 
-/* =====================
-   SUB-PAGES
-===================== */
+// Sub-page
 function ProfileTab({ user }) {
   const [editing, setEditing] = useState(false);
   const [name,  setName]  = useState(user?.name  || "");
@@ -267,9 +259,7 @@ function SecurityTab() {
   );
 }
 
-/* =====================
-   DARK MODE TOGGLE
-===================== */
+// Dark mode toggle
 function ThemeToggle({ dark, onToggle }) {
   return (
     <button
@@ -288,9 +278,7 @@ function ThemeToggle({ dark, onToggle }) {
   );
 }
 
-/* =====================
-   MAIN
-===================== */
+// Main component
 export default function Account() {
   const { user, logout } = useAuth();
   const navigate         = useNavigate();
@@ -298,7 +286,6 @@ export default function Account() {
   const [active,     setActive]     = useState("profile");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dark,       setDark]       = useState(() => {
-    // Persiste preferência no localStorage
     return localStorage.getItem("acc-theme") === "dark";
   });
 
@@ -350,9 +337,6 @@ export default function Account() {
       <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
 
       <style>{`
-        /* ─────────────────────────────
-           LIGHT MODE (default)
-        ───────────────────────────── */
         .acc-root {
           --bg:         #f9f7f4;
           --surface:    #ffffff;
@@ -387,9 +371,6 @@ export default function Account() {
           transition:  var(--transition);
         }
 
-        /* ─────────────────────────────
-           DARK MODE
-        ───────────────────────────── */
         .acc-root.dark-mode {
           --bg:         #0f0f0f;
           --surface:    #1a1a1a;
@@ -414,9 +395,6 @@ export default function Account() {
           --btn-ghost-bd:    #3a3a3a;
         }
 
-        /* ─────────────────────────────
-           HERO
-        ───────────────────────────── */
         .acc-hero {
           background: linear-gradient(135deg, var(--hero-bg1) 0%, var(--hero-bg2) 100%);
           padding: 48px 0 80px;
@@ -456,9 +434,6 @@ export default function Account() {
           color: var(--hero-sub);
         }
 
-        /* ─────────────────────────────
-           LAYOUT
-        ───────────────────────────── */
         .acc-body {
           max-width: 1100px;
           margin: -44px auto 64px;
@@ -470,9 +445,6 @@ export default function Account() {
           z-index: 2;
         }
 
-        /* ─────────────────────────────
-           SIDEBAR
-        ───────────────────────────── */
         .acc-sidebar {
           background: var(--surface);
           border: 1px solid var(--border);
@@ -510,9 +482,6 @@ export default function Account() {
         .nav-signout:hover { background: #fef2f2 !important; }
         .dark-mode .nav-signout:hover { background: #2a1111 !important; }
 
-        /* ─────────────────────────────
-           THEME TOGGLE
-        ───────────────────────────── */
         .theme-toggle {
           display: flex;
           align-items: center;
@@ -558,9 +527,6 @@ export default function Account() {
         }
         .toggle-label { font-size: 13px; }
 
-        /* ─────────────────────────────
-           MAIN PANEL
-        ───────────────────────────── */
         .acc-main {
           background: var(--surface);
           border: 1px solid var(--border);
@@ -589,9 +555,6 @@ export default function Account() {
         }
         .section-sub { font-size: 13px; color: var(--text-2); margin: 0; }
 
-        /* ─────────────────────────────
-           PROFILE CARD
-        ───────────────────────────── */
         .profile-card {
           background: var(--surface-2);
           border: 1px solid var(--border);
@@ -655,9 +618,6 @@ export default function Account() {
           display: inline-block;
         }
 
-        /* ─────────────────────────────
-           FORM
-        ───────────────────────────── */
         .edit-form { display: flex; flex-direction: column; gap: 20px; }
         .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .field-row--col { grid-template-columns: 1fr; }
@@ -684,9 +644,6 @@ export default function Account() {
         .field-group input:focus, .addr-input:focus { border-color: var(--text-1); }
         .form-actions { display: flex; gap: 10px; justify-content: flex-end; }
 
-        /* ─────────────────────────────
-           BUTTONS
-        ───────────────────────────── */
         .btn-primary {
           display: inline-flex;
           align-items: center;
@@ -721,9 +678,6 @@ export default function Account() {
         .btn-sm { padding: 7px 14px; font-size: 12px; }
         .text-danger { color: var(--danger) !important; }
 
-        /* ─────────────────────────────
-           TOAST
-        ───────────────────────────── */
         .toast {
           display: flex;
           align-items: center;
@@ -737,9 +691,6 @@ export default function Account() {
         }
         .dark-mode .toast { background: #052e16; color: #6ee7b7; }
 
-        /* ─────────────────────────────
-           ORDERS
-        ───────────────────────────── */
         .orders-list { display: flex; flex-direction: column; gap: 12px; }
         .order-card {
           display: flex;
@@ -771,9 +722,6 @@ export default function Account() {
         .order-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
         .order-total { font-weight: 600; font-size: 15px; color: var(--text-1); }
 
-        /* ─────────────────────────────
-           ADDRESSES
-        ───────────────────────────── */
         .address-grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -806,9 +754,6 @@ export default function Account() {
         .addr-actions { display: flex; gap: 8px; margin-top: 12px; }
         .address-form-card { background: var(--surface); border-style: dashed; }
 
-        /* ─────────────────────────────
-           MOBILE
-        ───────────────────────────── */
         .mobile-header {
           display: none;
           padding: 16px 24px;

@@ -11,7 +11,6 @@ export function authMiddleware(req, res, next) {
       });
     }
 
-    // aceita "Bearer token" mesmo com espaços extras ou variação de caixa
     const [scheme, token] = authHeader.trim().split(" ");
 
     if (!scheme || scheme.toLowerCase() !== "bearer" || !token) {

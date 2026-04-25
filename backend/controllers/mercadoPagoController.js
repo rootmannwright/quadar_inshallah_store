@@ -1,9 +1,7 @@
 import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
 import Product from "../models/Product.js";
 
-/* =========================
-   CLIENT LAZY (🔥 CORRETO)
-========================= */
+// Client lazy
 const getClient = () => {
   if (!process.env.MP_ACCESS_TOKEN) {
     throw new Error("MP_ACCESS_TOKEN não definida");
@@ -14,9 +12,7 @@ const getClient = () => {
   });
 };
 
-/* =========================
-   BUILD ITEMS
-========================= */
+// Build items
 const buildItemsFromDB = async (items) => {
   const products = await Product.find({
     _id: { $in: items.map((i) => i.productId) },
@@ -38,9 +34,7 @@ const buildItemsFromDB = async (items) => {
   });
 };
 
-/* =========================
-   CHECKOUT PRO
-========================= */
+// Checkout MercadoPagoAPI
 export const createMercadoPagoPreference = async (req, res) => {
   try {
     const { items } = req.body;
@@ -66,7 +60,6 @@ export const createMercadoPagoPreference = async (req, res) => {
           pending: `${baseUrl}/pending`,
         },
 
-        // ⚠️ se der erro aqui, comenta essa linha
         auto_return: "approved",
 
         payment_methods: {
@@ -93,9 +86,7 @@ export const createMercadoPagoPreference = async (req, res) => {
   }
 };
 
-/* =========================
-   PIX (QR CODE)
-========================= */
+// Pix (QR Code)
 export const createPixPayment = async (req, res) => {
   try {
     const { items, payer } = req.body;
@@ -156,9 +147,7 @@ export const createPixPayment = async (req, res) => {
   }
 };
 
-/* =========================
-   STATUS PIX
-========================= */
+// Status pix
 export const getPixStatus = async (req, res) => {
   try {
     const { paymentId } = req.params;

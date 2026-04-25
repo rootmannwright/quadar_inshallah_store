@@ -1,7 +1,5 @@
 // utils/consentLoaders.js
-
-// Manage loading of third-party scripts based on user consent, with idempotency and error handling.
-
+// Consent management are in development and may change. This file is a placeholder for loading analytics and marketing scripts based on user consent.
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const loadedScripts = new Set();
 

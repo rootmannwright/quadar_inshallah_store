@@ -8,8 +8,7 @@ import { doubleCsrfProtection } from "../middleware/csrf.js";
 
 const router = express.Router();
 
-// ─── Rotas públicas (GET) ─────────────────────────────────────────────────────
-
+// GET /products - List all products
 router.get("/", async (req, res) => {
   try {
     const produtos = await Product.find();
@@ -20,6 +19,7 @@ router.get("/", async (req, res) => {
   }
 });
 
+// GET /products/:id - Search product for ID
 router.get("/:id", async (req, res) => {
   try {
     const idSchema = Joi.string().required();
@@ -40,9 +40,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// ─── Rotas protegidas (mutações) ──────────────────────────────────────────────
-// authMiddleware em todas + CSRF virá do app.js
-
+// POST /products - Create new product
 router.post("/", authMiddleware, doubleCsrfProtection, async (req, res) => {
   try {
     const schema = Joi.object({
@@ -65,6 +63,7 @@ router.post("/", authMiddleware, doubleCsrfProtection, async (req, res) => {
   }
 });
 
+// PUT /products/:id - Update product
 router.put("/:id", authMiddleware, doubleCsrfProtection, async (req, res) => {
   try {
     const { id } = req.params;
@@ -96,6 +95,7 @@ router.put("/:id", authMiddleware, doubleCsrfProtection, async (req, res) => {
   }
 });
 
+// DELETE /products/:id - Delete product
 router.delete("/:id", authMiddleware, doubleCsrfProtection, async (req, res) => {
   try {
     const { id } = req.params;

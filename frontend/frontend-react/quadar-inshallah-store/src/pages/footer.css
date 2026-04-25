@@ -20,12 +20,12 @@
 
 .footer-brand {
   font-family: "Monsieur La Doulaise", cursive;
-  font-size: clamp(1.4em, 4vw, 2em);
-  text-transform: initial;
-  letter-spacing: 0.4em;
-  font-weight: bold;
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  letter-spacing: 0.1em;
   color: #000000;
-  text-align: center;
+  font-weight: bold;
+  margin-bottom: 24px;
+  margin: 32px auto 24px;
 }
 
 /* ─── Logo ───────────────────────────────────────────────────────────────────── */
@@ -121,9 +121,22 @@
 
 .author-content {
   display: flex;
-  justify-content: center;
   align-items: center;
-  margin: 24px auto 0;
+  gap: 12px;
+  margin-top: 24px;
+  padding-bottom: 2.5rem;
+}
+
+.author-content h3 {
+  font-size: clamp(0.875rem, 1.8vw, 1.25rem);
+  color: #000000;
+  font-family: "Monsieur La Doulaise", cursive;
+  letter-spacing: 0.1em;
+}
+
+.author-content p {
+  font-size: clamp(0.75rem, 1.2vw, 0.875rem);
+  color: #000000;
 }
 
 /* ─── Online dot ─────────────────────────────────────────────────────────────── */

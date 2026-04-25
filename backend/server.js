@@ -18,6 +18,10 @@ async function startServer() {
       console.log(`🚀 Server rodando em http://localhost:${PORT}`);
       console.log(`🌍 Ambiente: ${process.env.NODE_ENV}`);
     });
+
+    if (process.env.NODE_ENV !== "production") {
+      await import("./ngrok/tunnel.js");
+    }
   } catch (error) {
     console.error("❌ Erro ao iniciar servidor:", error.message);
     process.exit(1);

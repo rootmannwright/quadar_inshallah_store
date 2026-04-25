@@ -2,7 +2,6 @@
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 
-// Definição básica do Swagger
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -17,7 +16,7 @@ const options = {
       },
     ],
   },
-  apis: ["./routes/*.js"], // Swagger vai ler os comentários JSDoc das rotas
+  apis: ["./routes/*.js"],
 };
 
 const specs = swaggerJsdoc(options);

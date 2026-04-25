@@ -5,9 +5,7 @@ import { Token } from './token.model.js';
 
 const TOKEN_EXPIRATION_MINUTES = 10;
 
-// ======================
-// HELPERS
-// ======================
+// Helpers
 function generateRawToken() {
   return crypto.randomBytes(32).toString('hex');
 }
@@ -16,9 +14,7 @@ function hashToken(token) {
   return crypto.createHash('sha256').update(token).digest('hex');
 }
 
-// ======================
-// CREATE TOKEN
-// ======================
+// Create token
 export async function createToken({ userId, type }) {
   const rawToken = generateRawToken();
   const tokenHash = hashToken(rawToken);
@@ -35,12 +31,10 @@ export async function createToken({ userId, type }) {
     used: false
   });
 
-  return rawToken; // envia por email
+  return rawToken;
 }
 
-// ======================
-// VALIDATE TOKEN
-// ======================
+// Validate token (for password reset or email verification)
 export async function validateToken({ token, type }) {
   const tokenHash = hashToken(token);
 
@@ -61,9 +55,7 @@ export async function validateToken({ token, type }) {
   return storedToken;
 }
 
-// ======================
-// MARK AS USED
-// ======================
+// Mark as used
 export async function markTokenAsUsed(tokenId) {
   await Token.findByIdAndUpdate(tokenId, {
     used: true

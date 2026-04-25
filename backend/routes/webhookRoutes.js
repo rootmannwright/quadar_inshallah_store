@@ -23,12 +23,14 @@ const paymentLimiter = rateLimiter({
   message: "Too many payment requests from this IP, please try again later."
 });
 
+// POST /stripe/webhook - Stripe webhook endpoint (no auth, but rate limited)
 router.post(
   "/webhook",
   express.raw({ type: "application/json" }),
   handleWebhook
 );
 
+// POST /stripe/create-intent - Create Stripe Payment Intent for an order (protected, rate limited)
 router.post("/create-intent", authMiddleware, paymentLimiter, async (req, res) => {
   try {
     // eslint-disable-next-line no-undef

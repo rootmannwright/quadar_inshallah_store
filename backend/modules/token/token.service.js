@@ -5,17 +5,15 @@ import { Token } from './token.model.js';
 
 const TOKEN_EXPIRATION_MINUTES = 10;
 
-// gerar token seguro
 export function generateToken() {
   return crypto.randomBytes(32).toString('hex');
 }
 
-// hash do token (NUNCA salva o token puro)
 function hashToken(token) {
   return crypto.createHash('sha256').update(token).digest('hex');
 }
 
-// criar token
+// Create token
 export async function createToken({ userId, type }) {
   const rawToken = generateToken();
   const tokenHash = hashToken(rawToken);

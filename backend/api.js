@@ -23,24 +23,15 @@ dotenv.config();
 
 const app = express();
 
-/* =========================
-   🔐 CORE SECURITY
-========================= */
-
+// Core security and performance settings
 app.disable("x-powered-by");
 app.set("trust proxy", 1);
 
-/* =========================
-   📁 PATH
-========================= */
-
+// Path utilities 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-/* =========================
-   🛡️ HELMET
-========================= */
-
+// Helmet
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -64,10 +55,7 @@ app.use(
   })
 );
 
-/* =========================
-   🌐 CORS
-========================= */
-
+// Cors
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -89,27 +77,17 @@ app.use(
   })
 );
 
-/* =========================
-   📦 BODY PARSERS
-========================= */
-
-// Stripe webhook precisa do body raw
+// Body parsers
 app.use("/api/webhooks", express.raw({ type: "application/json" }));
 
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 
-/* =========================
-   🧼 SECURITY LAYERS
-========================= */
-
+// Security layers
 app.use(hpp());
 app.use(requestLogger);
 
-/* =========================
-   🚦 RATE LIMIT GLOBAL
-========================= */
-
+// Rate limiter
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -124,43 +102,32 @@ app.use(
   })
 );
 
-/* =========================
-   🔑 CSRF TOKEN
-========================= */
-
+// CSRF token endpoint
 app.get("/api/csrf-token", (req, res) => {
   res.json({ csrfToken: generateToken(req, res) });
 });
 
-/* =========================
-   🧭 ROUTES
-========================= */
-
-// Produtos — público, sem CSRF
+// Routes
+// Product  - without CSRF (read-only, public)
 app.use("/api/products", productRoutes);
 
-// Auth — CSRF obrigatório
+// Auth — CSRF
 app.use("/api/auth", authRoutes);
 
-// Carrinho — CSRF obrigatório
+// Cart — CSRF
 app.use("/api/cart", doubleCsrfProtection, cartRoutes);
 
-// Pagamentos — SEM CSRF (providers externos fazem redirect)
+// Payments — Without CSRF
 app.use("/api/payments", paymentRoutes);
 
-// Webhooks — SEM CSRF (chamadas server-to-server do Stripe/MP)
+// Webhooks — Without CSRF 
 app.use("/api/webhooks", webhookRoutes);
 
-/* =========================
-   📁 STATIC FILES
-========================= */
 
+// Static files
 app.use("/images", express.static(path.join(__dirname, "public/images")));
 
-/* =========================
-   🩺 HEALTH CHECK
-========================= */
-
+// Health checker
 app.get("/", (req, res) => {
   res.json({
     success: true,
@@ -169,10 +136,7 @@ app.get("/", (req, res) => {
   });
 });
 
-/* =========================
-   ❌ 404 HANDLER
-========================= */
-
+// 404 handler
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -180,10 +144,7 @@ app.use((req, res) => {
   });
 });
 
-/* =========================
-   ⚠️ GLOBAL ERROR HANDLER
-========================= */
-
+// Global error handler
 app.use(errorHandler);
 
 export default app;

@@ -14,10 +14,10 @@ export function AccessibilityProvider({ children }) {
   useEffect(() => {
     const root = document.documentElement;
 
-    // contraste
+    // contrast
     root.classList.toggle("high-contrast", highContrast);
 
-    // fonte
+    // font
     root.style.fontSize =
       fontSize === "small"
         ? "14px"

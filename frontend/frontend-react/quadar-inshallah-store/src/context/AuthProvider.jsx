@@ -15,7 +15,6 @@ export function AuthProvider({ children }) {
     return t && t !== "undefined" && t !== "null" ? t : "";
   });
 
-  // Impede que o PrivateRoute redirecione antes do localStorage ser lido
   const [isInitialized, setIsInitialized] = useState(false);
   const [loading,        setLoading]       = useState(false);
   const [error,          setError]         = useState(null);
@@ -24,8 +23,6 @@ export function AuthProvider({ children }) {
     setIsInitialized(true);
   }, []);
 
-  // Ouve o evento disparado pelo api.js quando um 401 acontece fora do login
-  // → limpa o estado sem fazer redirect forçado (o PrivateRoute cuida disso)
   useEffect(() => {
     const handleExpired = () => {
       setUser(null);
@@ -36,7 +33,7 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener("auth:expired", handleExpired);
   }, []);
 
-  // ─── Helpers ─────────────────────────────────────────────────────────────
+// Helpers
   const persistSession = (userData, jwt) => {
     setUser(userData);
     setToken(jwt);
@@ -51,7 +48,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("token");
   };
 
-  // ─── Login ────────────────────────────────────────────────────────────────
+// Login
   const login = async (email, password) => {
     setLoading(true);
     setError(null);
@@ -70,7 +67,6 @@ export function AuthProvider({ children }) {
 
       if (jwt) persistSession(userData, jwt);
       else {
-        // Backend só usa cookie → persiste só o user
         setUser(userData);
         localStorage.setItem("user", JSON.stringify(userData));
       }
@@ -86,7 +82,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // ─── Register ─────────────────────────────────────────────────────────────
+// Register
   const register = async (name, email, password, extras = {}) => {
     setLoading(true);
     setError(null);
@@ -113,13 +109,12 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // ─── Logout ───────────────────────────────────────────────────────────────
+// Logout
   const logout = async () => {
-    clearSession(); // limpa imediatamente, não espera o servidor
+    clearSession();
     try {
       await api.post("/api/auth/logout", {}, { withCredentials: true });
     } catch {
-      // ignora falha de rede — sessão local já foi limpa
     }
   };
 

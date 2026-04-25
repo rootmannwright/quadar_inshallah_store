@@ -1,14 +1,8 @@
-/**
- * Stories.jsx — Quadar
- * Editorial page: brand stories, videos, lookbooks
- */
-
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "../styles/stories.css";
 
-// ─── Mock data — substitua pelos seus dados reais ─────────────────────────────
-
+// Mock data
 const FEATURED = {
   id: 1,
   tag: "BRAND FILM",
@@ -16,8 +10,8 @@ const FEATURED = {
   subtitle: "SS 2026",
   description:
     "Entre o sagrado e o urbano, entre Guarulhos e o mundo — Quadar nasceu da convicção de que moda é intenção. Esta é a história da nossa primeira coleção.",
-  videoSrc: null,           // substitua por URL real
-  videoPoster: null,        // substitua por URL de thumbnail
+  videoSrc: null,
+  videoPoster: null,
   date: "ABRIL 2026",
 };
 
@@ -56,8 +50,7 @@ const STORIES = [
   },
 ];
 
-// ─── VideoPlayer ──────────────────────────────────────────────────────────────
-
+// VideoPlayer component
 function VideoPlayer({ src, poster }) {
   const videoRef = useRef(null);
   const [playing, setPlaying] = useState(false);
@@ -85,7 +78,6 @@ function VideoPlayer({ src, poster }) {
           onEnded={() => setPlaying(false)}
         />
       ) : (
-        /* Placeholder quando não há vídeo ainda */
         <div className="s-video-placeholder">
           <div className="s-video-grain" />
           <div className="s-video-lines">
@@ -116,8 +108,7 @@ function VideoPlayer({ src, poster }) {
   );
 }
 
-// ─── StoryCard ────────────────────────────────────────────────────────────────
-
+// StoryCard component
 function StoryCard({ story, index }) {
   return (
     <motion.article
@@ -158,8 +149,7 @@ function StoryCard({ story, index }) {
   );
 }
 
-// ─── Stories (root) ───────────────────────────────────────────────────────────
-
+// Stories root
 export default function Stories() {
   return (
     <div className="s-page">
@@ -233,7 +223,7 @@ export default function Stories() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.35 }}
           >
-            <iframe width="1100" height="800" src="https://www.youtube.com/embed/SLZW9MCB_Bs?list=RDF4-n8E3gX4M" title="yung vegan - assata shakur (visualizer)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <iframe width="1100" height="800" src="https://www.youtube.com/embed/6HgonwiDlbE?list=RD6HgonwiDlbE" title="&#39;Til I Go" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
           </motion.div>
         </div>
       </section>

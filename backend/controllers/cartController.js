@@ -3,10 +3,7 @@ import Product from "../models/Product.js";
 import mongoose from "mongoose";
 import Joi from "joi";
 
-/* =========================
-   🔒 VALIDATION SCHEMAS
-========================= */
-
+// Validation schema
 const addToCartSchema = Joi.object({
   productId: Joi.string().hex().length(24).required(),
   qty: Joi.number().integer().min(1).default(1),
@@ -16,10 +13,7 @@ const productParamSchema = Joi.object({
   productId: Joi.string().hex().length(24).required(),
 });
 
-/* =========================
-   🧠 HELPERS
-========================= */
-
+// Helpers
 function getIdentifier(req) {
   if (req.user?.id) {
     return { type: "user", value: String(req.user.id) };
@@ -62,10 +56,7 @@ async function findOrCreateCart(identifier) {
   return cart;
 }
 
-/* =========================
-   📦 RESPONSE HELPERS
-========================= */
-
+// Response helpers
 const sendError = (res, status, message) =>
   res.status(status).json({
     success: false,
@@ -78,10 +69,7 @@ const sendSuccess = (res, data) =>
     ...data,
   });
 
-/* =========================
-   🛒 CONTROLLERS
-========================= */
-
+// Controllers
 export async function getCartController(req, res) {
   try {
     const identifier = getIdentifier(req);
@@ -108,7 +96,6 @@ export async function addToCartController(req, res) {
       return sendError(res, 400, "Sessão não identificada");
     }
 
-    // 🔒 validação segura
     const { error, value } = addToCartSchema.validate(req.body);
 
     if (error) {
@@ -117,7 +104,6 @@ export async function addToCartController(req, res) {
 
     const { productId, qty } = value;
 
-    // 🔒 valida ObjectId extra (defensivo)
     if (!mongoose.Types.ObjectId.isValid(productId)) {
       return sendError(res, 400, "productId inválido");
     }
@@ -225,10 +211,7 @@ export async function clearCartController(req, res) {
   }
 }
 
-/* =========================
-   🔄 MERGE CART
-========================= */
-
+// Merge guest cart into user cart after login/registration
 export async function mergeGuestCart(userId, sessionId) {
   try {
     if (!sessionId || !mongoose.Types.ObjectId.isValid(userId)) return;

@@ -7,8 +7,7 @@ import "../styles/login.css";
 import Breadcrumbs from "../components/Breadcrumbs";
 import { useAuth } from "../context/AuthProvider";
 
-// ─── Animation helpers ────────────────────────────────────────────────────────
-
+// Animation helpers
 const stagger = (delay = 0) => ({
   hidden: { opacity: 0, y: 24 },
   show: {
@@ -23,8 +22,7 @@ const fadeIn = (delay = 0) => ({
   show: { opacity: 1, transition: { duration: 0.6, delay } },
 });
 
-// ─── ThemeToggle ──────────────────────────────────────────────────────────────
-
+// Theme toggle component
 function ThemeToggle({ dark, onToggle }) {
   return (
     <motion.button
@@ -50,8 +48,7 @@ function ThemeToggle({ dark, onToggle }) {
   );
 }
 
-// ─── FloatingInput ────────────────────────────────────────────────────────────
-
+// Floating input component with animated label
 function FloatingInput({ id, label, type = "text", value, onChange, onKeyDown }) {
   const [focused, setFocused] = useState(false);
   const active = focused || value.length > 0;
@@ -80,8 +77,7 @@ function FloatingInput({ id, label, type = "text", value, onChange, onKeyDown })
   );
 }
 
-// ─── HeroPanel ────────────────────────────────────────────────────────────────
-
+// Hero panel
 function HeroPanel() {
   return (
     <motion.div className="hero" initial="hidden" animate="show">
@@ -127,26 +123,20 @@ function HeroPanel() {
   );
 }
 
-// ─── LoginForm ────────────────────────────────────────────────────────────────
-
+// Login form
 function LoginForm({ dark, onToggle }) {
   const { login, error: authError } = useAuth();
   const navigate  = useNavigate();
   const location  = useLocation();
-
-  // Volta para onde o usuário estava antes de ser redirecionado ao login
-  // Ex: veio de /cart → após login volta para /cart
   const from = location.state?.from?.pathname || null;
-
   const [email,      setEmail]      = useState("");
   const [password,   setPassword]   = useState("");
   const [submitted,  setSubmitted]  = useState(false);
   const [loading,    setLoading]    = useState(false);
   const [localError, setLocalError] = useState(null);
-
   const errorMsg = localError || authError;
 
-  // ── Submit ──────────────────────────────────────────────────────────────────
+// Submit
   const handleSubmit = async () => {
     if (!email.trim() || !password.trim()) {
       setLocalError("Preencha e-mail e senha");
@@ -165,7 +155,6 @@ function LoginForm({ dark, onToggle }) {
         return;
       }
 
-      // Merge carrinho guest após login
       const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
       if (guestCart.length > 0) {
         localStorage.setItem("pendingCartMerge", JSON.stringify(guestCart));
@@ -174,7 +163,6 @@ function LoginForm({ dark, onToggle }) {
 
       setSubmitted(true);
 
-      // ── replace: true → remove /login do histórico, evita o loop ────────────
       setTimeout(() => {
         if (result.user?.role === "admin") {
           navigate("/dashboard", { replace: true });
@@ -326,8 +314,7 @@ function LoginForm({ dark, onToggle }) {
   );
 }
 
-// ─── Login (root) ─────────────────────────────────────────────────────────────
-
+// Login root
 export default function Login() {
   const [dark, setDark] = useState(true);
 

@@ -51,20 +51,20 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
-                {/* LAYOUT PÚBLICO */}
+                {/* PUBLIC LAYOUT */}
                 <Route element={<PublicLayout />}>
 
                   {/* STRIPE RESULT */}
                   <Route path="/success" element={<PaymentSuccess />} />
                   <Route path="/cancel" element={<PaymentFailed />} />
 
-                  {/* PÁGINAS PÚBLICAS */}
+                  {/* PUBLIC PAGES */}
                   <Route path="/" element={<Home />} />
                   <Route path="/products" element={<Products />} />
                   <Route path="/stories" element={<Stories />} />
                   <Route path="/cart" element={<Cart />} />
 
-                  {/* ROTAS PRIVADAS */}
+                  {/* PRIVATE ROUTES */}
                   <Route
                     path="/customer"
                     element={

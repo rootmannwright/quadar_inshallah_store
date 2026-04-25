@@ -4,9 +4,7 @@ import js from "@eslint/js";
 export default [
   js.configs.recommended,
 
-  // ======================
-  // NODE / BACKEND
-  // ======================
+// (Node/backend)
   {
     files: ["**/*.js"],
     languageOptions: {
@@ -20,9 +18,7 @@ export default [
     }
   },
 
-  // ======================
-  // BROWSER (frontend)
-  // ======================
+// (Browser/frontend)
   {
     files: ["src/**/*.js"],
     languageOptions: {

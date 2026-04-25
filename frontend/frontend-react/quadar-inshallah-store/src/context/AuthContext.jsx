@@ -11,7 +11,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // ─── Login ───────────────────────────────────────────────
+// Login
   const login = async (email, password) => {
     setLoading(true);
     setError(null);
@@ -30,7 +30,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // ─── Cadastro ─────────────────────────────────────────────
+// Register
   const register = async (name, email, password) => {
     setLoading(true);
     setError(null);
@@ -49,7 +49,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // ─── Logout ───────────────────────────────────────────────
+// Logout
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');

@@ -7,10 +7,7 @@ import { createMercadoPagoPreference, createPixPayment, getPixStatus } from "../
 
 const router = express.Router();
 
-/* =========================
-   RATE LIMIT
-========================= */
-
+// Rate limit
 const paymentLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
@@ -22,10 +19,7 @@ const paymentLimiter = rateLimit({
   },
 });
 
-/* =========================
-   STRIPE
-========================= */
-
+// Stripe Checkout Session
 router.post(
   "/checkout-session",
   paymentLimiter,
@@ -33,10 +27,7 @@ router.post(
   createCheckoutSession
 );
 
-/* =========================
-   MERCADO PAGO — CHECKOUT PRO
-========================= */
-
+// Checkout Pro (Stripe) - for future use
 router.post(
   "/mercadopago",
   paymentLimiter,
@@ -44,10 +35,7 @@ router.post(
   createMercadoPagoPreference
 );
 
-/* =========================
-   PIX
-========================= */
-
+// PIX (MercadoPago)
 router.post(
   "/pix",
   paymentLimiter,
@@ -61,10 +49,7 @@ router.get(
   getPixStatus
 );
 
-/* =========================
-   HEALTH CHECK
-========================= */
-
+// Health check
 router.get("/health", (req, res) => {
   res.json({
     success: true,

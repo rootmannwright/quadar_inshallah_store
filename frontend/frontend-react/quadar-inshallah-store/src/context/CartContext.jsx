@@ -8,7 +8,7 @@ export function CartProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState(null);
 
-  // ─── Adicionar item ───────────────────────────────────────
+// Add items
   const addToCart = useCallback((product, quantity = 1) => {
     setCart((prev) => {
       const exists = prev.items.find((i) => i.id === product.id);
@@ -23,7 +23,7 @@ export function CartProvider({ children }) {
     });
   }, []);
 
-  // ─── Remover item ─────────────────────────────────────────
+// Remove item
   const removeFromCart = useCallback((productId) => {
     setCart((prev) => {
       const items = prev.items.filter((i) => i.id !== productId);
@@ -32,7 +32,7 @@ export function CartProvider({ children }) {
     });
   }, []);
 
-  // ─── Atualizar quantidade ─────────────────────────────────
+// Update quantity
   const updateQuantity = useCallback((productId, quantity) => {
     if (quantity <= 0) return removeFromCart(productId);
     setCart((prev) => {
@@ -44,7 +44,7 @@ export function CartProvider({ children }) {
     });
   }, [removeFromCart]);
 
-  // ─── Checkout ─────────────────────────────────────────────
+// Checkout
   const checkout = useCallback(async (addressData) => {
     setLoading(true);
     setCheckoutError(null);
@@ -54,7 +54,7 @@ export function CartProvider({ children }) {
         address: addressData,
       };
       const { data } = await api.post('/api/orders', payload);
-      setCart({ items: [], total: 0 }); // limpa o carrinho após pedido
+      setCart({ items: [], total: 0 });
       return { success: true, order: data };
     } catch (err) {
       const msg = err.response?.data?.message || 'Erro ao finalizar pedido';

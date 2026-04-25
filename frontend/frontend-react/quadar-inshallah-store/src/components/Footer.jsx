@@ -6,7 +6,7 @@ function Footer() {
         <footer className="footer">
             <div className="footer-content">
 
-                <p><span className="footer-brand">Quadar Inshallah Co. & Records Team.</span></p>
+                <p><span className="footer-brand">Quadar Inshallah Co. & Records.</span></p>
                 <div className="images">
                     <img src="/logos/felix-the-cat.png" alt="Quadar Inshallah Co. & Records Logo" className="footer-logo" />
                     <img src="/logos/quadar-inshallah-elipse.png" alt="Letreiro Logo" />

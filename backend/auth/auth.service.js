@@ -9,20 +9,16 @@ import resetPasswordTemplate  from '../services/email/templates/resetPasswordTem
 export async function register(userData) {
   const { email, password } = userData;
 
-  // 1. criar usuário
   const user = await User.create({
     email,
     password,
     isVerified: false
   });
 
-  // 2. gerar token
   const token = generateToken();
 
-  // 3. salvar token (ideal: hash + expires)
   await saveVerificationToken(user.id, token);
 
-  // 4. enviar email
   await sendEmail({
     to: email,
     subject: 'Verifique sua conta',

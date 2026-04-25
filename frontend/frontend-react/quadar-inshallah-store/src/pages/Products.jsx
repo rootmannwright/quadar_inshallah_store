@@ -5,8 +5,7 @@ import { useAuth } from "../context/AuthProvider";
 import api from "../api";
 import "../styles/products.css";
 
-// ─── Framer variants ──────────────────────────────────────────────────────────
-
+// Framer Motion variants
 const gridVariants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.07 } },
@@ -47,8 +46,7 @@ function countGuestCart() {
   return getGuestCart().reduce((sum, i) => sum + i.qty, 0);
 }
 
-// ─── CartDrawer ───────────────────────────────────────────────────────────────
-
+// Cart Drawer component
 function CartDrawer({ open, onClose, items, onRemove, onCheckout }) {
   const total = items.reduce((sum, item) => {
     const price = item.price ?? item.product?.price ?? 0;
@@ -156,8 +154,7 @@ function CartDrawer({ open, onClose, items, onRemove, onCheckout }) {
   );
 }
 
-// ─── ProductCard ──────────────────────────────────────────────────────────────
-
+// Product card
 function ProductCard({ product, onAddToCart, adding }) {
   const outOfStock = product.stock === 0;
   const [hovered, setHovered] = useState(false);
@@ -212,8 +209,7 @@ function ProductCard({ product, onAddToCart, adding }) {
   );
 }
 
-// ─── FilterBar ────────────────────────────────────────────────────────────────
-
+// Filter Bar
 function FilterBar({ activeFilter, onFilter, productCount }) {
   const filters = ["ALL", "NEW", "IN STOCK", "SALE"];
 
@@ -235,8 +231,7 @@ function FilterBar({ activeFilter, onFilter, productCount }) {
   );
 }
 
-// ─── Products (root) ──────────────────────────────────────────────────────────
-
+// Products root
 export default function Products() {
   const { user } = useAuth();
   const navigate  = useNavigate();
@@ -244,15 +239,15 @@ export default function Products() {
   const [products, setProducts]       = useState([]);
   const [loading, setLoading]         = useState(true);
   const [fetchError, setFetchError]   = useState(null);
-  const [adding, setAdding]           = useState(null);      // product._id currently being added
+  const [adding, setAdding]           = useState(null);
   const [cartOpen, setCartOpen]       = useState(false);
-  const [cartItems, setCartItems]     = useState([]);        // unified cart state (guest or server)
+  const [cartItems, setCartItems]     = useState([]);
   const [cartCount, setCartCount]     = useState(0);
   const [activeFilter, setActiveFilter] = useState("ALL");
-  const [toast, setToast]             = useState(null);      // { message, type }
+  const [toast, setToast]             = useState(null);
   const toastTimer = useRef(null);
 
-  // ── CSRF token ──────────────────────────────────────────────────────────────
+// CSRF token fetch on mount
   const [csrfToken, setCsrfToken] = useState("");
   useEffect(() => {
     fetch("https://equation-hazelnut-camcorder.ngrok-free.dev/api/csrf-token", { credentials: "include" })
@@ -261,7 +256,7 @@ export default function Products() {
       .catch(() => {});
   }, []);
 
-  // ── Fetch products ──────────────────────────────────────────────────────────
+// Fetch products
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -276,13 +271,10 @@ export default function Products() {
     fetchProducts();
   }, []);
 
-  // ── Hydrate cart on mount ───────────────────────────────────────────────────
   useEffect(() => {
     if (user) {
-      // Logged-in: fetch server cart
       fetchServerCart();
 
-      // Merge pending guest items if user just logged in
       const pending = localStorage.getItem("pendingCartMerge");
       if (pending) {
         try {
@@ -292,14 +284,13 @@ export default function Products() {
         localStorage.removeItem("pendingCartMerge");
       }
     } else {
-      // Guest: hydrate from localStorage
       const guestCart = getGuestCart();
       setCartItems(guestCart);
       setCartCount(guestCart.reduce((s, i) => s + i.qty, 0));
     }
   }, [user]);
 
-  // ── Server cart helpers ─────────────────────────────────────────────────────
+// Server cart helpers
   const fetchServerCart = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
@@ -330,23 +321,20 @@ export default function Products() {
     fetchServerCart();
   }, [csrfToken, fetchServerCart]);
 
-  // ── Toast helper ────────────────────────────────────────────────────────────
+// Toast helper
   const showToast = (message, type = "success") => {
     clearTimeout(toastTimer.current);
     setToast({ message, type });
     toastTimer.current = setTimeout(() => setToast(null), 2500);
   };
 
-  // ── Add to cart ─────────────────────────────────────────────────────────────
-  // No login required here — guest cart uses localStorage.
-  // Login is gated only at checkout.
+// Add to cart
   const handleAddToCart = async (product) => {
     if (product.stock === 0) return;
     setAdding(product._id);
 
     try {
       if (user) {
-        // Logged-in → sync to server
         const token = localStorage.getItem("token");
         await api.post(
           "/api/cart/add",
@@ -361,7 +349,6 @@ export default function Products() {
         );
         await fetchServerCart();
       } else {
-        // Guest → localStorage only
         const updatedCart = addToGuestCart(product);
         setCartItems(updatedCart);
         setCartCount(updatedCart.reduce((s, i) => s + i.qty, 0));
@@ -375,7 +362,7 @@ export default function Products() {
     }
   };
 
-  // ── Remove from cart ────────────────────────────────────────────────────────
+// Remove from cart
   const handleRemove = async (productId) => {
     if (user) {
       try {
@@ -399,18 +386,16 @@ export default function Products() {
     }
   };
 
-  // ── Checkout: gate login here, not at add-to-cart ──────────────────────────
+// Checkout
   const handleCheckout = () => {
     if (!user) {
-      // Persist cart so Login.jsx can merge it after authentication
-      // (guestCart is already in localStorage — nothing extra needed)
       navigate("/login");
       return;
     }
     navigate("/checkout");
   };
 
-  // ── Filter products ─────────────────────────────────────────────────────────
+// Filter products
   const filtered = products.filter((p) => {
     if (activeFilter === "ALL")      return true;
     if (activeFilter === "IN STOCK") return p.stock > 0;

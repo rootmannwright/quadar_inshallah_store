@@ -12,17 +12,16 @@ import api from "../api.js";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthProvider";
 
-// ─── Stripe init ─────────────────────────────────────────────────────────────
-// Sua chave pública Stripe — mova para .env em produção
+// Stripe initialization
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
-// ─── Animation helpers ────────────────────────────────────────────────────────
+// Animation helpers
 const slide = (delay = 0) => ({
   hidden: { opacity: 0, y: 28 },
   show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1], delay } },
 });
 
-// ─── Order Summary (coluna esquerda) ─────────────────────────────────────────
+// Order summary
 function OrderSummary({ cart }) {
   return (
     <motion.div className="checkout-summary" initial="hidden" animate="show">
@@ -59,7 +58,7 @@ function OrderSummary({ cart }) {
   );
 }
 
-// ─── Stripe Payment Form (coluna direita) ─────────────────────────────────────
+// Stripe payment form
 function PaymentForm({ clientSecret }) {
   const stripe   = useStripe();
   const elements = useElements();
@@ -88,7 +87,6 @@ function PaymentForm({ clientSecret }) {
     }
 
     if (paymentIntent?.status === "succeeded") {
-      // Registra o pedido na sua API
       await checkout({ paymentIntentId: paymentIntent.id });
       setSucceeded(true);
       setTimeout(() => navigate("/account?tab=orders"), 2000);
@@ -184,7 +182,7 @@ function PaymentForm({ clientSecret }) {
   );
 }
 
-// ─── Checkout (root) ──────────────────────────────────────────────────────────
+// Checkout page
 export default function Checkout() {
   const { cart }       = useCart();
   const { user }       = useAuth();
@@ -193,7 +191,6 @@ export default function Checkout() {
   const [clientSecret, setClientSecret] = useState(null);
   const [initError,    setInitError]    = useState(null);
 
-  // Cria o PaymentIntent na sua API ao montar
   useEffect(() => {
     if (!cart.items.length) { navigate("/cart"); return; }
 
@@ -220,10 +217,10 @@ export default function Checkout() {
 
   return (
     <div className="checkout-root">
-      {/* ── Coluna esquerda: resumo ── */}
+      {/* ── Left column ── */}
       <OrderSummary cart={cart} />
 
-      {/* ── Coluna direita: pagamento ── */}
+      {/* ── Right column: payment ── */}
       {initError ? (
         <div className="checkout-init-error">{initError}</div>
       ) : clientSecret ? (

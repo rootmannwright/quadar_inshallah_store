@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useCookieConsent } from "../hooks/useCookieConsent";
 
-// Categorias alinhadas com os campos do consentService (analytics + marketing)
 const categories = [
   {
     id: "necessary",
@@ -74,7 +73,6 @@ export default function CookieModal() {
   const [animIn, setAnimIn] = useState(false);
   const [prefs, setPrefs] = useState({ analytics: false, marketing: false });
 
-  // Dispara animação de entrada quando o modal aparece
   useEffect(() => {
     if (showConsent) {
       requestAnimationFrame(() => {
@@ -275,7 +273,7 @@ export default function CookieModal() {
         onClick={handleRejectAll}
       />
 
-      {/* Wrapper — flexbox centraliza o card */}
+      {/* Wrapper */}
       <div className="ck-wrap">
         <div className={`ck-box ${animIn ? "shown" : "hidden"}`}>
 
@@ -291,7 +289,7 @@ export default function CookieModal() {
             <a href="#" onClick={(e) => e.preventDefault()}>Política de Privacidade</a>.
           </p>
 
-          {/* Expandir preferências */}
+          {/* Preferences */}
           <button
             type="button"
             className="ck-toggle-details"
@@ -306,7 +304,7 @@ export default function CookieModal() {
             {expanded ? "Ocultar detalhes" : "Gerir preferências"}
           </button>
 
-          {/* Categorias — só analytics e marketing são toggleáveis */}
+          {/* Categories */}
           <div className={`ck-cats ${expanded ? "open" : "closed"}`}>
             {categories.map((cat) => (
               <div className="ck-cat" key={cat.id}>
@@ -325,7 +323,7 @@ export default function CookieModal() {
             ))}
           </div>
 
-          {/* Ações */}
+          {/* Actions */}
           <div className="ck-actions">
             <button className="ck-btn ck-btn-dark" onClick={handleAcceptAll}>
               Aceitar todos

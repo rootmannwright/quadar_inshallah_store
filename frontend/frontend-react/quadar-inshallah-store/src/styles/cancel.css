@@ -42,7 +42,7 @@
   margin-bottom: 24px;
 }
 
-/* ITALIC "não" */
+/* ITALIC */
 .qd-headline em {
   font-style: italic;
 }
@@ -63,7 +63,7 @@
   gap: 12px;
 }
 
-/* BOTÃO PRINCIPAL */
+/* MAIN BUTTON */
 .ps-actions button,
 .qd-btn-primary {
   background: #111;
@@ -82,7 +82,7 @@
   opacity: 0.8;
 }
 
-/* BOTÃO SECUNDÁRIO */
+/* SECONDARY BUTTON */
 .ps-actions .ghost,
 .qd-btn-ghost {
   background: transparent;
@@ -172,7 +172,7 @@
   color: #666;
 }
 
-/* RESPONSIVO */
+/* RESPONSIVE */
 @media (max-width: 900px) {
   .ps-main, .qd-main {
     grid-template-columns: 1fr;

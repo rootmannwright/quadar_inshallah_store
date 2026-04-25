@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-// Snapshot of order item
 const OrderItemSchema = new mongoose.Schema(
   {
     product: {

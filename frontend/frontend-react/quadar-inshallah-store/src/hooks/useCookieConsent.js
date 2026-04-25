@@ -14,10 +14,8 @@ export const useCookieConsent = () => {
 
   useEffect(() => {
     if (!hasUserConsented()) {
-      // Primeira visita — exibe o modal
       setShowConsent(true);
     } else {
-      // Visita recorrente — reaplica scripts já consentidos
       applyConsent();
     }
   }, []);

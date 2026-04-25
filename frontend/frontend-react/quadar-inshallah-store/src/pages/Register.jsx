@@ -29,7 +29,7 @@ async function apiRegister({ name, email, password }) {
   }
 }
 
-// ─── Inline SVG Icons ─────────────────────────────────────────────────────────
+// Inline SVG Icons
 const IconEye = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
@@ -51,7 +51,7 @@ const IconChevron = () => (
   </svg>
 );
 
-// ─── Motion variants ──────────────────────────────────────────────────────────
+// Motion variants
 const stagger = {
   hidden: {},
   show: { transition: { staggerChildren: 0.09, delayChildren: 0.1 } },
@@ -68,11 +68,11 @@ const slideErr = {
   exit: { opacity: 0, height: 0, transition: { duration: 0.2 } },
 };
 
-// ─── Fonts ────────────────────────────────────────────────────────────────────
+// Fonts
 const serif = "Georgia, 'Times New Roman', Times, serif";
 const sans = "'Helvetica Neue', Helvetica, Arial, sans-serif";
 
-// ─── useTheme ─────────────────────────────────────────────────────────────────
+// Use theme (light/dark)
 function useTheme() {
   const [theme, setTheme] = useState(
     document.documentElement.getAttribute("data-theme") || "dark"
@@ -89,7 +89,7 @@ function useTheme() {
   return theme;
 }
 
-// ─── InputField (dark theme) ──────────────────────────────────────────────────
+// Input field
 function InputField({ id, label, type = "text", value, onChange, error, autoComplete, rightSlot }) {
   const [focused, setFocused] = useState(false);
   const floated = focused || value.length > 0;
@@ -177,7 +177,7 @@ function InputField({ id, label, type = "text", value, onChange, error, autoComp
   );
 }
 
-// ─── PasswordStrength ─────────────────────────────────────────────────────────
+// Password Strength Indicator
 function PasswordStrength({ value }) {
   const score = [
     value.length >= 8,
@@ -218,7 +218,7 @@ function PasswordStrength({ value }) {
   );
 }
 
-// ─── EyeButton ────────────────────────────────────────────────────────────────
+// Eye Button
 function EyeBtn({ show, onToggle }) {
   return (
     <button
@@ -236,7 +236,7 @@ function EyeBtn({ show, onToggle }) {
   );
 }
 
-// ─── Register Page ────────────────────────────────────────────────────────────
+// Register page
 export default function Register() {
   const theme = useTheme();
   const isLight = theme === "light";
@@ -310,7 +310,7 @@ export default function Register() {
   return (
     <div style={{ minHeight: "100vh", display: "flex", fontFamily: sans }}>
 
-      {/* ── LEFT PANEL ────────────────────────────────────────────────────── */}
+      {/* LEFT PANEL */}
       <div
         className="register-left"
         style={{
@@ -380,7 +380,7 @@ export default function Register() {
         </p>
       </div>
 
-      {/* ── RIGHT PANEL ───────────────────────────────────────────────────── */}
+      {/* RIGHT PANEL */}
       <div style={{
         flex: 1,
         backgroundColor: "#0d0d0d",
@@ -434,7 +434,7 @@ export default function Register() {
         }}>
           <div style={{ width: "100%", maxWidth: 340 }}>
 
-            {/* heading — cor reativa ao tema */}
+            {/* heading */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
