@@ -1,48 +1,58 @@
-// routes/orderRoutes.js
 import express from "express";
 import mongoose from "mongoose";
-import Joi from "joi";
-import rateLimiter from "express-rate-limit";
+import rateLimit from "express-rate-limit";
+import { z } from "zod";
+
 import authMiddleware from "../middleware/authMiddleware.js";
+import csrfMiddleware from "../middleware/csrfMiddleware.js";
 import {
   createOrder,
   getOrderById,
-  getMyOrders
+  getMyOrders,
 } from "../controllers/orderController.js";
 
 const router = express.Router();
 
-const orderPostLimiter = rateLimiter({
+const orderPostLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
-  message: "Too many requests from this IP, please try again later."
+  standardHeaders: true,   // envia RateLimit-* headers (RFC 6585)
+  legacyHeaders: false,
+  message: { error: "Too many requests, please try again later." },
 });
 
-const orderGetLimiter = rateLimiter({
+const orderGetLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
-  message: "Too many requests from this IP, please try again later."
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many requests, please try again later." },
 });
 
-router.post("/", orderPostLimiter, authMiddleware, createOrder);
+const orderIdSchema = z.object({
+  id: z
+    .string({ required_error: "Order ID é obrigatório" })
+    .refine((val) => mongoose.Types.ObjectId.isValid(val), {
+      message: "Order ID inválido",
+    }),
+});
 
-router.get("/:id", orderGetLimiter, authMiddleware, async (req, res, next) => {
-  try {
-    const schema = Joi.object({ id: Joi.string().required() });
-    const { error, value } = schema.validate(req.params);
+const validateOrderId = (req, res, next) => {
+  const result = orderIdSchema.safeParse(req.params);
 
-    if (error || !mongoose.Types.ObjectId.isValid(value.id)) {
-      return res.status(400).json({ error: "Invalid order ID" });
-    }
-
-    req.params.id = value.id;
-    return getOrderById(req, res, next);
-    // eslint-disable-next-line no-unused-vars
-  } catch (err) {
-    return res.status(500).json({ error: "Internal server error while fetching order" });
+  if (!result.success) {
+    const message = result.error.errors[0]?.message ?? "Parâmetro inválido";
+    return res.status(400).json({ error: message });
   }
-});
 
-router.get("/", orderGetLimiter, authMiddleware, getMyOrders);
+  req.params.id = result.data.id;
+  return next();
+};
+
+router.get("/my", orderGetLimiter, authMiddleware, getMyOrders);
+
+router.get("/:id", orderGetLimiter, authMiddleware, validateOrderId, getOrderById);
+
+router.post("/", orderPostLimiter, authMiddleware, csrfMiddleware, createOrder);
 
 export default router;
