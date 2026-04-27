@@ -1,38 +1,36 @@
-// middleware/csrf.js
-import crypto from "crypto";
+import { doubleCsrf } from "csrf-csrf";
 
-const COOKIE = "x-csrf-token";
-const isProd = process.env.NODE_ENV === "production";
+const {
+  invalidCsrfTokenError,
+  generateCsrfToken,
+  validateRequest,
+  doubleCsrfProtection,
+} = doubleCsrf({
+  getSecret: () => {
+    if (!process.env.CSRF_SECRET) throw new Error("CSRF_SECRET não definida");
+    return process.env.CSRF_SECRET;
+  },
 
-function generateToken(req, res) {
-  const token = crypto.randomBytes(32).toString("hex");
+  getSessionIdentifier: (req) => req.ip,
 
-  res.cookie(COOKIE, token, {
-    httpOnly: false,
-    sameSite: "strict",
-    secure: isProd,
+  cookieName: "csrf-secret",
+
+  cookieOptions: {
+    httpOnly: true,
+    sameSite: "none",
+    secure: true,
     path: "/",
-  });
+  },
 
-  return token;
-}
+  getTokenFromRequest: (req) =>
+    req.headers["x-csrf-token"] ?? req.body?._csrf ?? null,
 
-function doubleCsrfProtection(req, res, next) {
-  const SAFE = ["GET", "HEAD", "OPTIONS"];
-  if (SAFE.includes(req.method)) return next();
+  size: 64,
+});
 
-  const fromHeader = req.headers["x-csrf-token"];
-  const fromCookie = req.cookies?.[COOKIE];
-
-  if (!fromHeader || !fromCookie || fromHeader !== fromCookie) {
-    return res.status(403).json({
-      success: false,
-      code: "EBADCSRFTOKEN",
-      message: "Token CSRF inválido.",
-    });
-  }
-
-  next();
-}
-
-export { generateToken, doubleCsrfProtection };
+export {
+  invalidCsrfTokenError,
+  generateCsrfToken,
+  validateRequest,
+  doubleCsrfProtection,
+};

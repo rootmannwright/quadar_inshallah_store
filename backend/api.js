@@ -1,46 +1,43 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import rateLimit from "express-rate-limit";
 import hpp from "hpp";
 import path from "path";
 import { fileURLToPath } from "url";
-import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 
-import { generateToken, doubleCsrfProtection } from "./middleware/csrf.js";
+import { generateCsrfToken, doubleCsrfProtection } from "./middleware/csrf.js";
 
-import authRoutes from "./routes/authRoutes.js";
+import authRoutes    from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import webhookRoutes from "./routes/webhookRoutes.js";
-import cartRoutes from "./routes/cartRoutes.js";
+import cartRoutes    from "./routes/cartRoutes.js";
 
-import errorHandler from "./middleware/errorHandler.js";
-import { requestLogger } from "./middleware/requestLogger.js";
-
-dotenv.config();
+import errorHandler          from "./middleware/errorHandler.js";
+import { requestLogger }     from "./middleware/requestLogger.js";
 
 const app = express();
 
-// Core security and performance settings
 app.disable("x-powered-by");
 app.set("trust proxy", 1);
 
-// Path utilities 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname  = path.dirname(__filename);
 
+// ---------------------------------------------------------------------------
 // Helmet
+// ---------------------------------------------------------------------------
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", "data:", "https:"],
-        connectSrc: [
+        defaultSrc:     ["'self'"],
+        scriptSrc:      ["'self'"],
+        styleSrc:       ["'self'", "'unsafe-inline'"],
+        imgSrc:         ["'self'", "data:", "https:"],
+        connectSrc:     [
           "'self'",
           "http://localhost:5173",
           "http://localhost:3000",
@@ -48,53 +45,75 @@ app.use(
           "https://api.stripe.com",
           "https://api.mercadopago.com",
         ].filter(Boolean),
-        objectSrc: ["'none'"],
+        objectSrc:      ["'none'"],
         frameAncestors: ["'none'"],
       },
     },
   })
 );
 
-// Cors
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Sem origin = request server-to-server ou Postman
-      if (!origin) return callback(null, true);
+// ---------------------------------------------------------------------------
+// CORS
+// ---------------------------------------------------------------------------
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+];
 
-      const allowed = [
-        "http://localhost:5173",
-        "http://localhost:3000",
-        process.env.CLIENT_URL,
-      ].filter(Boolean);
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
 
-      if (allowed.includes(origin)) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
 
-      return callback(new Error(`CORS bloqueado: ${origin}`));
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-  })
-);
+    if (origin.includes(".ngrok-free.dev")) {
+      return callback(null, true);
+    }
 
-// Body parsers
+    console.log("❌ CORS bloqueado:", origin);
+    return callback(new Error(`CORS bloqueado: ${origin}`));
+  },
+
+  credentials: true,
+
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "X-CSRF-Token",
+    "x-csrf-token"
+  ]
+}));
+
+app.options(/.*/, cors());
+
+// ---------------------------------------------------------------------------
+// Body parsers — webhook raw ANTES do express.json
+// ---------------------------------------------------------------------------
 app.use("/api/webhooks", express.raw({ type: "application/json" }));
-
 app.use(express.json({ limit: "10kb" }));
+app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 app.use(cookieParser());
 
-// Security layers
+// ---------------------------------------------------------------------------
+// Segurança + logging
+// ---------------------------------------------------------------------------
 app.use(hpp());
 app.use(requestLogger);
 
-// Rate limiter
+// ---------------------------------------------------------------------------
+// Rate limiter global
+// ---------------------------------------------------------------------------
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 150,
     standardHeaders: true,
     legacyHeaders: false,
-    keyGenerator: (req) => ipKeyGenerator(req),
+    // ipKeyGenerator removido — express-rate-limit v7 já usa IP por padrão
     message: {
       success: false,
       message: "Muitas requisições. Tente novamente mais tarde.",
@@ -102,49 +121,42 @@ app.use(
   })
 );
 
-// CSRF token endpoint
+// ---------------------------------------------------------------------------
+// CSRF token — público, chamado pelo frontend antes de mutações
+// FIX: overwrite: true obrigatório no csrf-csrf v4
+// ---------------------------------------------------------------------------
 app.get("/api/csrf-token", (req, res) => {
-  res.json({ csrfToken: generateToken(req, res) });
+  try {
+    const token = generateCsrfToken(req, res, true);
+    return res.json({ csrfToken: token });
+  } catch (err) {
+    console.error("[CSRF TOKEN ERROR]", err);
+    return res.status(500).json({ error: "Erro ao gerar token CSRF" });
+  }
 });
 
-// Routes
-// Product  - without CSRF (read-only, public)
+// ---------------------------------------------------------------------------
+// Rotas
+// ---------------------------------------------------------------------------
 app.use("/api/products", productRoutes);
-
-// Auth — CSRF
-app.use("/api/auth", authRoutes);
-
-// Cart — CSRF
-app.use("/api/cart", doubleCsrfProtection, cartRoutes);
-
-// Payments — Without CSRF
-app.use("/api/payments", paymentRoutes);
-
-// Webhooks — Without CSRF 
+app.use("/api/auth",     authRoutes);
+app.use("/api/cart",     doubleCsrfProtection, cartRoutes);
+app.use("/api/payments", doubleCsrfProtection, paymentRoutes);
 app.use("/api/webhooks", webhookRoutes);
 
-
-// Static files
+// ---------------------------------------------------------------------------
+// Estáticos, health check, 404
+// ---------------------------------------------------------------------------
 app.use("/images", express.static(path.join(__dirname, "public/images")));
 
-// Health checker
-app.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "API running 🚀",
-    status: "healthy",
-  });
-});
+app.get("/health", (_req, res) =>
+  res.json({ success: true, message: "API running 🚀", status: "healthy" })
+);
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: "Route not found",
-  });
-});
+app.use((_req, res) =>
+  res.status(404).json({ success: false, message: "Route not found" })
+);
 
-// Global error handler
 app.use(errorHandler);
 
 export default app;
