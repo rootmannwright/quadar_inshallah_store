@@ -114,7 +114,7 @@ export const createCheckoutSession = async (req, res) => {
       })),
       success_url: `${process.env.CLIENT_URL}/success`,
       cancel_url:  `${process.env.CLIENT_URL}/cancel`,
-      expires_at:  Math.floor(Date.now() / 1000) + 30 * 60, // expira em 30 min
+      expires_at: Math.floor(Date.now() / 1000) + (60 * 60), // 1 hora
       metadata: {
         orderId: order._id.toString(),
         userId:  req.user.id,
